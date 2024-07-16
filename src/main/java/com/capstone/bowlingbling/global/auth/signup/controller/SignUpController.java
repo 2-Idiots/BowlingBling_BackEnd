@@ -1,0 +1,27 @@
+package com.capstone.bowlingbling.global.auth.signup.controller;
+
+import com.capstone.bowlingbling.global.auth.signup.dto.MemberSignUpDto;
+import com.capstone.bowlingbling.global.auth.signup.service.SignUpService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class SignUpController {
+
+    private final SignUpService memberService;
+
+    @PostMapping("/sign-up")
+    public String signUp(@RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
+        memberService.signUp(memberSignUpDto);
+        return "회원가입 성공";
+    }
+
+    @GetMapping("/jwt-test")
+    public String jwtTest() {
+        return "jwtTest 요청 성공";
+    }
+}
