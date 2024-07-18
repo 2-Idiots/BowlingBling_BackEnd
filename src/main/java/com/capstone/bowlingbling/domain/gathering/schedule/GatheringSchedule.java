@@ -15,7 +15,7 @@ public class GatheringSchedule {
 
     private final GatheringRepository gatheringRepository;
 
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행 초 분 시 일 월 요일(0일요일 - 6토요일)
     public void markPastGatheringsAsDeleted() {
         LocalDateTime now = LocalDateTime.now();
         gatheringRepository.findAllByDateBeforeAndDeletedAtIsNull(now)
