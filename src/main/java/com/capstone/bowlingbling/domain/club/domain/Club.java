@@ -1,6 +1,7 @@
 package com.capstone.bowlingbling.domain.club.domain;
 
 import com.capstone.bowlingbling.domain.member.domain.Member;
+import com.capstone.bowlingbling.domain.place.domain.Place;
 import com.capstone.bowlingbling.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
