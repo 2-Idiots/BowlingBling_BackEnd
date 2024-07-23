@@ -42,6 +42,7 @@ public class Gathering extends BaseEntity {
     @Builder.Default
     private Set<MemberGathering> memberGatherings = new HashSet<>();
 
+    @Transient
     public int getCurrentParticipants() {
         return memberGatherings.size();
     }
