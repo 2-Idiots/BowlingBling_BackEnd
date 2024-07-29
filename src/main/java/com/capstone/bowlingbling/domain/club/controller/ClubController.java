@@ -2,6 +2,7 @@ package com.capstone.bowlingbling.domain.club.controller;
 
 import com.capstone.bowlingbling.domain.club.dto.request.ClubJoinRequestStatusDto;
 import com.capstone.bowlingbling.domain.club.dto.request.ClubRequestDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubJoinResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubResponseListDto;
 import com.capstone.bowlingbling.domain.club.service.ClubService;
@@ -55,10 +56,10 @@ public class ClubController {
 
     @Operation(summary = "동호회 가입 요청 목록 조회", description = "동호회장이 가입 요청한 회원 목록을 조회합니다.")
     @GetMapping("/{clubId}/joinList")
-    public ResponseEntity<Page<Member>> getJoinRequests(@PathVariable Long clubId, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<Page<ClubJoinResponseDto>> getJoinRequests(@PathVariable Long clubId, @AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
-        Page<Member> joinRequests = clubService.getJoinRequests(clubId, memberEmail, Pageable.ofSize(10));
-        return ResponseEntity.ok(joinRequests);
+        Page<ClubJoinResponseDto> joinResponse = clubService.getJoinRequests(clubId, memberEmail, Pageable.ofSize(10));
+        return ResponseEntity.ok(joinResponse);
     }
 
     @Operation(summary = "동호회 가입 요청 처리", description = "동호회장이 가입 요청을 승인 또는 거부합니다.")

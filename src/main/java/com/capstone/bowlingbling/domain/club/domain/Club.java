@@ -22,6 +22,10 @@ public class Club extends BaseEntity {
     @OneToOne
     private Member leader;
 
+    @OneToOne
+    @JoinColumn(name = "place_id")
+    private Place place;
+
     @Column(nullable = false)
     private String clubname;
 
