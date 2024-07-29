@@ -2,43 +2,62 @@ package com.capstone.bowlingbling.domain.gathering.service;
 
 import com.capstone.bowlingbling.domain.gathering.domain.Gathering;
 import com.capstone.bowlingbling.domain.gathering.domain.MemberGathering;
-import com.capstone.bowlingbling.domain.gathering.dto.GatheringDto;
+import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringRequestDto;
+import com.capstone.bowlingbling.domain.gathering.dto.response.GatheringCreateResponseDto;
 import com.capstone.bowlingbling.domain.gathering.repository.GatheringRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
+import com.capstone.bowlingbling.domain.place.domain.Place;
+import com.capstone.bowlingbling.domain.place.dto.PlaceDto;
+import com.capstone.bowlingbling.domain.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class GatheringService {
     private final GatheringRepository gatheringRepository;
     private final MemberRepository memberRepository;
+    private final PlaceRepository placeRepository;
 
     @Transactional
-    public GatheringDto createGathering(GatheringDto gatheringDto, String memberEmail) {
+    public GatheringCreateResponseDto createGathering(GatheringRequestDto gatheringRequestDto, String memberEmail) {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException(memberEmail + " 멤버를 찾을 수 없습니다."));
 
+        PlaceDto placeDto = gatheringRequestDto.getPlace();
+        Place place = placeRepository.findById(Long.valueOf(placeDto.getId()))
+                .orElseGet(() -> placeRepository.save(Place.builder()
+                        .id(Long.valueOf(placeDto.getId()))
+                        .addressName(placeDto.getAddressName())
+                        .roadAddressName(placeDto.getRoadAddressName())
+                        .buildingName(placeDto.getBuildingName())
+                        .zoneNo(placeDto.getZoneNo())
+                        .latitude(placeDto.getY())
+                        .longitude(placeDto.getX())
+                        .placeName(placeDto.getPlaceName())
+                        .build()));
+
         Gathering gathering = Gathering.builder()
-                .name(gatheringDto.getName())
-                .minAverage(gatheringDto.getMinAverage())
-                .maxAverage(gatheringDto.getMaxAverage())
-                .description(gatheringDto.getDescription())
-                .location(gatheringDto.getLocation())
-                .date(gatheringDto.getDate())
-                .maxParticipants(gatheringDto.getMaxParticipants())
+                .leader(member)
+                .name(gatheringRequestDto.getName())
+                .minAverage(gatheringRequestDto.getMinAverage())
+                .maxAverage(gatheringRequestDto.getMaxAverage())
+                .description(gatheringRequestDto.getDescription())
+                .location(gatheringRequestDto.getLocation())
+                .date(gatheringRequestDto.getDate())
+                .maxParticipants(gatheringRequestDto.getMaxParticipants())
+                .place(place)
                 .build();
 
         Gathering savedGathering = gatheringRepository.save(gathering);
 
-        return GatheringDto.builder()
+        return GatheringCreateResponseDto.builder()
                 .id(savedGathering.getId())
+                .leadername(member.getNickname())
                 .name(savedGathering.getName())
                 .minAverage(savedGathering.getMinAverage())
                 .maxAverage(savedGathering.getMaxAverage())
@@ -51,13 +70,13 @@ public class GatheringService {
     }
 
     @Transactional(readOnly = true)
-    public GatheringDto getGathering(Long id) {
+    public GatheringRequestDto getGathering(Long id) {
         Gathering gathering = gatheringRepository.findActiveById(id);
         if (gathering == null) {
             throw new IllegalArgumentException(id + " 게시물을 찾을 수 없습니다.");
         }
 
-        return GatheringDto.builder()
+        return GatheringRequestDto.builder()
                 .id(gathering.getId())
                 .name(gathering.getName())
                 .minAverage(gathering.getMinAverage())
@@ -71,8 +90,8 @@ public class GatheringService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GatheringDto> getAllGatherings(Pageable pageable) {
-        return gatheringRepository.findAllActive(pageable).map(gathering -> GatheringDto.builder()
+    public Page<GatheringRequestDto> getAllGatherings(Pageable pageable) {
+        return gatheringRepository.findAllActive(pageable).map(gathering -> GatheringRequestDto.builder()
                 .id(gathering.getId())
                 .name(gathering.getName())
                 .minAverage(gathering.getMinAverage())
@@ -86,25 +105,25 @@ public class GatheringService {
     }
 
     @Transactional
-    public GatheringDto updateGathering(Long id, GatheringDto gatheringDto, String memberEmail) {
+    public GatheringRequestDto updateGathering(Long id, GatheringRequestDto gatheringRequestDto, String memberEmail) {
         Gathering gathering = gatheringRepository.findActiveById(id);
         if (gathering == null) {
             throw new IllegalArgumentException(id + " 게시물을 찾을 수 없습니다.");
         }
 
         gathering = gathering.toBuilder()
-                .name(gatheringDto.getName() != null ? gatheringDto.getName() : gathering.getName())
-                .minAverage(gatheringDto.getMinAverage() != null ? gatheringDto.getMinAverage() : gathering.getMinAverage())
-                .maxAverage(gatheringDto.getMaxAverage() != null ? gatheringDto.getMaxAverage() : gathering.getMaxAverage())
-                .description(gatheringDto.getDescription() != null ? gatheringDto.getDescription() : gathering.getDescription())
-                .location(gatheringDto.getLocation() != null ? gatheringDto.getLocation() : gathering.getLocation())
-                .date(gatheringDto.getDate() != null ? gatheringDto.getDate() : gathering.getDate())
-                .maxParticipants(gatheringDto.getMaxParticipants() != null ? gatheringDto.getMaxParticipants() : gathering.getMaxParticipants())
+                .name(gatheringRequestDto.getName() != null ? gatheringRequestDto.getName() : gathering.getName())
+                .minAverage(gatheringRequestDto.getMinAverage() != null ? gatheringRequestDto.getMinAverage() : gathering.getMinAverage())
+                .maxAverage(gatheringRequestDto.getMaxAverage() != null ? gatheringRequestDto.getMaxAverage() : gathering.getMaxAverage())
+                .description(gatheringRequestDto.getDescription() != null ? gatheringRequestDto.getDescription() : gathering.getDescription())
+                .location(gatheringRequestDto.getLocation() != null ? gatheringRequestDto.getLocation() : gathering.getLocation())
+                .date(gatheringRequestDto.getDate() != null ? gatheringRequestDto.getDate() : gathering.getDate())
+                .maxParticipants(gatheringRequestDto.getMaxParticipants() != null ? gatheringRequestDto.getMaxParticipants() : gathering.getMaxParticipants())
                 .build();
 
         Gathering updatedGathering = gatheringRepository.save(gathering);
 
-        return GatheringDto.builder()
+        return GatheringRequestDto.builder()
                 .id(updatedGathering.getId())
                 .name(updatedGathering.getName())
                 .minAverage(updatedGathering.getMinAverage())
@@ -150,11 +169,11 @@ public class GatheringService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GatheringDto> getMemberGatherings(String memberEmail, Pageable pageable) {
+    public Page<GatheringRequestDto> getMemberGatherings(String memberEmail, Pageable pageable) {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalStateException(memberEmail + "에 해당하는 멤버를 찾을 수 없습니다."));
 
-        return gatheringRepository.findByMember(member.getId(), pageable).map(gathering -> GatheringDto.builder()
+        return gatheringRepository.findByMember(member.getId(), pageable).map(gathering -> GatheringRequestDto.builder()
                 .id(gathering.getId())
                 .name(gathering.getName())
                 .minAverage(gathering.getMinAverage())

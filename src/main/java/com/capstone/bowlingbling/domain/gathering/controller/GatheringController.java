@@ -1,6 +1,7 @@
 package com.capstone.bowlingbling.domain.gathering.controller;
 
-import com.capstone.bowlingbling.domain.gathering.dto.GatheringDto;
+import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringRequestDto;
+import com.capstone.bowlingbling.domain.gathering.dto.response.GatheringCreateResponseDto;
 import com.capstone.bowlingbling.domain.gathering.service.GatheringService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +21,23 @@ public class GatheringController {
 
     @GetMapping
     @Operation(summary = "전체 번개 모임 조회", description = "모든 번개 모임을 페이징 처리하여 조회합니다.")
-    public ResponseEntity<Page<GatheringDto>> getAllGatherings() {
-        Page<GatheringDto> gatherings = gatheringService.getAllGatherings(Pageable.ofSize(10));
+    public ResponseEntity<Page<GatheringRequestDto>> getAllGatherings() {
+        Page<GatheringRequestDto> gatherings = gatheringService.getAllGatherings(Pageable.ofSize(10));
         return ResponseEntity.ok(gatherings);
     }
 
     @GetMapping("/{gatheringId}")
     @Operation(summary = "단일 번개 모임 조회", description = "번개 모임의 상세 정보를 조회합니다.")
-    public ResponseEntity<GatheringDto> getGatheringById(@PathVariable Long gatheringId) {
-        GatheringDto gathering = gatheringService.getGathering(gatheringId);
+    public ResponseEntity<GatheringRequestDto> getGatheringById(@PathVariable Long gatheringId) {
+        GatheringRequestDto gathering = gatheringService.getGathering(gatheringId);
         return ResponseEntity.ok(gathering);
     }
 
     @PostMapping("/create")
     @Operation(summary = "번개 모임 생성", description = "새로운 번개 모임을 생성합니다.")
-    public ResponseEntity<GatheringDto> createGathering(@RequestBody GatheringDto gatheringDto, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<GatheringCreateResponseDto> createGathering(@RequestBody GatheringRequestDto gatheringRequestDto, @AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
-        GatheringDto createdGathering = gatheringService.createGathering(gatheringDto, memberEmail);
+        GatheringCreateResponseDto createdGathering = gatheringService.createGathering(gatheringRequestDto, memberEmail);
         return ResponseEntity.ok(createdGathering);
     }
 
@@ -50,17 +51,17 @@ public class GatheringController {
 
     @GetMapping("/my")
     @Operation(summary = "내 번개 모임 조회", description = "내가 생성하거나 가입한 번개 모임 목록을 조회합니다.")
-    public ResponseEntity<Page<GatheringDto>> getMyGatherings(@AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<Page<GatheringRequestDto>> getMyGatherings(@AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
-        Page<GatheringDto> gatherings = gatheringService.getMemberGatherings(memberEmail, Pageable.ofSize(10));
+        Page<GatheringRequestDto> gatherings = gatheringService.getMemberGatherings(memberEmail, Pageable.ofSize(10));
         return ResponseEntity.ok(gatherings);
     }
 
     @PatchMapping("/{gatheringId}")
     @Operation(summary = "번개 모임 수정", description = "번개 모임 정보를 수정합니다.")
-    public ResponseEntity<GatheringDto> updateGathering(@PathVariable Long gatheringId, @RequestBody GatheringDto gatheringDto, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<GatheringRequestDto> updateGathering(@PathVariable Long gatheringId, @RequestBody GatheringRequestDto gatheringRequestDto, @AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
-        GatheringDto updatedGathering = gatheringService.updateGathering(gatheringId, gatheringDto, memberEmail);
+        GatheringRequestDto updatedGathering = gatheringService.updateGathering(gatheringId, gatheringRequestDto, memberEmail);
         return ResponseEntity.ok(updatedGathering);
     }
 

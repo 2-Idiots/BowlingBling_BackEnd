@@ -1,5 +1,7 @@
 package com.capstone.bowlingbling.domain.gathering.domain;
 
+import com.capstone.bowlingbling.domain.member.domain.Member;
+import com.capstone.bowlingbling.domain.place.domain.Place;
 import com.capstone.bowlingbling.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +18,9 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Gathering extends BaseEntity {
+
+    @OneToOne
+    private Member leader;
 
     @Column(nullable = false)
     private String name;
@@ -37,6 +42,10 @@ public class Gathering extends BaseEntity {
 
     @Column(nullable = false)
     private Integer maxParticipants;
+
+    @OneToOne
+    @JoinColumn(name = "place_id")
+    private Place place;
 
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

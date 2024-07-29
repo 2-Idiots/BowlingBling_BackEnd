@@ -1,5 +1,7 @@
-package com.capstone.bowlingbling.domain.gathering.dto;
+package com.capstone.bowlingbling.domain.gathering.dto.request;
 
+import com.capstone.bowlingbling.domain.member.domain.Member;
+import com.capstone.bowlingbling.domain.place.dto.PlaceDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,7 +9,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class GatheringDto {
+public class GatheringRequestDto {
+    private Member member;
     private Long id;
     private String name;
     private Integer minAverage;
@@ -17,4 +20,5 @@ public class GatheringDto {
     private LocalDateTime date;
     private Integer maxParticipants;
     private Integer currentParticipants;
+    private PlaceDto place;
 }
