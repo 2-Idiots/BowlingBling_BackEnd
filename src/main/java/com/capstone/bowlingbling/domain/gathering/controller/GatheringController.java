@@ -43,10 +43,10 @@ public class GatheringController {
 
     @PostMapping("/{gatheringId}/join")
     @Operation(summary = "번개 모임 가입", description = "번개 모임에 가입 신청을 합니다.")
-    public ResponseEntity<Void> joinGathering(@PathVariable Long gatheringId, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<String> joinGathering(@PathVariable Long gatheringId, @AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
         gatheringService.joinGathering(gatheringId, memberEmail);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("가입 신청 완료");
     }
 
     @GetMapping("/my")
