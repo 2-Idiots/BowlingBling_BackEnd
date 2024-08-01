@@ -41,12 +41,12 @@ public class CommunityController {
         return communityService.getCommunityByCategory(category, Pageable.ofSize(10));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateCommunity (@PathVariable Long id, @RequestBody CommunitySaveRequestDto communitySaveRequestDto,
+    @PatchMapping("/{communityId}")
+    public ResponseEntity<String> updateCommunity (@PathVariable Long communityId, @RequestBody CommunitySaveRequestDto communitySaveRequestDto,
                                                    @AuthenticationPrincipal User sessionMember){
         try{
             String memberEmail = sessionMember.getUsername();
-            communityService.updateCommunity(id, communitySaveRequestDto, memberEmail);
+            communityService.updateCommunity(communityId, communitySaveRequestDto, memberEmail);
             return ResponseEntity.ok("게시글이 성공적으로 수정되었습니다");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

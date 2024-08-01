@@ -1,5 +1,6 @@
 package com.capstone.bowlingbling.domain.community.domain;
 
+import com.capstone.bowlingbling.domain.comment.domain.CommunityComment;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.BaseEntity;
 import jakarta.persistence.*;
@@ -28,5 +29,4 @@ public class Community extends BaseEntity {
     @Column(nullable = false)
     private String contents;
 
-    //TODO 댓글 추가 예정
 }

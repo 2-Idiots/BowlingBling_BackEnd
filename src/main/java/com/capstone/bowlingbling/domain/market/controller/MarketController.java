@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "markets", description = "중고장터 API")
-@RequestMapping("/markets")
+@RequestMapping("/market")
 public class MarketController {
 
     @Autowired
