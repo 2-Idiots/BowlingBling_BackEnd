@@ -1,6 +1,6 @@
-package com.capstone.bowlingbling.domain.community.domain;
+package com.capstone.bowlingbling.domain.comment.domain;
 
-import com.capstone.bowlingbling.domain.comment.domain.CommunityComment;
+import com.capstone.bowlingbling.domain.market.domain.Market;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.BaseEntity;
 import jakarta.persistence.*;
@@ -14,19 +14,14 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "coummunity")
-public class Community extends BaseEntity {
-    //TODO place와 image 추가
+@Table(name = "MarketComments")
+public class MarketComment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    //private boolean anonymous;
-    private String category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Market market;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String contents;
-
+    private String conmments;
 }

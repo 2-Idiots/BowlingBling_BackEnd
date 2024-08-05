@@ -4,12 +4,16 @@ import com.capstone.bowlingbling.domain.club.domain.Club;
 import com.capstone.bowlingbling.domain.club.domain.ClubJoinRequest;
 import com.capstone.bowlingbling.domain.club.dto.request.ClubJoinRequestStatusDto;
 import com.capstone.bowlingbling.domain.club.dto.request.ClubRequestDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubJoinResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubResponseListDto;
 import com.capstone.bowlingbling.domain.club.repository.ClubJoinRequestRepository;
 import com.capstone.bowlingbling.domain.club.repository.ClubRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
+import com.capstone.bowlingbling.domain.place.domain.Place;
+import com.capstone.bowlingbling.domain.place.dto.PlaceDto;
+import com.capstone.bowlingbling.domain.place.repository.PlaceRepository;
 import com.capstone.bowlingbling.global.enums.ClubJoinRequestStatus;
 import com.capstone.bowlingbling.global.enums.Role;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,7 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final ClubJoinRequestRepository clubJoinRequestRepository;
     private final MemberRepository memberRepository;
+    private final PlaceRepository placeRepository;
 
     public Page<ClubResponseListDto> getAllClubs(Pageable pageable) {
         Page<Club> ClubPage = clubRepository.findAll(pageable);
@@ -55,19 +60,36 @@ public class ClubService {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
+        PlaceDto placeDto = clubDto.getPlace();
+        Place place = placeRepository.findById(Long.valueOf(placeDto.getId()))
+                .orElseGet(() -> placeRepository.save(Place.builder()
+                        .id(Long.valueOf(placeDto.getId()))
+                        .addressName(placeDto.getAddressName())
+                        .roadAddressName(placeDto.getRoadAddressName())
+                        .buildingName(placeDto.getBuildingName())
+                        .zoneNo(placeDto.getZoneNo())
+                        .latitude(placeDto.getY())
+                        .longitude(placeDto.getX())
+                        .placeName(placeDto.getPlaceName())
+                        .build()));
+
         Club club = Club.builder()
                 .clubname(clubDto.getClubname())
                 .introduction(clubDto.getIntroduction())
                 .leader(member)
                 .memberCount(1)
+                .place(place)
                 .build();
+
         clubRepository.save(club);
+
         return ClubResponseDto.builder()
                 .id(club.getId())
                 .clubname(club.getClubname())
                 .introduction(club.getIntroduction())
                 .memberCount(club.getMemberCount())
                 .leaderNickname(club.getLeader().getNickname())
+                .placeName(place.getPlaceName())
                 .build();
     }
 
@@ -86,7 +108,7 @@ public class ClubService {
         clubJoinRequestRepository.save(joinRequest);
     }
 
-    public Page<Member> getJoinRequests(Long clubId, String memberEmail, Pageable pageable) {
+    public Page<ClubJoinResponseDto> getJoinRequests(Long clubId, String memberEmail, Pageable pageable) {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
@@ -101,7 +123,16 @@ public class ClubService {
                 club, ClubJoinRequestStatus.PENDING, pageable
         );
 
-        return joinRequestPage.map(ClubJoinRequest::getMember);
+        return joinRequestPage.map(joinRequest -> {
+            Member m = joinRequest.getMember();
+            return ClubJoinResponseDto.builder()
+                    .id(m.getId())
+                    .imageUrl(m.getImageUrl())
+                    .sex(m.getSex())
+                    .age(m.getAge())
+                    .phonenum(m.getPhonenum())
+                    .build();
+        });
     }
 
     public void acceptJoinRequest(Long clubId, Long memberId, ClubJoinRequestStatusDto statusDto, String memberEmail) {

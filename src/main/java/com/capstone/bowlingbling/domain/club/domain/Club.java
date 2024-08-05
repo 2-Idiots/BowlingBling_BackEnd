@@ -1,6 +1,7 @@
 package com.capstone.bowlingbling.domain.club.domain;
 
 import com.capstone.bowlingbling.domain.member.domain.Member;
+import com.capstone.bowlingbling.domain.place.domain.Place;
 import com.capstone.bowlingbling.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,10 @@ public class Club extends BaseEntity {
     //TODO place와 image 추가
     @OneToOne
     private Member leader;
+
+    @OneToOne
+    @JoinColumn(name = "place_id")
+    private Place place;
 
     @Column(nullable = false)
     private String clubname;

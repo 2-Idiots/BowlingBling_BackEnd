@@ -1,8 +1,15 @@
 package com.capstone.bowlingbling.domain.member.service;
 
 import com.capstone.bowlingbling.domain.member.domain.Member;
+import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
 import com.capstone.bowlingbling.domain.member.dto.MemberProfileUpdateRequest;
+import com.capstone.bowlingbling.domain.member.dto.TeacherRequestDto;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
+import com.capstone.bowlingbling.domain.member.repository.TeacherRequestRepository;
+import com.capstone.bowlingbling.global.enums.Role;
+import com.capstone.bowlingbling.global.enums.TeacherStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final TeacherRequestRepository teacherRequestRepository;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository) {
         this.memberRepository = memberRepository;
+        this.teacherRequestRepository = teacherRequestRepository;
     }
 
     @Transactional
@@ -30,5 +39,49 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member);
+    }
+
+    @Transactional
+    public TeacherRequest requestTeacherRole(TeacherRequestDto request, String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
+
+        TeacherRequest teacherRequest = TeacherRequest.builder()
+                .member(member)
+                .specialty(request.getSpecialty())
+                .bio(request.getBio())
+                .status(TeacherStatus.PENDING)
+                .build();
+
+        return teacherRequestRepository.save(teacherRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TeacherRequest> getPendingTeacherRequests(Pageable pageable) {
+        return teacherRequestRepository.findAllByStatus(TeacherStatus.PENDING, pageable);
+    }
+
+    @Transactional
+    public void approveTeacherRequest(Long requestId) {
+        TeacherRequest teacherRequest = teacherRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 요청을 찾을 수 없습니다."));
+
+        Member member = teacherRequest.getMember();
+        member = member.toBuilder()
+                .role(Role.TEACHER)
+                .build();
+
+        teacherRequest = teacherRequest.toBuilder()
+                .status(TeacherStatus.APPROVED)
+                .build();
+
+        memberRepository.save(member);
+        teacherRequestRepository.save(teacherRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
     }
 }

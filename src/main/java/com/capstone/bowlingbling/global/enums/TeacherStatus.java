@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Role {
+public enum TeacherStatus {
 
-    GUEST("ROLE_GUEST"), USER("ROLE_USER"), ADMIN("ROLE_ADMIN"), TEACHER("ROLE_TEACHER");
-
-    private final String key;
+    PENDING,
+    APPROVED,
+    REJECTED
 }

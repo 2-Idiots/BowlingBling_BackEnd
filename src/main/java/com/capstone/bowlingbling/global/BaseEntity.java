@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
     @Id
@@ -31,5 +31,9 @@ public abstract class BaseEntity {
     private LocalDateTime modifiedAt;
 
     @JsonIgnore
-    private LocalDateTime deletedAt;
+    protected LocalDateTime deletedAt;
+
+    public void markAsDeleted() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
