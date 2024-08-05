@@ -34,12 +34,17 @@ public class CommunityCommentService {
                 .orElseThrow(() -> new IllegalArgumentException("커뮤니티를 찾을 수 없습니다."));
 
         return communityCommentRepository.findByCommunity(community, pageable)
-                .map(comment -> CommunityCommentResponseDto.builder()
-                        .id(comment.getId())
-                        .comments(comment.getConmments())
-                        .memberName(comment.getMember().getNickname())
-                        .communityTitle(comment.getCommunity().getTitle())
-                        .build());
+                .map(comment -> {
+                    boolean isDeleted = comment.getDeletedAt() != null;
+                    return CommunityCommentResponseDto.builder()
+                            .id(comment.getId())
+                            .comments(isDeleted ? "삭제된 댓글입니다." : comment.getConmments())
+                            .memberName(comment.getMember().getNickname())
+                            .communityTitle(comment.getCommunity().getTitle())
+                            .modifiedAt(comment.getModifiedAt())
+                            .isDeleted(isDeleted)
+                            .build();
+                });
     }
 
     @Transactional
@@ -62,6 +67,8 @@ public class CommunityCommentService {
                 .comments(savedComment.getConmments())
                 .memberName(savedComment.getMember().getNickname())
                 .communityTitle(savedComment.getCommunity().getTitle())
+                .modifiedAt(savedComment.getModifiedAt())
+                .isDeleted(false)
                 .build();
     }
 
@@ -89,6 +96,8 @@ public class CommunityCommentService {
                 .comments(updatedComment.getConmments())
                 .memberName(updatedComment.getMember().getNickname())
                 .communityTitle(updatedComment.getCommunity().getTitle())
+                .modifiedAt(updatedComment.getModifiedAt())
+                .isDeleted(updatedComment.getDeletedAt() != null)
                 .build();
     }
 

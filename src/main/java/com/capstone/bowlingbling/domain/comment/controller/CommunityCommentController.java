@@ -3,6 +3,7 @@ package com.capstone.bowlingbling.domain.comment.controller;
 import com.capstone.bowlingbling.domain.comment.dto.request.CommunityCommentRequestDto;
 import com.capstone.bowlingbling.domain.comment.dto.response.CommunityCommentResponseDto;
 import com.capstone.bowlingbling.domain.comment.service.CommunityCommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,12 +20,14 @@ public class CommunityCommentController {
     private CommunityCommentService communityCommentService;
 
     @GetMapping
+    @Operation(summary = "게시판 댓글 조회", description = "해당 게시판에 속해있는 댓글들을 페이징하여 조회합니다.")
     public ResponseEntity<Page<CommunityCommentResponseDto>> getComments(@PathVariable Long communityId) {
         Page<CommunityCommentResponseDto> comments = communityCommentService.getComments(communityId, Pageable.ofSize(10));
         return ResponseEntity.ok(comments);
     }
 
     @PostMapping("/save")
+    @Operation(summary = "게시판 댓글 저장", description = "새로운 댓글을 저장합니다.")
     public ResponseEntity<CommunityCommentResponseDto> saveComment(@PathVariable Long communityId, @RequestBody CommunityCommentRequestDto requestDto, @AuthenticationPrincipal User user) {
         String memberEmail = user.getUsername();
         CommunityCommentResponseDto responseDto = communityCommentService.saveComment(communityId, requestDto, memberEmail);
@@ -32,6 +35,7 @@ public class CommunityCommentController {
     }
 
     @PatchMapping("/update/{commentId}")
+    @Operation(summary = "게시판 댓글 수정", description = "작성한 댓글을 수정합니다. (작성자만 가능)")
     public ResponseEntity<CommunityCommentResponseDto> updateComment(@PathVariable Long communityId, @PathVariable Long commentId, @RequestBody CommunityCommentRequestDto requestDto, @AuthenticationPrincipal User user) {
         String memberEmail = user.getUsername();
         CommunityCommentResponseDto responseDto = communityCommentService.updateComment(communityId, commentId, requestDto, memberEmail);
@@ -39,6 +43,7 @@ public class CommunityCommentController {
     }
 
     @DeleteMapping("/delete/{commentId}")
+    @Operation(summary = "게시판 댓글 삭제", description = "작성한 댓글을 삭제합니다.")
     public ResponseEntity<Void> deleteComment(@PathVariable Long communityId, @PathVariable Long commentId, @AuthenticationPrincipal User user) {
         String memberEmail = user.getUsername();
         communityCommentService.deleteComment(communityId, commentId, memberEmail);
