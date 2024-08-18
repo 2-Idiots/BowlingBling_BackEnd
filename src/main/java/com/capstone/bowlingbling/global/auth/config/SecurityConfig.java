@@ -77,6 +77,7 @@ public class SecurityConfig {
                 .headers((headerConfig) -> headerConfig.frameOptions(frameOptionsConfig ->
                         frameOptionsConfig.disable()))
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/hc", "/env").permitAll()
                         .requestMatchers("/","/css/**","/images/**","/js/**","/favicon.ico","/swagger", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/sign-up").permitAll()
                         .anyRequest().authenticated())

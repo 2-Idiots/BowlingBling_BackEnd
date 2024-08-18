@@ -14,7 +14,7 @@ import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.domain.place.domain.Place;
 import com.capstone.bowlingbling.domain.place.dto.PlaceDto;
 import com.capstone.bowlingbling.domain.place.repository.PlaceRepository;
-import com.capstone.bowlingbling.global.enums.ClubJoinRequestStatus;
+import com.capstone.bowlingbling.global.enums.RequestStatus;
 import com.capstone.bowlingbling.global.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -103,7 +103,7 @@ public class ClubService {
         ClubJoinRequest joinRequest = ClubJoinRequest.builder()
                 .club(club)
                 .member(member)
-                .status(ClubJoinRequestStatus.PENDING)
+                .status(RequestStatus.PENDING)
                 .build();
         clubJoinRequestRepository.save(joinRequest);
     }
@@ -120,7 +120,7 @@ public class ClubService {
         }
 
         Page<ClubJoinRequest> joinRequestPage = clubJoinRequestRepository.findAllByClubAndStatus(
-                club, ClubJoinRequestStatus.PENDING, pageable
+                club, RequestStatus.PENDING, pageable
         );
 
         return joinRequestPage.map(joinRequest -> {
@@ -157,7 +157,7 @@ public class ClubService {
                 .build();
         clubJoinRequestRepository.save(joinRequest);
 
-        if (statusDto.getStatus() == ClubJoinRequestStatus.APPROVED) {
+        if (statusDto.getStatus() == RequestStatus.ACCEPTED) {
             member = member.toBuilder()
                     .club(club)
                     .build();
