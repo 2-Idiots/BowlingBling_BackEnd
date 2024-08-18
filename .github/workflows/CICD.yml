@@ -44,12 +44,6 @@ jobs:
       - name: Push Docker
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
 
-  # 의존성 제출 단계 (향후의 의존성 관리 및 보안 점검을 위한 작업)
-  dependency-submission:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
   # 배포 단계
   deploy:
     needs: build  # 배포 작업이 build 작업 완료 후에 실행됨
