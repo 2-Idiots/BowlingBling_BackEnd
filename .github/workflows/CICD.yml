@@ -24,10 +24,11 @@ jobs:
           distribution: 'temurin'
 
       # Gradle을 사용하여 프로젝트를 빌드하는 단계
+      # 권한 부여 및 테스트를 제외하고 빌드 실행
       - name: Build with Gradle
         run: |
-          chmod 777 ./gradlew  # Gradle Wrapper 스크립트에 실행 권한 부여
-          ./gradlew clean build -x test  # 테스트를 제외하고 빌드 실행
+          chmod 777 ./gradlew
+          ./gradlew clean build -x test
 
       # DockerHub에 로그인하는 단계 (도커 이미지를 푸시하기 위해 필요)
       - name: Login to DockerHub
@@ -55,22 +56,19 @@ jobs:
           STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.LIVE_SERVER_IP }}/env")
           echo $STATUS
           if [ $STATUS = 200 ]; then
-            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.LIVE_SERVER_IP }}/env")  # 현재 실행 중인 서비스(blue 또는 green) 확인
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.LIVE_SERVER_IP }}/env")
           else
-            CURRENT_UPSTREAM=green  # 서비스가 실행 중이 아니면 green으로 설정
+            CURRENT_UPSTREAM=green
           fi
           echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
           if [ $CURRENT_UPSTREAM = blue ]; then
-            echo "CURRENT_PORT=8080" >> $GITHUB_ENV  # blue가 실행 중이면 포트 8080
-            echo "STOPPED_PORT=8081" >> $GITHUB_ENV  # green은 멈춘 상태로 포트 8081
-            echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV  # 다음에 활성화될 서비스는 green
-          elif [ $CURRENT_UPSTREAM = green ]; then
-            echo "CURRENT_PORT=8081" >> $GITHUB_ENV  # green이 실행 중이면 포트 8081
-            echo "STOPPED_PORT=8080" >> $GITHUB_ENV  # blue는 멈춘 상태로 포트 8080
-            echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV  # 다음에 활성화될 서비스는 blue
+            echo "CURRENT_PORT=8080" >> $GITHUB_ENV
+            echo "STOPPED_PORT=8081" >> $GITHUB_ENV
+            echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
           else
-            echo "error"
-            exit 1
+            echo "CURRENT_PORT=8081" >> $GITHUB_ENV
+            echo "STOPPED_PORT=8080" >> $GITHUB_ENV
+            echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
           fi
           
       # 새로 빌드된 Docker 이미지를 사용하여 대상 서버에서 Docker Compose로 서비스 시작
@@ -82,8 +80,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest  # 최신 이미지를 pull
-            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d  # green 또는 blue 구성으로 서비스 실행
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
+            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
       
       # 배포된 서버의 URL을 확인하여 서비스가 정상적으로 동작하는지 검사
       - name: Check deploy server URL
@@ -101,8 +99,9 @@ jobs:
           host: ${{ secrets.LIVE_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
+          # Nginx 리로드를 통해 트래픽 전환
           script: |
-            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload'  # Nginx 리로드를 통해 트래픽 전환
+            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload'
 
       # 기존에 실행 중이던 서비스를 중지하고 컨테이너 삭제
       - name: Stop current server
