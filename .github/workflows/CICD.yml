@@ -22,6 +22,18 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          
+      ## create application-database.yml
+      - name: make application-database.yml
+        run: |
+          cd ./src/main/resources
+          
+          # application-database.yml 파일 생성
+          touch ./application-database.yml
+          
+          # GitHub-Actions 에서 설정한 값을 application-database.yml 파일에 쓰기
+          echo "${{ secrets.DATABASE }}" >> ./application-database.yml
+        shell: bash
 
       # Gradle을 사용하여 프로젝트를 빌드하는 단계
       # 권한 부여 및 테스트를 제외하고 빌드 실행
