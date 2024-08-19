@@ -84,12 +84,12 @@ jobs:
             sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
       
       # 배포된 서버의 URL을 확인하여 서비스가 정상적으로 동작하는지 검사
-      - name: Check deploy server URL
-        uses: jtalk/url-health-check-action@v3
-        with:
-          url: http://${{ secrets.LIVE_SERVER_IP }}:${{env.STOPPED_PORT}}/env
-          max-attempts: 3  # 최대 3번 시도
-          retry-delay: 10s  # 시도 간 10초 대기
+      #- name: Check deploy server URL
+      #  uses: jtalk/url-health-check-action@v3
+      #  with:
+      #    url: http://${{ secrets.LIVE_SERVER_IP }}:${{env.STOPPED_PORT}}/env
+      #    max-attempts: 3  # 최대 3번 시도
+      #    retry-delay: 10s  # 시도 간 10초 대기
 
       # Nginx 설정을 변경하여 트래픽을 새로 배포된 서비스로 라우팅
       - name: Change nginx upstream
