@@ -82,19 +82,6 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
             sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
-            
-      ## create application-database.yml
-      - name: make application-database.yml
-        run: |
-
-          cd ./src/main/resources
-          
-          # application-database.yml 파일 생성
-          touch ./application-database.yml
-          
-          # GitHub-Actions 에서 설정한 값을 application-database.yml 파일에 쓰기
-          echo "${{ secrets.DATABASE }}" >> ./application-database.yml
-        shell: bash
       
       # 배포된 서버의 URL을 확인하여 서비스가 정상적으로 동작하는지 검사
       - name: Check deploy server URL
