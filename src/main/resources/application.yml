@@ -1,0 +1,67 @@
+spring:
+  profiles:
+    active: local
+    group:
+      local: local, common, secret, jwt, oauth
+      blue: blue, common, secret, jwt, oauth
+      green: green, common, secret, jwt, oauth
+
+server:
+  env: blue
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+
+server:
+  port: 8080
+  serverAddress: localhost
+
+serverName: local_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: blue
+    security:
+      oauth2:
+        client:
+          registration:
+            kakao:
+              redirect-uri: http://54.180.41.136/login/oauth2/code/kakao
+
+server:
+  port: 8080
+  serverAddress: 54.180.41.136
+
+serverName: blue_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: green
+    security:
+      oauth2:
+        client:
+          registration:
+            kakao:
+              redirect-uri: http://54.180.41.136/login/oauth2/code/kakao
+
+server:
+  port: 8081
+  serverAddress: 54.180.41.136
+
+serverName: green_server
