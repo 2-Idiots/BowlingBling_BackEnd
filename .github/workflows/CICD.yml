@@ -22,23 +22,15 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          
-      ## create application-secret.yml for database
-      - name: make application-secret.yml
-        run: |
-          cd ./src/main/resources
-          
-          # application-database.yml 파일 생성
-          touch ./application-secret.yml
-          
-          # GitHub-Actions 에서 설정한 값을 application-secret.yml 파일에 쓰기
-          echo "${{ secrets.DATABASE }}" >> ./application-secret.yml
-        shell: bash
 
       # Gradle을 사용하여 프로젝트를 빌드하는 단계
       # 권한 부여 및 테스트를 제외하고 빌드 실행
       - name: Build with Gradle
         run: |
+          echo ${{secrets.APPLICATION_SECRET}} | base64 --decode > ./src/main/resources/application-secret.yml
+          echo ${{secrets.APPLICATION_JWT}} | base64 --decode > ./src/main/resources/application-jwt.yml
+          echo ${{secrets.APPLICATION_OAUTH}} | base64 --decode > ./src/main/resources/application-oauth.yml
+          cat ./src/main/resources/application-secret.yml
           chmod 777 ./gradlew
           ./gradlew clean build -x test
 
