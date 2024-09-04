@@ -40,6 +40,8 @@ spring:
         registration:
           kakao:
             redirect-uri: https://bowlingbling.duckdns.org:8080/login/oauth2/code/kakao
+          google:
+            redirect-uri: https://bowlingbling.duckdns.org:8080/login/oauth2/code/google
 
 server:
   port: 8080
@@ -59,6 +61,8 @@ spring:
         registration:
           kakao:
             redirect-uri: https://bowlingbling.duckdns.org:8081/login/oauth2/code/kakao
+          google:
+            redirect-uri: https://bowlingbling.duckdns.org:8081/login/oauth2/code/google
 
 server:
   port: 8081
