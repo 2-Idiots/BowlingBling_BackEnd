@@ -114,5 +114,5 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            sudo docker stop ${{env.CURRENT_UPSTREAM}}  # 현재 실행 중인 컨테이너 중지
-            sudo docker rm ${{env.CURRENT_UPSTREAM}}  # 중지된 컨테이너 삭제
+            sudo docker stop ${{env.CURRENT_UPSTREAM}} || true # 현재 실행 중인 컨테이너 중지
+            sudo docker rm ${{env.CURRENT_UPSTREAM}} || true # 중지된 컨테이너 삭제
