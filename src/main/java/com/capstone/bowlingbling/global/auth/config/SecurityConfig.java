@@ -77,8 +77,20 @@ public class SecurityConfig {
 //                    }
 //                })));
 
+        http.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                configuration.setAllowedHeaders(Collections.singletonList("*"));
+                configuration.setAllowCredentials(true);
+                configuration.setMaxAge(3600L); // 1시간 캐싱
+                return configuration;
+            }
+        }));
+
         http
-                .cors(AbstractHttpConfigurer::disable)
                 .formLogin((formLogin) -> formLogin.disable())
                 .httpBasic((httpbasic) -> httpbasic.disable())
                 .csrf((csrfConfig) -> csrfConfig.disable())
