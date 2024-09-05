@@ -58,7 +58,12 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
                         CorsConfiguration configuration = new CorsConfiguration();
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org",
+                                "https://bowlingbling.duckdns.org:8080/login/oauth2/code/google",
+                                "https://bowlingbling.duckdns.org:8080/login/oauth2/code/kakao",
+                                "https://bowlingbling.duckdns.org:8081/login/oauth2/code/google",
+                                "https://bowlingbling.duckdns.org:8081/login/oauth2/code/kakao"
+                                ));
 
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
