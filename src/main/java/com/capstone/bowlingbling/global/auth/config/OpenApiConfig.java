@@ -12,11 +12,11 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         info = @Info(
                 contact = @Contact(
                         name = "BowlingBling",
-                        url = "https://github.com/mohajistudio"
+                        url = "https://github.com/2-Idiots"
                 ),
-                description = "MohajiStudio, 4th project prototype blog service",
-                title = "Tangerine Prototype - Mohajistudio",
-                version = "v0.0.2"
+                description = "2-Idiots, 1th project prototype bowling sports service",
+                title = "Bowilngbling Prototype - 2-Idiots",
+                version = "v0.0.1"
         ),
         security = {
                 @SecurityRequirement(name = "bearerAuth")
