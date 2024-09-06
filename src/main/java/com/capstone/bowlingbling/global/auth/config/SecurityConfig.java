@@ -52,43 +52,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-//        http
-//                .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-//
-//                    @Override
-//                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-//
-//                        CorsConfiguration configuration = new CorsConfiguration();
-//                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org",
-//                                "https://bowlingbling.duckdns.org:8080/login/oauth2/code/google",
-//                                "https://bowlingbling.duckdns.org:8080/login/oauth2/code/kakao",
-//                                "https://bowlingbling.duckdns.org:8081/login/oauth2/code/google",
-//                                "https://bowlingbling.duckdns.org:8081/login/oauth2/code/kakao"
-//                                ));
-//
-//                        configuration.setAllowedMethods(Collections.singletonList("*"));
-//                        configuration.setAllowCredentials(true);
-//                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-//                        configuration.setMaxAge(3600L);
-//
-//                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-//
-//                        return configuration;
-//                    }
-//                })));
+        http
+                .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
 
-        http.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-            @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org"));
-                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-                configuration.setAllowedHeaders(Collections.singletonList("*"));
-                configuration.setAllowCredentials(true);
-                configuration.setMaxAge(3600L); // 1시간 캐싱
-                return configuration;
-            }
-        }));
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+
+                        CorsConfiguration configuration = new CorsConfiguration();
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org:8080", "https://bowlingbling.duckdns.org:8081"));
+
+                        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                        configuration.setAllowCredentials(true);
+                        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+
+                        configuration.setMaxAge(3600L);
+
+                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                        return configuration;
+                    }
+                })));
 
         http
                 .formLogin((formLogin) -> formLogin.disable())
