@@ -59,7 +59,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
                         CorsConfiguration configuration = new CorsConfiguration();
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org:8080", "https://bowlingbling.duckdns.org:8081"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://bowlingbling.duckdns.org"));
 
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowCredentials(true);

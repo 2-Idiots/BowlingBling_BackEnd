@@ -12,7 +12,6 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
         corsRegistry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
-                .allowedOrigins("https://bowlingbling.duckdns.org:8080")
-                .allowedOrigins("https://bowlingbling.duckdns.org:8081");
+                .allowedOrigins("https://bowlingbling.duckdns.org");
     }
 }
