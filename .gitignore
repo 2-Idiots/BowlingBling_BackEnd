@@ -24,6 +24,7 @@ bin/
 application-jwt.yml
 application-oauth.yml
 application-secret.yml
+application-webhook.yml
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
