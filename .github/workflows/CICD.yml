@@ -29,6 +29,7 @@ jobs:
           echo ${{secrets.APPLICATION_JWT}} | base64 --decode > ./src/main/resources/application-jwt.yml
           echo ${{secrets.APPLICATION_OAUTH}} | base64 --decode > ./src/main/resources/application-oauth.yml
           echo ${{secrets.APPLICATION_WEBHOOK}} | base64 --decode > ./src/main/resources/application-webhook.yml
+          echo ${{secrets.APPLICATION_AWS}} | base64 --decode > ./src/main/resources/application-aws.yml
           cat ./src/main/resources/application-secret.yml
           chmod 777 ./gradlew
           ./gradlew clean build -x test
