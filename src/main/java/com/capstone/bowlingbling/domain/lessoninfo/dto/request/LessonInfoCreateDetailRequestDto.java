@@ -1,4 +1,4 @@
-package com.capstone.bowlingbling.domain.lessoninfo.dto.response;
+package com.capstone.bowlingbling.domain.lessoninfo.dto.request;
 
 import com.capstone.bowlingbling.global.enums.BowlingStyle;
 import lombok.AllArgsConstructor;
@@ -12,14 +12,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LessonInfoResponseDto {
+public class LessonInfoCreateDetailRequestDto {
     private String title;
     private String teacherName;
     private String introduction;
-    private String location;
     private String qualifications;
     private String careerHistory;
     private BowlingStyle program;
+    private String location;
     private String operatingHours;
-    private List<String> imageUrls;
 }

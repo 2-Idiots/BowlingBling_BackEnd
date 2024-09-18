@@ -1,20 +1,28 @@
 package com.capstone.bowlingbling.domain.lessoninfo.controller;
 
+import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoCreateDetailRequestDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoDetailRequestDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoListRequestDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.lessoninfo.service.LessonInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lessonsinfo")
@@ -39,27 +47,34 @@ public class LessonInfoController {
         return ResponseEntity.ok(lessonDetail);
     }
 
-    @PostMapping
-    @Operation(summary = "LessonInfo 생성", description = "새로운 LessonInfo를 생성합니다. 권한이 있는 사용자만 사용 가능합니다.")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)  // 멀티파트 데이터 타입 지원
+    @Operation(
+            summary = "LessonInfo 생성",
+            description = "새로운 LessonInfo를 생성합니다. 권한이 있는 사용자만 사용 가능합니다."
+    )
     public ResponseEntity<LessonInfoResponseDto> createLesson(
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
-            @RequestBody LessonInfoDetailRequestDto request) {
+            @RequestPart(value = "request") LessonInfoCreateDetailRequestDto request,  // LessonInfo 데이터
+            @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {  // 파일 업로드 파트 추가
 
         String teacherEmail = sessionMember.getUsername();
-        LessonInfoResponseDto response = lessonInfoService.createLesson(request, teacherEmail);
+        LessonInfoResponseDto response = lessonInfoService.createLesson(request, teacherEmail, files);
 
         return ResponseEntity.ok(response);
     }
+
 
     @PutMapping("/{id}")
     @Operation(summary = "LessonInfo 수정", description = "특정 LessonInfo를 수정합니다. 권한이 있는 사용자만 사용 가능합니다.")
     public ResponseEntity<LessonInfoResponseDto> updateLesson(
             @PathVariable Long id,
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
-            @RequestBody LessonInfoDetailRequestDto request) {
+            @RequestPart LessonInfoDetailRequestDto request,
+            @RequestPart(required = false) List<MultipartFile> files) throws IOException {  // 이미지 수정 시 파일도 함께 받을 수 있게 함
 
         String teacherEmail = sessionMember.getUsername();
-        LessonInfoResponseDto response = lessonInfoService.updateLesson(id, request, teacherEmail);
+        LessonInfoResponseDto response = lessonInfoService.updateLesson(id, request, teacherEmail, files);
 
         return ResponseEntity.ok(response);
     }

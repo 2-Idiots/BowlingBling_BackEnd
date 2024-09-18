@@ -3,17 +3,18 @@ package com.capstone.bowlingbling.domain.lessoninfo.domain;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.BaseEntity;
 import com.capstone.bowlingbling.global.enums.BowlingStyle;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Entity
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonInfo extends BaseEntity {
@@ -25,11 +26,12 @@ public class LessonInfo extends BaseEntity {
     private String careerHistory; // 이력사항
 
     private BowlingStyle program; // 볼링 스타일
-
     private String location; // 볼링장 위치
     private String operatingHours; // 운영시간
 
+    @ElementCollection
+    private List<String> imageUrls;
+
     @ManyToOne
-    @JoinColumn(name = "member_id")
     private Member member; // 강사 정보
 }

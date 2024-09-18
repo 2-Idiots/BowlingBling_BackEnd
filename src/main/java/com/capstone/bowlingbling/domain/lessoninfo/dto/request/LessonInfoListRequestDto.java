@@ -14,4 +14,5 @@ public class LessonInfoListRequestDto {
     private String teacherName;
     private String introduction;
     private String location;
+    private String imageUrl;
 }
