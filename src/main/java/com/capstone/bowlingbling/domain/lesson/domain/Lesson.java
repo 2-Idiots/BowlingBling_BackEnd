@@ -24,5 +24,6 @@ public class Lesson extends BaseEntity {
     private Member student;
 
     private LocalDateTime lessonDate;
+
     private String content;
 }

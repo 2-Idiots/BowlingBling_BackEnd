@@ -2,9 +2,9 @@ spring:
   profiles:
     active: local
     group:
-      local: local, common, secret, jwt, oauth
-      blue: blue, common, secret, jwt, oauth
-      green: green, common, secret, jwt, oauth
+      local: local, common, secret, jwt, oauth, webhook, aws
+      blue: blue, common, secret, jwt, oauth, webhook, aws
+      green: green, common, secret, jwt, oauth, webhook, aws
 
 server:
   env: blue
