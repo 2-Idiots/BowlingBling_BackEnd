@@ -8,6 +8,7 @@ import com.capstone.bowlingbling.domain.market.domain.Market;
 import com.capstone.bowlingbling.domain.market.repository.MarketRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
+import com.capstone.bowlingbling.global.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -72,7 +73,7 @@ public class MarketCommentService {
         MarketComment comment = marketCommentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
 
-        if (!comment.getMember().equals(member)) {
+        if (!comment.getMember().equals(member) && !member.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("댓글을 수정할 권한이 없습니다.");
         }
 
@@ -99,7 +100,7 @@ public class MarketCommentService {
         MarketComment comment = marketCommentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
 
-        if (!comment.getMember().equals(member)) {
+        if (!comment.getMember().equals(member) && !member.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("댓글을 삭제할 권한이 없습니다.");
         }
 

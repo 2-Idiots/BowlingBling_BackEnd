@@ -7,6 +7,7 @@ import com.capstone.bowlingbling.domain.market.dto.response.ResponseMarketListDT
 import com.capstone.bowlingbling.domain.market.repository.MarketRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
+import com.capstone.bowlingbling.global.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,10 +68,13 @@ public class MarketService {
     }
 
     public void updateMarket(Long id, RequestMarketSaveDTO marketDTO, String memberEmail) {
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
+
         Market market = marketRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 품목이 없습니다."));
 
-        if (!market.getMember().getEmail().equals(memberEmail)) {
+        if (!market.getMember().getEmail().equals(memberEmail) && !member.getRole().equals(Role.ADMIN)) {
             throw new SecurityException("수정 권한이 없습니다.");
         }
 
@@ -84,10 +88,13 @@ public class MarketService {
     }
 
     public void deleteMarket(Long id, String memberEmail) {
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
+
         Market market = marketRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID를 가진 품목이 없습니다."));
 
-        if (!market.getMember().getEmail().equals(memberEmail)) {
+        if (!market.getMember().getEmail().equals(memberEmail) && !member.getRole().equals(Role.ADMIN)) {
             throw new SecurityException("삭제 권한이 없습니다.");
         }
 

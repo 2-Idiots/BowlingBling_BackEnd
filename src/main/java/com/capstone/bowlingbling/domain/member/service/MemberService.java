@@ -29,6 +29,10 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
+        if (!member.getEmail().equals(email) && !member.getRole().equals(Role.ADMIN)) {
+            throw new SecurityException("삭제 권한이 없습니다.");
+        }
+
         member = member.toBuilder()
                 .nickname(request.getNickname() != null ? request.getNickname() : member.getNickname())
                 .imageUrl(request.getImageUrl() != null ? request.getImageUrl() : member.getImageUrl())

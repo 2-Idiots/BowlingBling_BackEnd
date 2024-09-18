@@ -10,6 +10,7 @@ import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.domain.place.domain.Place;
 import com.capstone.bowlingbling.domain.place.dto.PlaceDto;
 import com.capstone.bowlingbling.domain.place.repository.PlaceRepository;
+import com.capstone.bowlingbling.global.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,9 +107,16 @@ public class GatheringService {
 
     @Transactional
     public GatheringRequestDto updateGathering(Long id, GatheringRequestDto gatheringRequestDto, String memberEmail) {
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException(memberEmail + " 멤버를 찾을 수 없습니다."));
+
         Gathering gathering = gatheringRepository.findActiveById(id);
         if (gathering == null) {
             throw new IllegalArgumentException(id + " 게시물을 찾을 수 없습니다.");
+        }
+
+        if (!gathering.getLeader().equals(member) && !member.getRole().equals(Role.ADMIN)) {
+            throw new IllegalArgumentException("인가되지 않은 권한입니다.");
         }
 
         gathering = gathering.toBuilder()
@@ -154,7 +162,7 @@ public class GatheringService {
         }
 
         if (gathering.getCurrentParticipants() >= gathering.getMaxParticipants()) {
-            throw new IllegalStateException("This gathering is already full.");
+            throw new IllegalStateException("정원이 가득찼습니다.");
         }
 
         Member member = memberRepository.findByEmail(memberEmail)

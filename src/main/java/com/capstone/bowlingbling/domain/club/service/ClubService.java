@@ -115,7 +115,7 @@ public class ClubService {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("동호회를 찾을 수 없습니다."));
 
-        if (!club.getLeader().equals(member)) {
+        if (!club.getLeader().equals(member) && !member.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("인가되지 않은 권한입니다.");
         }
 
@@ -142,7 +142,7 @@ public class ClubService {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("동호회를 찾을 수 없습니다."));
 
-        if (!club.getLeader().equals(leader)) {
+        if (!club.getLeader().equals(leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("인가되지 않은 권한입니다.");
         }
 
@@ -179,7 +179,7 @@ public class ClubService {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("동호회를 찾을 수 없습니다."));
 
-        if (!club.getLeader().equals(member) && member.getRole() != Role.ADMIN) {
+        if (!club.getLeader().equals(member) && !member.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("인가되지 않은 권합입니다.");
         }
 
@@ -207,10 +207,10 @@ public class ClubService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
         Club club = clubRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+                .orElseThrow(() -> new IllegalArgumentException("동호회를 찾을 수 없습니다."));
 
-        if (!club.getLeader().equals(member) && member.getRole() != Role.ADMIN) {
-            throw new IllegalArgumentException("Only the club leader or admin can delete the club");
+        if (!club.getLeader().equals(member) && !member.getRole().equals(Role.ADMIN)) {
+            throw new IllegalArgumentException("인가되지 않은 권한입니다.");
         }
 
         clubRepository.delete(club);
