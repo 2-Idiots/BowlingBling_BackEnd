@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/lessonsinfo")
 @RequiredArgsConstructor
-@Tag(name = "LessonInfo", description = "LessonInfo API")
+@Tag(name = "LessonInfo", description = "레슨 상세 API")
 public class LessonInfoController {
 
     private final LessonInfoService lessonInfoService;
