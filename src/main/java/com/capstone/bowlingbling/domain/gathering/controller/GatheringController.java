@@ -4,6 +4,7 @@ import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringRequestDt
 import com.capstone.bowlingbling.domain.gathering.dto.response.GatheringCreateResponseDto;
 import com.capstone.bowlingbling.domain.gathering.service.GatheringService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/gatherings")
+@Tag(name = "gatherings", description = "번개 모임 API")
 @RequiredArgsConstructor
 public class GatheringController {
 

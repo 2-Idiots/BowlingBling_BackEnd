@@ -5,6 +5,7 @@ import com.capstone.bowlingbling.domain.lesson.dto.request.LessonRequestDto;
 import com.capstone.bowlingbling.domain.lesson.dto.response.LessonResponseDto;
 import com.capstone.bowlingbling.domain.lesson.service.LessonService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/lessons")
+@Tag(name = "lessons", description = "레슨 신청, 대기 등에 관한 API")
 public class LessonController {
 
     private final LessonService lessonService;

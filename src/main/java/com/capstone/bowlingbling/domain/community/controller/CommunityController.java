@@ -3,6 +3,7 @@ package com.capstone.bowlingbling.domain.community.controller;
 import com.capstone.bowlingbling.domain.community.dto.request.CommunitySaveRequestDto;
 import com.capstone.bowlingbling.domain.community.dto.response.CommunityListResponseDto;
 import com.capstone.bowlingbling.domain.community.service.CommunityService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ public class CommunityController {
 
     private CommunityService communityService;
 
+    @Operation(summary = "게시글 생성", description = "새로운 게시글을 작성합니다.")
     @PostMapping("/create")
     public ResponseEntity<String> createBoard(@RequestBody CommunitySaveRequestDto communitySaveRequestDto,
                                               @AuthenticationPrincipal User sessionMember){
@@ -31,16 +33,19 @@ public class CommunityController {
         }
     }
 
+    @Operation(summary = "게시글 목록 조회", description = "모든 게시글을 조회합니다. 한 번에 10개씩 조회됩니다.")
     @GetMapping
     public Page<CommunityListResponseDto> getAllCommunity() {
         return communityService.getAllCommunity(Pageable.ofSize(10));
     }
 
+    @Operation(summary = "카테고리별 게시글 조회", description = "카테고리를 기반으로 게시글을 조회합니다.")
     @GetMapping("/searchCategory/{category}")
     public Page<CommunityListResponseDto> getCommunityByCategory(@PathVariable String category){
         return communityService.getCommunityByCategory(category, Pageable.ofSize(10));
     }
 
+    @Operation(summary = "게시글 수정", description = "기존 게시글을 수정합니다.")
     @PatchMapping("/{communityId}")
     public ResponseEntity<String> updateCommunity (@PathVariable Long communityId, @RequestBody CommunitySaveRequestDto communitySaveRequestDto,
                                                    @AuthenticationPrincipal User sessionMember){

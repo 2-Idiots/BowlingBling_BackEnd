@@ -7,6 +7,7 @@ import com.capstone.bowlingbling.domain.member.dto.TeacherRequestDto;
 import com.capstone.bowlingbling.domain.member.service.MemberService;
 import com.capstone.bowlingbling.global.enums.Role;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/members")
+@Tag(name = "members", description = "회원 프로필 및 권한 요청 API")
 public class MemberController {
 
     private final MemberService memberService;

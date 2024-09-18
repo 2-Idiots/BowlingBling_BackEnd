@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/filetest")
+@Tag(name = "filetest", description = "파일 업로드 테스트용 API")
 public class S3TestController {
 
     @Autowired
@@ -28,7 +30,7 @@ public class S3TestController {
         return "File uploaded Successfully";
     }
 
-    @Operation(summary = "Upload multiple files to S3")
+    @Operation(summary = "멀티 파일 업로드 테스트용 controller")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Files uploaded successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
