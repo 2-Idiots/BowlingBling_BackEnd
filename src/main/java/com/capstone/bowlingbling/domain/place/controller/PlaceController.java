@@ -17,7 +17,7 @@ public class PlaceController {
         this.placeService = placeService;
     }
 
-    @GetMapping("/api/search")
+    @GetMapping("/search")
     @Operation(summary = "키워드로 장소 검색", description = "키워드를 사용하여 장소를 검색합니다.")
     public String searchKeyword(@RequestParam String query) {
         return placeService.searchKeyword(query);

@@ -17,7 +17,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping("/members")
 @Tag(name = "members", description = "회원 프로필 및 권한 요청 API")
 public class MemberController {
 

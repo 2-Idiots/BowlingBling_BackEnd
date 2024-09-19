@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/gatherings")
+@RequestMapping("/gatherings")
 @Tag(name = "gatherings", description = "번개 모임 API")
 @RequiredArgsConstructor
 public class GatheringController {

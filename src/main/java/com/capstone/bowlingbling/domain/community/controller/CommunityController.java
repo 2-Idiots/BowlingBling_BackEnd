@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "communitys", description = "자유게시판 API")
-@RequestMapping("/api/community")
+@RequestMapping("/community")
 public class CommunityController {
 
     private CommunityService communityService;
