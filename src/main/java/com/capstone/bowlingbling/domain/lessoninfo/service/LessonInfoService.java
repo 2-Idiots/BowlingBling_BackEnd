@@ -149,18 +149,28 @@ public class LessonInfoService {
         lessonInfoRepository.delete(lessonInfo);
     }
 
-    // 모든 LessonInfo 가져오기
-    public Page<LessonInfoListRequestDto> getAllLessonInfos(Pageable pageable) {
+    // 모든 LessonInfo 가져오기 (디테일 포함)
+    public Page<LessonInfoResponseDto> getAllLessonInfos(Pageable pageable) {
         return lessonInfoRepository.findAll(pageable)
-                .map(lesson -> LessonInfoListRequestDto.builder()
-                        .lessonId(lesson.getId())
+                .map(lesson -> LessonInfoResponseDto.builder()
                         .title(lesson.getTitle())
                         .teacherName(lesson.getTeacherName())
-                        .introduction(lesson.getContents())
+                        .contents(lesson.getContents())
+                        .lat(lesson.getLat())
+                        .lng(lesson.getLng())
+                        .place(lesson.getPlace())
+                        .category(lesson.getCategory())
+                        .price(lesson.getPrice())
+                        .hasFreeParking(lesson.getHasFreeParking())
+                        .qualifications(lesson.getQualifications())
+                        .careerHistory(lesson.getCareerHistory())
+                        .program(lesson.getProgram())
                         .location(lesson.getAddress())
-                        .imageUrl(lesson.getImages().isEmpty() ? null : lesson.getImages().get(0)) // 첫 번째 이미지 URL
+                        .operatingHours(lesson.getOperatingHours())
+                        .imageUrls(lesson.getImages())  // 이미지 URL 포함
                         .build());
     }
+
 
     // 특정 LessonInfoDetail 가져오기
     public LessonInfoResponseDto getLessonInfoDetail(Long id) {
