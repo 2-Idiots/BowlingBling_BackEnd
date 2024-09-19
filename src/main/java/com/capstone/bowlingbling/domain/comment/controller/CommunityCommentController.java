@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/community/{communityId}/comments")
+@RequestMapping("/community/{communityId}/comments")
 public class CommunityCommentController {
 
     @Autowired

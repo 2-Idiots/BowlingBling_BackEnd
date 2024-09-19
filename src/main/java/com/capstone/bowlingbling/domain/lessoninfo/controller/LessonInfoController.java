@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/lesson")
+@RequestMapping("/lesson")
 @RequiredArgsConstructor
 @Tag(name = "LessonInfo", description = "레슨 상세 API")
 public class LessonInfoController {

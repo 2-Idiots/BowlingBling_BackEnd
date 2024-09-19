@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/club")
+@RequestMapping("/club")
 @RequiredArgsConstructor
 @Tag(name = "Club", description = "Club API")
 public class ClubController {
