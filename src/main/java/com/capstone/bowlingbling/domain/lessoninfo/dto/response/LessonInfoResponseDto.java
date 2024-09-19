@@ -15,9 +15,15 @@ import java.util.List;
 public class LessonInfoResponseDto {
     private String title;
     private String teacherName;
-    private String introduction;
+    private String contents;
     private String location;
     private String qualifications;
+    private String lat;
+    private String lng;
+    private String place;
+    private String category;
+    private Integer price;
+    private Boolean hasFreeParking;
     private String careerHistory;
     private BowlingStyle program;
     private String operatingHours;

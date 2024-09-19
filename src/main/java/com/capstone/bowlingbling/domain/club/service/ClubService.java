@@ -127,7 +127,7 @@ public class ClubService {
             Member m = joinRequest.getMember();
             return ClubJoinResponseDto.builder()
                     .id(m.getId())
-                    .imageUrl(m.getImageUrl())
+                    .imageUrl(m.getImage())
                     .sex(m.getSex())
                     .age(m.getAge())
                     .phonenum(m.getPhonenum())
