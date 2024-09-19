@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/Market/{MarketId}/comments")
-@Tag(name = "마켓 댓글", description = "마켓 댓글 API")
+@Tag(name = "Market comments", description = "마켓 댓글 API")
 public class MarketCommentController {
 
     @Autowired
