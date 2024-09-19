@@ -34,8 +34,8 @@ public class LessonInfoController {
 
     @GetMapping
     @Operation(summary = "전체 LessonInfo 목록 조회", description = "페이징된 모든 LessonInfo의 제목, 소개, 볼링장 위치를 반환합니다.")
-    public ResponseEntity<Page<LessonInfoListRequestDto>> getAllLessonInfos() {
-        Page<LessonInfoListRequestDto> lessons = lessonInfoService.getAllLessonInfos(Pageable.ofSize(10));
+    public ResponseEntity<Page<LessonInfoResponseDto>> getAllLessonInfos() {
+        Page<LessonInfoResponseDto> lessons = lessonInfoService.getAllLessonInfos(Pageable.ofSize(10));
         return ResponseEntity.ok(lessons);
     }
 
