@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LessonInfoListRequestDto {
     private String title;
+    private Long lessonId;
     private String teacherName;
     private String introduction;
     private String location;

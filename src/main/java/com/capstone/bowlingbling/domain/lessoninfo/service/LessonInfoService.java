@@ -153,7 +153,9 @@ public class LessonInfoService {
     public Page<LessonInfoListRequestDto> getAllLessonInfos(Pageable pageable) {
         return lessonInfoRepository.findAll(pageable)
                 .map(lesson -> LessonInfoListRequestDto.builder()
+                        .lessonId(lesson.getId())
                         .title(lesson.getTitle())
+                        .teacherName(lesson.getTeacherName())
                         .introduction(lesson.getContents())
                         .location(lesson.getAddress())
                         .imageUrl(lesson.getImages().isEmpty() ? null : lesson.getImages().get(0)) // 첫 번째 이미지 URL
