@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberProfileUpdateRequest {
     private String nickname;
-    private String imageUrl;
+    private String image;
     private String phonenum;
     private String city;
     private String sex;

@@ -35,7 +35,7 @@ public class MemberService {
 
         member = member.toBuilder()
                 .nickname(request.getNickname() != null ? request.getNickname() : member.getNickname())
-                .imageUrl(request.getImageUrl() != null ? request.getImageUrl() : member.getImageUrl())
+                .image(request.getImage() != null ? request.getImage() : member.getImage())
                 .phonenum(request.getPhonenum() != null ? request.getPhonenum() : member.getPhonenum())
                 .city(request.getCity() != null ? request.getCity() : member.getCity())
                 .sex(request.getSex() != null ? request.getSex() : member.getSex())

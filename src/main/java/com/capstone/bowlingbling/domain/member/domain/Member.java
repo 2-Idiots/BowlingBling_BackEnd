@@ -18,13 +18,15 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String email; // 이메일
-    private String password; // 비밀번호
+    private String name;
     private String nickname; // 닉네임
-    private String imageUrl; // 프로필 이미지
-    private String sex;
-    private String phonenum;
-    private Integer age;
+    private String password; // 비밀번호
     private String city; // 사는 도시
+    private Integer age;
+    private String phonenum;
+    private String image; // 프로필 이미지
+    private String introduction;
+    private String sex;
 
     @Enumerated(EnumType.STRING)
     private Role role;
