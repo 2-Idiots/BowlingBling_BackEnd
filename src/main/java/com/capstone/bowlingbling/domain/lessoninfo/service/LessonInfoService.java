@@ -153,6 +153,7 @@ public class LessonInfoService {
     public Page<LessonInfoResponseDto> getAllLessonInfos(Pageable pageable) {
         return lessonInfoRepository.findAll(pageable)
                 .map(lesson -> LessonInfoResponseDto.builder()
+                        .id(lesson.getId())
                         .title(lesson.getTitle())
                         .teacherName(lesson.getTeacherName())
                         .contents(lesson.getContents())

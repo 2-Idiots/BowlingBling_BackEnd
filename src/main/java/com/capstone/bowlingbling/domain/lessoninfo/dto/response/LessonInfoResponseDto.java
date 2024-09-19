@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonInfoResponseDto {
+    private Number id;
     private String title;
     private String teacherName;
     private String contents;
