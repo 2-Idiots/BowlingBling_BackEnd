@@ -46,13 +46,13 @@ public class LessonInfoService {
         LessonInfo lessonInfo = LessonInfo.builder()
                 .title(request.getTitle())
                 .teacherName(teacher.getNickname())
-                .introduction(request.getIntroduction())
+                .contents(request.getIntroduction())
                 .qualifications(request.getQualifications())
                 .careerHistory(request.getCareerHistory())
                 .program(request.getProgram())
-                .location(request.getLocation())
+                .address(request.getLocation())
                 .operatingHours(request.getOperatingHours())
-                .imageUrls(imageUrls)  // 이미지 URL 저장
+                .images(imageUrls)  // 이미지 URL 저장
                 .member(teacher)
                 .build();
 
@@ -61,13 +61,13 @@ public class LessonInfoService {
         return LessonInfoResponseDto.builder()
                 .title(lessonInfo.getTitle())
                 .teacherName(lessonInfo.getTeacherName())
-                .introduction(lessonInfo.getIntroduction())
+                .introduction(lessonInfo.getContents())
                 .qualifications(lessonInfo.getQualifications())
                 .careerHistory(lessonInfo.getCareerHistory())
                 .program(lessonInfo.getProgram())
-                .location(lessonInfo.getLocation())
+                .location(lessonInfo.getAddress())
                 .operatingHours(lessonInfo.getOperatingHours())
-                .imageUrls(lessonInfo.getImageUrls())  // 응답에도 이미지 URL 포함
+                .imageUrls(lessonInfo.getImages())  // 응답에도 이미지 URL 포함
                 .build();
     }
 
@@ -84,7 +84,7 @@ public class LessonInfoService {
         }
 
         // 새로 업로드된 이미지 처리
-        List<String> imageUrls = existingLessonInfo.getImageUrls();
+        List<String> imageUrls = existingLessonInfo.getImages();
         if (!newImages.isEmpty()) {
             // 기존 이미지 삭제
             for (String imageUrl : imageUrls) {
@@ -100,14 +100,14 @@ public class LessonInfoService {
         LessonInfo updatedLessonInfo = LessonInfo.builder()
                 .id(existingLessonInfo.getId())
                 .title(request.getTitle())
-                .introduction(request.getIntroduction())
+                .contents(request.getIntroduction())
                 .qualifications(request.getQualifications())
                 .careerHistory(request.getCareerHistory())
                 .program(request.getProgram())
-                .location(request.getLocation())
+                .address(request.getLocation())
                 .operatingHours(request.getOperatingHours())
                 .member(teacher)
-                .imageUrls(imageUrls)  // 새로운 이미지 URL 리스트
+                .images(imageUrls)  // 새로운 이미지 URL 리스트
                 .build();
 
         lessonInfoRepository.save(updatedLessonInfo);
@@ -115,13 +115,13 @@ public class LessonInfoService {
         return LessonInfoResponseDto.builder()
                 .title(updatedLessonInfo.getTitle())
                 .teacherName(updatedLessonInfo.getTeacherName())
-                .introduction(updatedLessonInfo.getIntroduction())
+                .introduction(updatedLessonInfo.getContents())
                 .qualifications(updatedLessonInfo.getQualifications())
                 .careerHistory(updatedLessonInfo.getCareerHistory())
                 .program(updatedLessonInfo.getProgram())
-                .location(updatedLessonInfo.getLocation())
+                .location(updatedLessonInfo.getAddress())
                 .operatingHours(updatedLessonInfo.getOperatingHours())
-                .imageUrls(updatedLessonInfo.getImageUrls())  // 응답에 이미지 URL 포함
+                .imageUrls(updatedLessonInfo.getImages())  // 응답에 이미지 URL 포함
                 .build();
     }
 
@@ -138,7 +138,7 @@ public class LessonInfoService {
         }
 
         // 이미지 삭제
-        List<String> imageUrls = lessonInfo.getImageUrls();
+        List<String> imageUrls = lessonInfo.getImages();
         if (imageUrls != null) {
             imageUrls.forEach(imageUrl -> {
                 String fileName = s3ImageService.extractFileName(imageUrl);
@@ -154,9 +154,9 @@ public class LessonInfoService {
         return lessonInfoRepository.findAll(pageable)
                 .map(lesson -> LessonInfoListRequestDto.builder()
                         .title(lesson.getTitle())
-                        .introduction(lesson.getIntroduction())
-                        .location(lesson.getLocation())
-                        .imageUrl(lesson.getImageUrls().isEmpty() ? null : lesson.getImageUrls().get(0)) // 첫 번째 이미지 URL
+                        .introduction(lesson.getContents())
+                        .location(lesson.getAddress())
+                        .imageUrl(lesson.getImages().isEmpty() ? null : lesson.getImages().get(0)) // 첫 번째 이미지 URL
                         .build());
     }
 
@@ -168,13 +168,13 @@ public class LessonInfoService {
         return LessonInfoResponseDto.builder()
                 .title(lessonInfo.getTitle())
                 .teacherName(lessonInfo.getTeacherName())
-                .introduction(lessonInfo.getIntroduction())
+                .introduction(lessonInfo.getContents())
                 .qualifications(lessonInfo.getQualifications())
                 .careerHistory(lessonInfo.getCareerHistory())
                 .program(lessonInfo.getProgram())
-                .location(lessonInfo.getLocation())
+                .location(lessonInfo.getAddress())
                 .operatingHours(lessonInfo.getOperatingHours())
-                .imageUrls(lessonInfo.getImageUrls())  // 이미지 URL 포함
+                .imageUrls(lessonInfo.getImages())  // 이미지 URL 포함
                 .build();
     }
 
