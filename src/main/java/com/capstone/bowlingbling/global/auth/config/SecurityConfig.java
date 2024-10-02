@@ -81,7 +81,8 @@ public class SecurityConfig {
                         frameOptionsConfig.disable()))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/hc", "/env").permitAll()
-                        .requestMatchers("/","/css/**","/images/**","/js/**","/favicon.ico","/swagger", "/swagger-ui/**", "/v3/api-docs/**", "/lesson/*", "/lesson").permitAll()
+                        .requestMatchers("/lesson/*", "/lesson", "/market", "/market/*").permitAll()
+                        .requestMatchers("/","/css/**","/images/**","/js/**","/favicon.ico","/swagger", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/sign-up").permitAll()
                         .anyRequest().authenticated())
                 //소셜 로그인 설정
