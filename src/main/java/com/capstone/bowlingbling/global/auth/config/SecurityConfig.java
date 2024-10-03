@@ -80,10 +80,10 @@ public class SecurityConfig {
                 .headers((headerConfig) -> headerConfig.frameOptions(frameOptionsConfig ->
                         frameOptionsConfig.disable()))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/hc", "/env").permitAll()
-                        .requestMatchers("/lesson/*", "/lesson", "/market", "/market/*").permitAll()
                         .requestMatchers("/","/css/**","/images/**","/js/**","/favicon.ico","/swagger", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/sign-up").permitAll()
+                        .requestMatchers("/lesson/*", "/lesson", "/market", "/market/*").permitAll()
+                        .requestMatchers("/hc", "/env").permitAll()
                         .anyRequest().authenticated())
                 //소셜 로그인 설정
                 .oauth2Login(oauth2Login ->
