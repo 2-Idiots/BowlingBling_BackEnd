@@ -19,7 +19,8 @@ import java.util.List;
 public class LessonInfo extends BaseEntity {
 
     private String title; // 제목
-    private String contents; // 소개
+    private String intro; // 소개
+    private String contents; // 내용
     private String teacherName;
     private String qualifications; // 자격사항
     private String careerHistory; // 이력사항
