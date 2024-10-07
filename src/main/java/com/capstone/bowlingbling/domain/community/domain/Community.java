@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Entity
 @Builder(toBuilder = true)
@@ -16,9 +18,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "coummunity")
 public class Community extends BaseEntity {
-    //TODO place와 image 추가
+    //TODO place 추가
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+
+    @ElementCollection
+    private List<String> images;
 
     //private boolean anonymous;
     private String category;
