@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor
@@ -21,4 +19,5 @@ public class LessonInfoCreateDetailRequestDto {
     private BowlingStyle program;
     private String location;
     private String operatingHours;
+    private String contents;
 }
