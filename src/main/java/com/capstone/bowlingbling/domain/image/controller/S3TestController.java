@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/filetest")
-@Tag(name = "filetest", description = "파일 업로드 테스트용 API")
 public class S3TestController {
 
     @Autowired
@@ -30,7 +29,6 @@ public class S3TestController {
         return "File uploaded Successfully";
     }
 
-    @Operation(summary = "멀티 파일 업로드 테스트용 controller")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Files uploaded successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
@@ -41,5 +39,4 @@ public class S3TestController {
         List<String> imageUrls = s3ImageService.uploadMultiple(files);
         return ResponseEntity.ok(imageUrls);
     }
-
 }

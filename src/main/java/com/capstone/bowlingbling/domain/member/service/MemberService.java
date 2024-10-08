@@ -2,6 +2,7 @@ package com.capstone.bowlingbling.domain.member.service;
 
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
+import com.capstone.bowlingbling.domain.member.dto.MemberInfoResponseDto;
 import com.capstone.bowlingbling.domain.member.dto.MemberProfileUpdateRequest;
 import com.capstone.bowlingbling.domain.member.dto.TeacherRequestDto;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
@@ -24,13 +25,33 @@ public class MemberService {
         this.teacherRequestRepository = teacherRequestRepository;
     }
 
+    @Transactional(readOnly = true)
+    public MemberInfoResponseDto getMemberInfo(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 회원을 찾을 수 없습니다."));
+
+        return MemberInfoResponseDto.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .nickname(member.getNickname())
+                .city(member.getCity())
+                .age(member.getAge())
+                .phonenum(member.getPhonenum())
+                .image(member.getImage())
+                .introduction(member.getIntroduction())
+                .sex(member.getSex())
+                .role(member.getRole())
+                .socialType(member.getSocialType())
+                .build();
+    }
+
     @Transactional
     public Member updateProfile(MemberProfileUpdateRequest request, String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
         if (!member.getEmail().equals(email) && !member.getRole().equals(Role.ADMIN)) {
-            throw new SecurityException("삭제 권한이 없습니다.");
+            throw new SecurityException("수정 권한이 없습니다.");
         }
 
         member = member.toBuilder()
