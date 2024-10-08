@@ -4,32 +4,42 @@ import com.capstone.bowlingbling.domain.community.domain.Community;
 import com.capstone.bowlingbling.domain.community.dto.request.CommunitySaveRequestDto;
 import com.capstone.bowlingbling.domain.community.dto.response.CommunityListResponseDto;
 import com.capstone.bowlingbling.domain.community.repository.CommunityRepository;
+import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 public class CommunityService {
-    private CommunityRepository communityRepository;
-    private MemberRepository memberRepository;
+    private final CommunityRepository communityRepository;
+    private final MemberRepository memberRepository;
+    private final S3ImageService s3ImageService;
 
     @Autowired
-    public CommunityService(CommunityRepository communityRepository, MemberRepository memberRepository){
+    public CommunityService(CommunityRepository communityRepository, MemberRepository memberRepository, S3ImageService s3ImageService){
         this.communityRepository = communityRepository;
         this.memberRepository = memberRepository;
+        this.s3ImageService = s3ImageService;
     }
 
-    public void saveCommunity(CommunitySaveRequestDto communityDTO, String memberEmail){
+    public void saveCommunity(CommunitySaveRequestDto communityDTO, String memberEmail, List<MultipartFile> files) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
+
+        List<String> imageUrls = s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0]));
 
         Community community = Community.builder()
                 .member(member)
                 .title(communityDTO.getTitle())
                 .contents(communityDTO.getContents())
+                .images(imageUrls)
                 .category(communityDTO.getCategory())
                 .build();
 

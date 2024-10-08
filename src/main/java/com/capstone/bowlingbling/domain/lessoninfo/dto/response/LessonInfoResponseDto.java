@@ -15,6 +15,7 @@ import java.util.List;
 public class LessonInfoResponseDto {
     private Number id;
     private String title;
+    private String introduction;
     private String teacherName;
     private String contents;
     private String location;
