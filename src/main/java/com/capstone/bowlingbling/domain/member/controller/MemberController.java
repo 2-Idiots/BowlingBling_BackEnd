@@ -18,8 +18,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/members")
-@Tag(name = "members", description = "회원 프로필 및 권한 요청 API")
+@RequestMapping("/users")
+@Tag(name = "users", description = "회원 프로필 및 권한 요청 API")
 public class MemberController {
 
     private final MemberService memberService;
@@ -29,7 +29,7 @@ public class MemberController {
     }
 
     @Operation(summary = "유저 정보 조회", description = "현재 로그인된 유저의 정보를 조회합니다.")
-    @GetMapping("/api/users/info")
+    @GetMapping("/info")
     public ResponseEntity<MemberInfoResponseDto> getUserInfo(@AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
         MemberInfoResponseDto memberInfo = memberService.getMemberInfo(memberEmail);
