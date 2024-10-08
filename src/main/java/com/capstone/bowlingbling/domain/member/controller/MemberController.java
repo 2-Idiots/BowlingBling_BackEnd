@@ -2,6 +2,7 @@ package com.capstone.bowlingbling.domain.member.controller;
 
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
+import com.capstone.bowlingbling.domain.member.dto.MemberInfoResponseDto;
 import com.capstone.bowlingbling.domain.member.dto.MemberProfileUpdateRequest;
 import com.capstone.bowlingbling.domain.member.dto.TeacherRequestDto;
 import com.capstone.bowlingbling.domain.member.service.MemberService;
@@ -25,6 +26,14 @@ public class MemberController {
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
+    }
+
+    @Operation(summary = "유저 정보 조회", description = "현재 로그인된 유저의 정보를 조회합니다.")
+    @GetMapping("/api/users/info")
+    public ResponseEntity<MemberInfoResponseDto> getUserInfo(@AuthenticationPrincipal User sessionMember) {
+        String memberEmail = sessionMember.getUsername();
+        MemberInfoResponseDto memberInfo = memberService.getMemberInfo(memberEmail);
+        return ResponseEntity.ok(memberInfo);
     }
 
     @Operation(summary = "프로필 수정", description = "회원 프로필을 수정합니다.")

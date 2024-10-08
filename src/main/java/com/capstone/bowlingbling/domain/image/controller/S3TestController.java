@@ -39,5 +39,4 @@ public class S3TestController {
         List<String> imageUrls = s3ImageService.uploadMultiple(files);
         return ResponseEntity.ok(imageUrls);
     }
-
 }
