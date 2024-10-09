@@ -15,4 +15,6 @@ public class CenterDetailRequestDto {
     private int laneCount;
     private List<String> images;
     private String ownerName;
+    private String lat;
+    private String lng;
 }

@@ -36,4 +36,7 @@ public class Center extends BaseEntity {
 
     @ElementCollection
     private List<String> images;
+
+    private String lat;
+    private String lng;
 }
