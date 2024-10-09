@@ -47,7 +47,7 @@ public class GatheringController {
     public ResponseEntity<String> createGathering(@RequestPart(value = "request") GatheringRequestDto gatheringRequestDto,
                                                   @AuthenticationPrincipal User sessionMember,
                                                   @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-                                                      @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
+                                                  @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
         String memberEmail = sessionMember.getUsername();
         gatheringService.createGathering(gatheringRequestDto, memberEmail, files);
         return ResponseEntity.ok("번개 모임 생성 완료");
