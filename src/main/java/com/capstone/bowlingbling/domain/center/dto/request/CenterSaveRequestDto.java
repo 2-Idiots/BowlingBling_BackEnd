@@ -12,4 +12,6 @@ public class CenterSaveRequestDto {
     private String operatingHours;
     private String announcements;
     private Integer laneCount;
+    private String lat;
+    private String lng;
 }

@@ -50,6 +50,8 @@ public class CenterService {
                 .announcements(centerDTO.getAnnouncements())
                 .laneCount(centerDTO.getLaneCount())
                 .images(imageUrls)
+                .lat(centerDTO.getLat())
+                .lng(centerDTO.getLng())
                 .build();
 
         centerRepository.save(center);
@@ -104,6 +106,8 @@ public class CenterService {
                 .laneCount(center.getLaneCount())
                 .images(center.getImages())
                 .operatingHours(center.getOperatingHours())
+                .lat(center.getLat())
+                .lng(center.getLng())
                 .build();
     }
 
