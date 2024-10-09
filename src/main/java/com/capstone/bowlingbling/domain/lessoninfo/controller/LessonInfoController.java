@@ -1,7 +1,7 @@
 package com.capstone.bowlingbling.domain.lessoninfo.controller;
 
 import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoCreateDetailRequestDto;
-import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoDetailRequestDto;
+import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoDetailUpdateRequestDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.lessoninfo.service.LessonInfoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,7 +68,7 @@ public class LessonInfoController {
     public ResponseEntity<LessonInfoResponseDto> updateLesson(
             @PathVariable Long id,
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
-            @RequestPart LessonInfoDetailRequestDto request,
+            @RequestPart LessonInfoDetailUpdateRequestDto request,
             @RequestPart(required = false) List<MultipartFile> files) throws IOException {  // 이미지 수정 시 파일도 함께 받을 수 있게 함
 
         String teacherEmail = sessionMember.getUsername();

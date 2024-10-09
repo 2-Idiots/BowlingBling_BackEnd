@@ -3,8 +3,7 @@ package com.capstone.bowlingbling.domain.lessoninfo.service;
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoCreateDetailRequestDto;
-import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoDetailRequestDto;
-import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoListRequestDto;
+import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoDetailUpdateRequestDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.lessoninfo.repository.LessonInfoRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
@@ -73,7 +72,7 @@ public class LessonInfoService {
     }
 
     // 레슨 수정
-    public LessonInfoResponseDto updateLesson(Long id, LessonInfoDetailRequestDto request, String teacherEmail, List<MultipartFile> newImages) throws IOException {
+    public LessonInfoResponseDto updateLesson(Long id, LessonInfoDetailUpdateRequestDto request, String teacherEmail, List<MultipartFile> newImages) throws IOException {
         LessonInfo existingLessonInfo = lessonInfoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 레슨을 찾을 수 없습니다."));
 
@@ -157,6 +156,7 @@ public class LessonInfoService {
                 .map(lesson -> LessonInfoResponseDto.builder()
                         .id(lesson.getId())
                         .title(lesson.getTitle())
+                        .introduction(lesson.getIntro())
                         .teacherName(lesson.getTeacherName())
                         .contents(lesson.getContents())
                         .lat(lesson.getLat())
