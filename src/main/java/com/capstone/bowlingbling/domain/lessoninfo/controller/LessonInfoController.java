@@ -65,16 +65,16 @@ public class LessonInfoController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "LessonInfo 수정", description = "특정 LessonInfo를 수정합니다. 권한이 있는 사용자만 사용 가능합니다.")
-    public ResponseEntity<LessonInfoResponseDto> updateLesson(
+    public ResponseEntity<String> updateLesson(
             @PathVariable Long id,
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
             @RequestPart LessonInfoDetailUpdateRequestDto request,
             @RequestPart(required = false) List<MultipartFile> files) throws IOException {  // 이미지 수정 시 파일도 함께 받을 수 있게 함
 
         String teacherEmail = sessionMember.getUsername();
-        LessonInfoResponseDto response = lessonInfoService.updateLesson(id, request, teacherEmail, files);
+        lessonInfoService.updateLesson(id, request, teacherEmail, files);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("수정이 성공적으로 완료되었습니다.");
     }
 
     @DeleteMapping("/{id}")

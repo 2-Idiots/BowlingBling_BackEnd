@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonInfo extends BaseEntity {

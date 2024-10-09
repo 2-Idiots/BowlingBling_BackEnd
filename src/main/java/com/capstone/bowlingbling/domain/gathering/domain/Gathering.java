@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,7 +24,7 @@ public class Gathering extends BaseEntity {
     private Member leader;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(nullable = false)
     private Integer minAverage;
@@ -42,6 +43,12 @@ public class Gathering extends BaseEntity {
 
     @Column(nullable = false)
     private Integer maxParticipants;
+
+    @ElementCollection
+    private List<String> images;
+
+    private String lat;
+    private String lng;
 
     @OneToOne
     @JoinColumn(name = "place_id")
