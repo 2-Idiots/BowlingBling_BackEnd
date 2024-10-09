@@ -3,12 +3,11 @@ package com.capstone.bowlingbling.domain.gathering.service;
 import com.capstone.bowlingbling.domain.gathering.domain.Gathering;
 import com.capstone.bowlingbling.domain.gathering.domain.MemberGathering;
 import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringRequestDto;
-import com.capstone.bowlingbling.domain.gathering.dto.response.GatheringCreateResponseDto;
+import com.capstone.bowlingbling.domain.gathering.dto.response.GatheringDetailResponseDto;
 import com.capstone.bowlingbling.domain.gathering.repository.GatheringRepository;
+import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
-import com.capstone.bowlingbling.domain.place.domain.Place;
-import com.capstone.bowlingbling.domain.place.dto.PlaceDto;
 import com.capstone.bowlingbling.domain.place.repository.PlaceRepository;
 import com.capstone.bowlingbling.global.enums.Role;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,78 +26,75 @@ public class GatheringService {
     private final GatheringRepository gatheringRepository;
     private final MemberRepository memberRepository;
     private final PlaceRepository placeRepository;
+    private final S3ImageService s3ImageService;
 
     @Transactional
-    public GatheringCreateResponseDto createGathering(GatheringRequestDto gatheringRequestDto, String memberEmail) {
+    public void createGathering(GatheringRequestDto gatheringRequestDto, String memberEmail, List<MultipartFile> files) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException(memberEmail + " 멤버를 찾을 수 없습니다."));
 
-        PlaceDto placeDto = gatheringRequestDto.getPlace();
-        Place place = placeRepository.findById(Long.valueOf(placeDto.getId()))
-                .orElseGet(() -> placeRepository.save(Place.builder()
-                        .id(Long.valueOf(placeDto.getId()))
-                        .addressName(placeDto.getAddressName())
-                        .roadAddressName(placeDto.getRoadAddressName())
-                        .buildingName(placeDto.getBuildingName())
-                        .zoneNo(placeDto.getZoneNo())
-                        .latitude(placeDto.getY())
-                        .longitude(placeDto.getX())
-                        .placeName(placeDto.getPlaceName())
-                        .build()));
+//        PlaceDto placeDto = gatheringRequestDto.getPlace();
+//        Place place = placeRepository.findById(Long.valueOf(placeDto.getId()))
+//                .orElseGet(() -> placeRepository.save(Place.builder()
+//                        .id(Long.valueOf(placeDto.getId()))
+//                        .addressName(placeDto.getAddressName())
+//                        .roadAddressName(placeDto.getRoadAddressName())
+//                        .buildingName(placeDto.getBuildingName())
+//                        .zoneNo(placeDto.getZoneNo())
+//                        .latitude(placeDto.getY())
+//                        .longitude(placeDto.getX())
+//                        .placeName(placeDto.getPlaceName())
+//                        .build()));
+
+        List<String> imageUrls = s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0]));
 
         Gathering gathering = Gathering.builder()
                 .leader(member)
-                .name(gatheringRequestDto.getName())
+                .title(gatheringRequestDto.getTitle())
                 .minAverage(gatheringRequestDto.getMinAverage())
                 .maxAverage(gatheringRequestDto.getMaxAverage())
                 .description(gatheringRequestDto.getDescription())
                 .location(gatheringRequestDto.getLocation())
                 .date(gatheringRequestDto.getDate())
                 .maxParticipants(gatheringRequestDto.getMaxParticipants())
-                .place(place)
+                .lat(gatheringRequestDto.getLat())
+                .lng(gatheringRequestDto.getLng())
+                .images(imageUrls)
+//                .place(place)
                 .build();
 
-        Gathering savedGathering = gatheringRepository.save(gathering);
-
-        return GatheringCreateResponseDto.builder()
-                .id(savedGathering.getId())
-                .leadername(member.getNickname())
-                .name(savedGathering.getName())
-                .minAverage(savedGathering.getMinAverage())
-                .maxAverage(savedGathering.getMaxAverage())
-                .description(savedGathering.getDescription())
-                .location(savedGathering.getLocation())
-                .date(savedGathering.getDate())
-                .maxParticipants(savedGathering.getMaxParticipants())
-                .currentParticipants(savedGathering.getCurrentParticipants())
-                .build();
+        gatheringRepository.save(gathering);
     }
 
     @Transactional(readOnly = true)
-    public GatheringRequestDto getGathering(Long id) {
+    public GatheringDetailResponseDto getGathering(Long id) {
         Gathering gathering = gatheringRepository.findActiveById(id);
         if (gathering == null) {
             throw new IllegalArgumentException(id + " 게시물을 찾을 수 없습니다.");
         }
 
-        return GatheringRequestDto.builder()
+        return GatheringDetailResponseDto.builder()
                 .id(gathering.getId())
-                .name(gathering.getName())
+                .title(gathering.getTitle())
+                .leadername(gathering.getLeader().getName())
                 .minAverage(gathering.getMinAverage())
                 .maxAverage(gathering.getMaxAverage())
                 .description(gathering.getDescription())
                 .location(gathering.getLocation())
+                .lat(gathering.getLat())
+                .lng(gathering.getLng())
                 .date(gathering.getDate())
                 .maxParticipants(gathering.getMaxParticipants())
                 .currentParticipants(gathering.getCurrentParticipants())
+                .images(gathering.getImages())
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public Page<GatheringRequestDto> getAllGatherings(Pageable pageable) {
-        return gatheringRepository.findAllActive(pageable).map(gathering -> GatheringRequestDto.builder()
+    public Page<GatheringDetailResponseDto> getAllGatherings(Pageable pageable) {
+        return gatheringRepository.findAllActive(pageable).map(gathering -> GatheringDetailResponseDto.builder()
                 .id(gathering.getId())
-                .name(gathering.getName())
+                .title(gathering.getTitle())
                 .minAverage(gathering.getMinAverage())
                 .maxAverage(gathering.getMaxAverage())
                 .description(gathering.getDescription())
@@ -102,11 +102,12 @@ public class GatheringService {
                 .date(gathering.getDate())
                 .maxParticipants(gathering.getMaxParticipants())
                 .currentParticipants(gathering.getCurrentParticipants())
+                .images(gathering.getImages())
                 .build());
     }
 
     @Transactional
-    public GatheringRequestDto updateGathering(Long id, GatheringRequestDto gatheringRequestDto, String memberEmail) {
+    public GatheringDetailResponseDto updateGathering(Long id, GatheringDetailResponseDto gatheringRequestDto, String memberEmail) {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException(memberEmail + " 멤버를 찾을 수 없습니다."));
 
@@ -120,7 +121,7 @@ public class GatheringService {
         }
 
         gathering = gathering.toBuilder()
-                .name(gatheringRequestDto.getName() != null ? gatheringRequestDto.getName() : gathering.getName())
+                .title(gatheringRequestDto.getTitle() != null ? gatheringRequestDto.getTitle() : gathering.getTitle())
                 .minAverage(gatheringRequestDto.getMinAverage() != null ? gatheringRequestDto.getMinAverage() : gathering.getMinAverage())
                 .maxAverage(gatheringRequestDto.getMaxAverage() != null ? gatheringRequestDto.getMaxAverage() : gathering.getMaxAverage())
                 .description(gatheringRequestDto.getDescription() != null ? gatheringRequestDto.getDescription() : gathering.getDescription())
@@ -131,9 +132,9 @@ public class GatheringService {
 
         Gathering updatedGathering = gatheringRepository.save(gathering);
 
-        return GatheringRequestDto.builder()
+        return GatheringDetailResponseDto.builder()
                 .id(updatedGathering.getId())
-                .name(updatedGathering.getName())
+                .title(updatedGathering.getTitle())
                 .minAverage(updatedGathering.getMinAverage())
                 .maxAverage(updatedGathering.getMaxAverage())
                 .description(updatedGathering.getDescription())
@@ -177,13 +178,13 @@ public class GatheringService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GatheringRequestDto> getMemberGatherings(String memberEmail, Pageable pageable) {
+    public Page<GatheringDetailResponseDto> getMemberGatherings(String memberEmail, Pageable pageable) {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalStateException(memberEmail + "에 해당하는 멤버를 찾을 수 없습니다."));
 
-        return gatheringRepository.findByMember(member.getId(), pageable).map(gathering -> GatheringRequestDto.builder()
+        return gatheringRepository.findByMember(member.getId(), pageable).map(gathering -> GatheringDetailResponseDto.builder()
                 .id(gathering.getId())
-                .name(gathering.getName())
+                .title(gathering.getTitle())
                 .minAverage(gathering.getMinAverage())
                 .maxAverage(gathering.getMaxAverage())
                 .description(gathering.getDescription())
