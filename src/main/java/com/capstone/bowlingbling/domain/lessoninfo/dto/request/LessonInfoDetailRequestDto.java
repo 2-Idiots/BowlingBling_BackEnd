@@ -22,5 +22,4 @@ public class LessonInfoDetailRequestDto {
     private BowlingStyle program;
     private String location;
     private String operatingHours;
-    private List<String> imageUrls;
 }
