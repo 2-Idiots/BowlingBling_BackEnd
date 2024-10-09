@@ -94,6 +94,7 @@ public class GatheringService {
     public Page<GatheringDetailResponseDto> getAllGatherings(Pageable pageable) {
         return gatheringRepository.findAllActive(pageable).map(gathering -> GatheringDetailResponseDto.builder()
                 .id(gathering.getId())
+                .leadername(gathering.getLeader().getName())
                 .title(gathering.getTitle())
                 .minAverage(gathering.getMinAverage())
                 .maxAverage(gathering.getMaxAverage())
