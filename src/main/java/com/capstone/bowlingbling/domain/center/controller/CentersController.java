@@ -1,5 +1,6 @@
 package com.capstone.bowlingbling.domain.center.controller;
 
+import com.capstone.bowlingbling.domain.center.dto.request.CenterDetailRequestDto;
 import com.capstone.bowlingbling.domain.center.dto.request.CenterSaveRequestDto;
 import com.capstone.bowlingbling.domain.center.dto.response.CenterListResponseDto;
 import com.capstone.bowlingbling.domain.center.service.CenterService;
@@ -45,6 +46,13 @@ public class CentersController {
     @GetMapping
     public Page<CenterListResponseDto> getAllCenters() {
         return centerService.getAllCenters(Pageable.ofSize(10));
+    }
+
+    @Operation(summary = "센터 디테일 조회", description = "아이디에 해당하는 센터를 조회합니다.")
+    @GetMapping("/{id}")
+    public ResponseEntity<CenterDetailRequestDto> getCenterDetails(@PathVariable Long id) {
+        CenterDetailRequestDto centerDetails = centerService.getCenterDetails(id);
+        return ResponseEntity.ok(centerDetails);
     }
 
     @Operation(summary = "센터 수정", description = "기존 센터 정보를 수정합니다.")

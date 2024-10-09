@@ -1,6 +1,7 @@
 package com.capstone.bowlingbling.domain.center.service;
 
 import com.capstone.bowlingbling.domain.center.domain.Center;
+import com.capstone.bowlingbling.domain.center.dto.request.CenterDetailRequestDto;
 import com.capstone.bowlingbling.domain.center.dto.request.CenterSaveRequestDto;
 import com.capstone.bowlingbling.domain.center.dto.response.CenterListResponseDto;
 import com.capstone.bowlingbling.domain.center.repository.CenterRepository;
@@ -89,6 +90,21 @@ public class CenterService {
                 .build();
 
         centerRepository.save(center);
+    }
+
+    public CenterDetailRequestDto getCenterDetails(Long id) {
+        Center center = centerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 센터를 찾을 수 없습니다."));
+
+        return CenterDetailRequestDto.builder()
+                .ownerName(center.getOwner().getName())
+                .businessName(center.getBusinessName())
+                .location(center.getLocation())
+                .announcements(center.getAnnouncements())
+                .laneCount(center.getLaneCount())
+                .images(center.getImages())
+                .operatingHours(center.getOperatingHours())
+                .build();
     }
 
     public void deleteCenter(Long centerId, String memberEmail) {
