@@ -157,6 +157,7 @@ public class LessonInfoService {
                 .map(lesson -> LessonInfoResponseDto.builder()
                         .id(lesson.getId())
                         .title(lesson.getTitle())
+                        .introduction(lesson.getIntro())
                         .teacherName(lesson.getTeacherName())
                         .contents(lesson.getContents())
                         .lat(lesson.getLat())
