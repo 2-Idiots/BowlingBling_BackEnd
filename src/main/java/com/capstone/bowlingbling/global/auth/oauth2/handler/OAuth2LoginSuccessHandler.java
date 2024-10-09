@@ -77,7 +77,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.getWriter().write(jsonObject.toString());
 
         String redirectUrl = UriComponentsBuilder
-                .fromUriString("https://bowlingbling.duckdns.org/auth/signin")
+                .fromUriString("http://localhost:3000/users/signin")
                 .queryParam("accessToken", accessToken)
                 .queryParam("refreshToken", refreshToken)
                 .build()
