@@ -101,6 +101,8 @@ public class GatheringService {
                 .description(gathering.getDescription())
                 .location(gathering.getLocation())
                 .date(gathering.getDate())
+                .lat(gathering.getLat())
+                .lng(gathering.getLng())
                 .maxParticipants(gathering.getMaxParticipants())
                 .currentParticipants(gathering.getCurrentParticipants())
                 .images(gathering.getImages())
