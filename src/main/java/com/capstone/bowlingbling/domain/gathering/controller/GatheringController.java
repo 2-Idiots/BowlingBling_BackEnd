@@ -44,10 +44,10 @@ public class GatheringController {
 
     @PostMapping(value ="/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "번개 모임 생성", description = "새로운 번개 모임을 생성합니다.")
-    public ResponseEntity<String> createGathering(@RequestBody GatheringRequestDto gatheringRequestDto,
-                                                                      @AuthenticationPrincipal User sessionMember,
-                                                                      @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-                                                                      @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
+    public ResponseEntity<String> createGathering(@RequestPart(value = "request") GatheringRequestDto gatheringRequestDto,
+                                                  @AuthenticationPrincipal User sessionMember,
+                                                  @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                      @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
         String memberEmail = sessionMember.getUsername();
         gatheringService.createGathering(gatheringRequestDto, memberEmail, files);
         return ResponseEntity.ok("번개 모임 생성 완료");
