@@ -36,8 +36,8 @@ public class CenterService {
         Member owner = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
-        if (files != null && files.size() > 3) { // 최대 3개의 이미지만 허용
-            throw new IllegalArgumentException("최대 3개의 이미지만 업로드할 수 있습니다.");
+        if (files != null && files.size() > 5) { // 최대 5개의 이미지만 허용
+            throw new IllegalArgumentException("최대 5개의 이미지만 업로드할 수 있습니다.");
         }
 
         List<String> imageUrls = s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0]));
