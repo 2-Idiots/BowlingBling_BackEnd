@@ -14,4 +14,6 @@ public class CenterListResponseDto {
     private String operatingHours;
     private Integer laneCount;
     private List<String> images;
+    private String lat;
+    private String lng;
 }
