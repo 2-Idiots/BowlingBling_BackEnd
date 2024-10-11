@@ -66,6 +66,8 @@ public class CenterService {
                 .operatingHours(center.getOperatingHours())
                 .images(center.getImages())
                 .laneCount(center.getLaneCount())
+                .lat(center.getLat())
+                .lng(center.getLng())
                 .build());
     }
 
