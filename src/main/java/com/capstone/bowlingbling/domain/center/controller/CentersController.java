@@ -46,10 +46,8 @@ public class CentersController {
     @Operation(summary = "센터 목록 조회", description = "모든 센터를 조회합니다.")
     @GetMapping
     public Page<CenterListResponseDto> getAllCenters(
-            @RequestParam(defaultValue = "0") int page  // 기본 페이지는 0
     ) {
-        Pageable pageable = PageRequest.of(page, 10);
-        return centerService.getAllCenters(pageable);
+        return centerService.getAllCenters(Pageable.ofSize(10));
     }
 
     @Operation(summary = "센터 디테일 조회", description = "아이디에 해당하는 센터를 조회합니다.")
