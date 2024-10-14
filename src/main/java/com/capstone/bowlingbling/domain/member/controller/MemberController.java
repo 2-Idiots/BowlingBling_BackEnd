@@ -8,14 +8,21 @@ import com.capstone.bowlingbling.domain.member.dto.TeacherRequestDto;
 import com.capstone.bowlingbling.domain.member.service.MemberService;
 import com.capstone.bowlingbling.global.enums.Role;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -37,12 +44,14 @@ public class MemberController {
     }
 
     @Operation(summary = "프로필 수정", description = "회원 프로필을 수정합니다.")
-    @PutMapping("/profile/update")
-    public ResponseEntity<Member> updateProfile(@RequestBody MemberProfileUpdateRequest request,
-            @AuthenticationPrincipal User sessionMember) {
+    @PatchMapping(value = "/profile/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Member> updateProfile(@RequestPart(value = "request") MemberProfileUpdateRequest request,
+                                                @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                @RequestPart(value = "files", required = false) MultipartFile file,
+                                                @AuthenticationPrincipal User sessionMember) throws IOException {
 
         String memberEmail = sessionMember.getUsername();
-        Member updatedMember = memberService.updateProfile(request, memberEmail);
+        Member updatedMember = memberService.updateProfile(request, memberEmail, file);
         return ResponseEntity.ok(updatedMember);
     }
 

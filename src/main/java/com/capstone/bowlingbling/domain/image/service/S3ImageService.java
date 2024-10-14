@@ -27,7 +27,9 @@ public class S3ImageService {
         ObjectMetadata metadata = new ObjectMetadata();
         amazonS3.putObject(bucketName, file.getOriginalFilename(), file.getInputStream(), metadata);
 
-        return "File Uploaded Successfully";
+        String imageUrl = amazonS3.getUrl(bucketName, file.getOriginalFilename()).toString();
+
+        return imageUrl;
     }
 
     public List<String> uploadMultiple(MultipartFile[] files) throws AmazonServiceException, IOException, SdkClientException {

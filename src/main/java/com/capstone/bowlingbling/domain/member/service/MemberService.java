@@ -1,5 +1,6 @@
 package com.capstone.bowlingbling.domain.member.service;
 
+import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
 import com.capstone.bowlingbling.domain.member.dto.MemberInfoResponseDto;
@@ -13,16 +14,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TeacherRequestRepository teacherRequestRepository;
+    private final S3ImageService s3ImageService;
 
-    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository) {
+    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository, S3ImageService s3ImageService) {
         this.memberRepository = memberRepository;
         this.teacherRequestRepository = teacherRequestRepository;
+        this.s3ImageService = s3ImageService;
     }
 
     @Transactional(readOnly = true)
@@ -37,7 +44,6 @@ public class MemberService {
                 .city(member.getCity())
                 .age(member.getAge())
                 .phonenum(member.getPhonenum())
-                .image(member.getImage())
                 .introduction(member.getIntroduction())
                 .sex(member.getSex())
                 .role(member.getRole())
@@ -46,21 +52,30 @@ public class MemberService {
     }
 
     @Transactional
-    public Member updateProfile(MemberProfileUpdateRequest request, String email) {
+    public Member updateProfile(MemberProfileUpdateRequest request, String email, MultipartFile files) throws IOException {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
+
+        if (!member.getEmail().equals(request.getEmail()) && memberRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("해당 이메일은 이미 사용 중입니다.");
+        }
 
         if (!member.getEmail().equals(email) && !member.getRole().equals(Role.ADMIN)) {
             throw new SecurityException("수정 권한이 없습니다.");
         }
 
+        String imageUrls = files != null ? s3ImageService.upload(files) : member.getImage();
+
         member = member.toBuilder()
+                .name(member.getName() != null ? request.getName() : member.getNickname())
                 .nickname(request.getNickname() != null ? request.getNickname() : member.getNickname())
-                .image(request.getImage() != null ? request.getImage() : member.getImage())
+                .email(request.getEmail() != null ? request.getEmail() : member.getEmail())
+                .image(imageUrls != null ? imageUrls : member.getImage())
                 .phonenum(request.getPhonenum() != null ? request.getPhonenum() : member.getPhonenum())
                 .city(request.getCity() != null ? request.getCity() : member.getCity())
                 .sex(request.getSex() != null ? request.getSex() : member.getSex())
                 .age(request.getAge() != null ? request.getAge() : member.getAge())
+                .introduction(request.getIntroduction() != null ? request.getIntroduction() : member.getIntroduction())
                 .build();
 
         return memberRepository.save(member);

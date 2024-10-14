@@ -18,7 +18,6 @@ public class MemberInfoResponseDto {
     private String city;
     private Integer age;
     private String phonenum;
-    private String image;
     private String introduction;
     private String sex;
     private Role role;

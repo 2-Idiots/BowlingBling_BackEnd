@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 public class Member extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
     private String email; // 이메일
     private String name;
     private String nickname; // 닉네임

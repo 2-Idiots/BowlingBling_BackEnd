@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberProfileUpdateRequest {
+    private String email; // 이메일
+    private String name;
     private String nickname;
-    private String image;
     private String phonenum;
     private String city;
     private String sex;
+    private String introduction;
     private Integer age; // Integer를 사용하여 null을 허용
 }
