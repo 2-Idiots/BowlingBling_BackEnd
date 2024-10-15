@@ -45,14 +45,14 @@ public class MemberController {
 
     @Operation(summary = "프로필 수정", description = "회원 프로필을 수정합니다.")
     @PatchMapping(value = "/profile/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Member> updateProfile(@RequestPart(value = "request") MemberProfileUpdateRequest request,
+    public ResponseEntity<String> updateProfile(@RequestPart(value = "request") MemberProfileUpdateRequest request,
                                                 @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                                                 @RequestPart(value = "files", required = false) MultipartFile file,
                                                 @AuthenticationPrincipal User sessionMember) throws IOException {
 
         String memberEmail = sessionMember.getUsername();
-        Member updatedMember = memberService.updateProfile(request, memberEmail, file);
-        return ResponseEntity.ok(updatedMember);
+        memberService.updateProfile(request, memberEmail, file);
+        return ResponseEntity.ok("수정 완료");
     }
 
     @Operation(summary = "Teacher 권한 요청", description = "Teacher 권한을 요청합니다.")
