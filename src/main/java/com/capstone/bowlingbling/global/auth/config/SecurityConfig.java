@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -82,6 +83,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/","/css/**","/images/**","/js/**","/favicon.ico","/swagger", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/sign-up", "/auth/signin").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/lesson/*", "/lesson", "/market", "/market/*", "/centers", "/centers/*", "/gatherings", "/gatherings/*").permitAll()
                         .requestMatchers("/hc", "/env").permitAll()
                         .anyRequest().authenticated())
