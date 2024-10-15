@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberInfoResponseDto {
     private String email;
+    private String image;
     private String name;
     private String nickname;
     private String city;

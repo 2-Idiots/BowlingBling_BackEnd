@@ -38,6 +38,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 회원을 찾을 수 없습니다."));
 
         return MemberInfoResponseDto.builder()
+                .image(member.getImage())
                 .email(member.getEmail())
                 .name(member.getName())
                 .nickname(member.getNickname())
@@ -52,7 +53,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member updateProfile(MemberProfileUpdateRequest request, String email, MultipartFile files) throws IOException {
+    public void updateProfile(MemberProfileUpdateRequest request, String email, MultipartFile files) throws IOException {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
@@ -66,19 +67,19 @@ public class MemberService {
 
         String imageUrls = files != null ? s3ImageService.upload(files) : member.getImage();
 
-        member = member.toBuilder()
-                .name(member.getName() != null ? request.getName() : member.getNickname())
-                .nickname(request.getNickname() != null ? request.getNickname() : member.getNickname())
-                .email(request.getEmail() != null ? request.getEmail() : member.getEmail())
-                .image(imageUrls != null ? imageUrls : member.getImage())
-                .phonenum(request.getPhonenum() != null ? request.getPhonenum() : member.getPhonenum())
-                .city(request.getCity() != null ? request.getCity() : member.getCity())
-                .sex(request.getSex() != null ? request.getSex() : member.getSex())
-                .age(request.getAge() != null ? request.getAge() : member.getAge())
-                .introduction(request.getIntroduction() != null ? request.getIntroduction() : member.getIntroduction())
-                .build();
-
-        return memberRepository.save(member);
+        // repository를 통해 업데이트
+        memberRepository.updateProfile(
+                request.getName() != null ? request.getName() : member.getName(),
+                request.getNickname() != null ? request.getNickname() : member.getNickname(),
+                request.getEmail() != null ? request.getEmail() : member.getEmail(),
+                imageUrls != null ? imageUrls : member.getImage(),
+                request.getPhonenum() != null ? request.getPhonenum() : member.getPhonenum(),
+                request.getCity() != null ? request.getCity() : member.getCity(),
+                request.getSex() != null ? request.getSex() : member.getSex(),
+                request.getAge() != null ? request.getAge() : member.getAge(),
+                request.getIntroduction() != null ? request.getIntroduction() : member.getIntroduction(),
+                email  // 현재 로그인된 사용자의 이메일
+        );
     }
 
     @Transactional
