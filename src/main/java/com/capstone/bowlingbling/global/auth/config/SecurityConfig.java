@@ -64,7 +64,7 @@ public class SecurityConfig {
 
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                         configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
+                        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
 
                         configuration.setMaxAge(3600L);
 
@@ -83,7 +83,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/","/css/**","/images/**","/js/**","/favicon.ico","/swagger", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/sign-up", "/auth/signin").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/lesson/*", "/lesson", "/market", "/market/*", "/centers", "/centers/*", "/gatherings", "/gatherings/*").permitAll()
                         .requestMatchers("/hc", "/env").permitAll()
                         .anyRequest().authenticated())
