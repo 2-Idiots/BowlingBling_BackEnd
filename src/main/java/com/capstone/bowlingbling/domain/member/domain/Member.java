@@ -1,12 +1,15 @@
 package com.capstone.bowlingbling.domain.member.domain;
 
 import com.capstone.bowlingbling.domain.club.domain.Club;
+import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
 import com.capstone.bowlingbling.global.BaseEntity;
 import com.capstone.bowlingbling.global.enums.Role;
 import com.capstone.bowlingbling.global.enums.SocialType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
 
 @Entity
 @Builder(toBuilder = true)
@@ -40,6 +43,9 @@ public class Member extends BaseEntity {
 
     @ManyToOne
     private Club club;
+
+    @ManyToMany
+    private List<LessonInfo> likedLessons;
 
     // 유저 권한 설정 메소드
     public void authorizeUser() {

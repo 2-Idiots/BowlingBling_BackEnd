@@ -50,16 +50,16 @@ public class LessonInfoController {
             summary = "LessonInfo 생성",
             description = "새로운 LessonInfo를 생성합니다. 권한이 있는 사용자만 사용 가능합니다."
     )
-    public ResponseEntity<LessonInfoResponseDto> createLesson(
+    public ResponseEntity<String> createLesson(
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
             @RequestPart(value = "request") LessonInfoCreateDetailRequestDto request,  // LessonInfo 데이터
             @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {  // 파일 업로드 파트 추가
 
         String teacherEmail = sessionMember.getUsername();
-        LessonInfoResponseDto response = lessonInfoService.createLesson(request, teacherEmail, files);
+        lessonInfoService.createLesson(request, teacherEmail, files);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("성공적으로 저장되었습니다.");
     }
 
 
@@ -88,5 +88,27 @@ public class LessonInfoController {
         lessonInfoService.deleteLesson(id, teacherEmail);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{lessonId}/like")
+    @Operation(summary = "레슨 찜하기", description = "특정 레슨을 찜할 수 있습니다.")
+    public ResponseEntity<String> likeLesson(
+            @AuthenticationPrincipal User sessionMember,
+            @PathVariable Long lessonId) {
+
+        String userEmail = sessionMember.getUsername();
+        lessonInfoService.likeLesson(userEmail, lessonId);
+        return ResponseEntity.ok("레슨을 찜했습니다.");
+    }
+
+    @PostMapping("/{lessonId}/like-cancel")
+    @Operation(summary = "레슨 찜 취소", description = "찜한 레슨을 취소할 수 있습니다.")
+    public ResponseEntity<String> cancelLikeLesson(
+            @AuthenticationPrincipal User sessionMember,
+            @PathVariable Long lessonId) {
+
+        String userEmail = sessionMember.getUsername();
+        lessonInfoService.cancelLikeLesson(userEmail, lessonId);
+        return ResponseEntity.ok("레슨 찜을 취소했습니다.");
     }
 }

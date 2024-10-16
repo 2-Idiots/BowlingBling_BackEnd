@@ -27,7 +27,7 @@ public class LessonInfoService {
     private final S3ImageService s3ImageService;
 
     // 레슨 생성
-    public LessonInfoResponseDto createLesson(LessonInfoCreateDetailRequestDto request, String teacherEmail, List<MultipartFile> files) throws IOException {
+    public void createLesson(LessonInfoCreateDetailRequestDto request, String teacherEmail, List<MultipartFile> files) throws IOException {
         Member teacher = memberRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
 
@@ -35,7 +35,7 @@ public class LessonInfoService {
             throw new IllegalStateException("권한이 없는 사용자입니다.");
         }
 
-        if (lessonInfoRepository.existsByMember(teacher)) {
+        if (lessonInfoRepository.existsByMemberAndDeletedAtIsNull(teacher)) {
             throw new IllegalStateException("레슨글이 이미 존재합니다.");
         }
 
@@ -57,18 +57,6 @@ public class LessonInfoService {
                 .build();
 
         lessonInfoRepository.save(lessonInfo);
-
-        return LessonInfoResponseDto.builder()
-                .title(lessonInfo.getTitle())
-                .teacherName(lessonInfo.getTeacherName())
-                .contents(lessonInfo.getContents())
-                .qualifications(lessonInfo.getQualifications())
-                .careerHistory(lessonInfo.getCareerHistory())
-                .program(lessonInfo.getProgram())
-                .location(lessonInfo.getAddress())
-                .operatingHours(lessonInfo.getOperatingHours())
-                .imageUrls(lessonInfo.getImages())  // 응답에도 이미지 URL 포함
-                .build();
     }
 
     // 레슨 수정
@@ -87,19 +75,24 @@ public class LessonInfoService {
         List<String> imageUrls = newImages != null ? s3ImageService.uploadMultiple(newImages.toArray(new MultipartFile[0])) : existingLessonInfo.getImages();
 
         // LessonInfo 업데이트
-        LessonInfo updatedLessonInfo = existingLessonInfo.toBuilder()
-                .title(request.getTitle() != null ? request.getTitle() : existingLessonInfo.getTitle())
-                .intro(request.getIntroduction() != null ? request.getIntroduction() : existingLessonInfo.getIntro())
-                .contents(request.getContents() != null ? request.getContents() : existingLessonInfo.getContents())
-                .qualifications(request.getQualifications() != null ? request.getQualifications() : existingLessonInfo.getQualifications())
-                .careerHistory(request.getCareerHistory() != null ? request.getCareerHistory() : existingLessonInfo.getCareerHistory())
-                .program(request.getProgram() != null ? request.getProgram() : existingLessonInfo.getProgram())
-                .address(request.getLocation() != null ? request.getLocation() : existingLessonInfo.getAddress())
-                .operatingHours(request.getOperatingHours() != null ? request.getOperatingHours() : existingLessonInfo.getOperatingHours())
-                .images(imageUrls)
-                .build();
-
-        lessonInfoRepository.save(updatedLessonInfo);
+        lessonInfoRepository.updateLessonInfo(
+                id,
+                request.getTitle() != null ? request.getTitle() : existingLessonInfo.getTitle(),
+                request.getIntroduction() != null ? request.getIntroduction() : existingLessonInfo.getIntro(),
+                request.getContents() != null ? request.getContents() : existingLessonInfo.getContents(),
+                request.getQualifications() != null ? request.getQualifications() : existingLessonInfo.getQualifications(),
+                request.getCareerHistory() != null ? request.getCareerHistory() : existingLessonInfo.getCareerHistory(),
+                request.getProgram() != null ? request.getProgram() : existingLessonInfo.getProgram(),
+                request.getLocation() != null ? request.getLocation() : existingLessonInfo.getAddress(),
+                request.getOperatingHours() != null ? request.getOperatingHours() : existingLessonInfo.getOperatingHours(),
+                imageUrls,
+                request.getLat() != null ? request.getLat() : existingLessonInfo.getLat(),
+                request.getLng() != null ? request.getLng() : existingLessonInfo.getLng(),
+                request.getPlace() != null ? request.getPlace() : existingLessonInfo.getPlace(),
+                request.getCategory() != null ? request.getCategory() : existingLessonInfo.getCategory(),
+                request.getPrice() != null ? request.getPrice() : existingLessonInfo.getPrice(),
+                request.getHasFreeParking() != null ? request.getHasFreeParking() : existingLessonInfo.getHasFreeParking()
+        );
     }
 
     // 레슨 삭제
@@ -113,22 +106,12 @@ public class LessonInfoService {
         if (!teacher.getRole().equals(Role.TEACHER) && !teacher.getRole().equals(Role.ADMIN)) {
             throw new IllegalStateException("권한이 없습니다.");
         }
-
-        // 이미지 삭제
-        List<String> imageUrls = lessonInfo.getImages();
-        if (imageUrls != null) {
-            imageUrls.forEach(imageUrl -> {
-                String fileName = s3ImageService.extractFileName(imageUrl);
-                s3ImageService.deleteFile(fileName);  // S3에서 이미지 삭제
-            });
-        }
-
-        lessonInfoRepository.delete(lessonInfo);
+        lessonInfo.markAsDeleted();
     }
 
-    // 모든 LessonInfo 가져오기 (디테일 포함)
+    // 모든 LessonInfo 가져오기 (디테일 포함) deletedAt에 값이 있는 필드 제외
     public Page<LessonInfoResponseDto> getAllLessonInfos(Pageable pageable) {
-        return lessonInfoRepository.findAll(pageable)
+        return lessonInfoRepository.findAllByDeletedAtIsNull(pageable)
                 .map(lesson -> LessonInfoResponseDto.builder()
                         .id(lesson.getId())
                         .title(lesson.getTitle())
@@ -149,7 +132,6 @@ public class LessonInfoService {
                         .imageUrls(lesson.getImages())  // 이미지 URL 포함
                         .build());
     }
-
 
     // 특정 LessonInfoDetail 가져오기
     public LessonInfoResponseDto getLessonInfoDetail(Long id) {
@@ -176,4 +158,23 @@ public class LessonInfoService {
                 .build();
     }
 
+    public void likeLesson(String userEmail, Long lessonId) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+        LessonInfo lessonInfo = lessonInfoRepository.findById(lessonId)
+                .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
+
+        member.getLikedLessons().add(lessonInfo);  // 찜한 레슨에 추가
+        memberRepository.save(member);  // 사용자 업데이트
+    }
+
+    public void cancelLikeLesson(String userEmail, Long lessonId) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+        LessonInfo lessonInfo = lessonInfoRepository.findById(lessonId)
+                .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
+
+        member.getLikedLessons().remove(lessonInfo);  // 찜한 레슨에서 삭제
+        memberRepository.save(member);  // 사용자 업데이트
+    }
 }

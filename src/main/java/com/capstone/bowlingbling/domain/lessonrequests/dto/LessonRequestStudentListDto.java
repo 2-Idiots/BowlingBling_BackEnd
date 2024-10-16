@@ -1,0 +1,17 @@
+package com.capstone.bowlingbling.domain.lessonrequests.dto;
+
+import com.capstone.bowlingbling.global.enums.Days;
+import com.capstone.bowlingbling.global.enums.RequestStatus;
+import lombok.*;
+
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class LessonRequestStudentListDto {
+    private String studentId;
+    private String studentName;
+    private Days dayOfWeek;
+    private String time;
+    private RequestStatus accepted;
+}
