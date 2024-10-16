@@ -84,16 +84,16 @@ public class CenterService {
         // 이미지 업로드 처리
         List<String> imageUrls = files != null ? s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0])) : center.getImages();
 
-        center = center.toBuilder()
-                .businessName(centerSaveRequestDto.getBusinessName() != null ? centerSaveRequestDto.getBusinessName() : center.getBusinessName())
-                .location(centerSaveRequestDto.getLocation() != null ? centerSaveRequestDto.getLocation() : center.getLocation())
-                .operatingHours(centerSaveRequestDto.getOperatingHours() != null ? centerSaveRequestDto.getOperatingHours() : center.getOperatingHours())
-                .announcements(centerSaveRequestDto.getAnnouncements() != null ? centerSaveRequestDto.getAnnouncements() : center.getAnnouncements())
-                .laneCount(centerSaveRequestDto.getLaneCount() != null ? centerSaveRequestDto.getLaneCount() : center.getLaneCount())
-                .images(imageUrls)
-                .build();
-
-        centerRepository.save(center);
+        // DTO에서 null이 아닌 값만 업데이트
+        centerRepository.updateCenter(
+                centerId,
+                centerSaveRequestDto.getBusinessName() != null ? centerSaveRequestDto.getBusinessName() : center.getBusinessName(),
+                centerSaveRequestDto.getLocation() != null ? centerSaveRequestDto.getLocation() : center.getLocation(),
+                centerSaveRequestDto.getOperatingHours() != null ? centerSaveRequestDto.getOperatingHours() : center.getOperatingHours(),
+                centerSaveRequestDto.getAnnouncements() != null ? centerSaveRequestDto.getAnnouncements() : center.getAnnouncements(),
+                centerSaveRequestDto.getLaneCount() != null ? centerSaveRequestDto.getLaneCount() : center.getLaneCount(),
+                imageUrls
+        );
     }
 
     public CenterDetailRequestDto getCenterDetails(Long id) {

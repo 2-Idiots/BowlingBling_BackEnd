@@ -45,8 +45,7 @@ public class CentersController {
 
     @Operation(summary = "센터 목록 조회", description = "모든 센터를 조회합니다.")
     @GetMapping
-    public Page<CenterListResponseDto> getAllCenters(
-    ) {
+    public Page<CenterListResponseDto> getAllCenters() {
         return centerService.getAllCenters(Pageable.ofSize(10));
     }
 
