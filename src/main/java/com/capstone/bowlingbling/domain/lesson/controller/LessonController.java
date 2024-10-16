@@ -3,6 +3,7 @@ package com.capstone.bowlingbling.domain.lesson.controller;
 import com.capstone.bowlingbling.domain.lesson.dto.request.LessonNoteDto;
 import com.capstone.bowlingbling.domain.lesson.dto.request.LessonRequestDto;
 import com.capstone.bowlingbling.domain.lesson.dto.response.LessonResponseDto;
+import com.capstone.bowlingbling.domain.lesson.dto.response.PendingLessonResponseDto;
 import com.capstone.bowlingbling.domain.lesson.service.LessonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +36,9 @@ public class LessonController {
 
     @Operation(summary = "대기 중인 레슨 요청 조회", description = "선생님이 대기 중인 레슨 요청을 조회합니다.")
     @GetMapping("/requests/pending")
-    public ResponseEntity<List<LessonResponseDto>> getPendingLessonRequests(@AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<List<PendingLessonResponseDto>> getPendingLessonRequests(@AuthenticationPrincipal User sessionMember) {
         String teacherEmail = sessionMember.getUsername();
-        List<LessonResponseDto> pendingRequests = lessonService.getPendingLessonRequests(teacherEmail);
+        List<PendingLessonResponseDto> pendingRequests = lessonService.getPendingLessonRequests(teacherEmail);
         return ResponseEntity.ok(pendingRequests);
     }
 

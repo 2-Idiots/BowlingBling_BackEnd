@@ -5,6 +5,7 @@ import com.capstone.bowlingbling.domain.lesson.domain.LessonRequest;
 import com.capstone.bowlingbling.domain.lesson.dto.request.LessonNoteDto;
 import com.capstone.bowlingbling.domain.lesson.dto.request.LessonRequestDto;
 import com.capstone.bowlingbling.domain.lesson.dto.response.LessonResponseDto;
+import com.capstone.bowlingbling.domain.lesson.dto.response.PendingLessonResponseDto;
 import com.capstone.bowlingbling.domain.lesson.repository.LessonRepository;
 import com.capstone.bowlingbling.domain.lesson.repository.LessonRequestRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
@@ -56,27 +57,25 @@ public class LessonService {
                 .id(lessonRequest.getId())
                 .teacherId(teacher.getId())
                 .studentId(student.getId())
-                .requestMessage(lessonRequest.getRequestMessage())
+                .requestMessage(teacher.getNickname() + "선생님께 레슨 요청이 접수되었습니다.")
                 .requestDate(lessonRequest.getCreatedAt())
                 .status(lessonRequest.getStatus())
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public List<LessonResponseDto> getPendingLessonRequests(String teacherEmail) {
+    public List<PendingLessonResponseDto> getPendingLessonRequests(String teacherEmail) {
         Member teacher = memberRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 선생님이 없습니다."));
 
         List<LessonRequest> lessonRequests = lessonRequestRepository.findAllByTeacherIdAndStatus(teacher.getId(), RequestStatus.PENDING);
 
         return lessonRequests.stream()
-                .map(request -> LessonResponseDto.builder()
+                .map(request -> PendingLessonResponseDto.builder()
                         .id(request.getId())
-                        .teacherId(request.getTeacher().getId())
                         .studentId(request.getStudent().getId())
                         .requestMessage(request.getRequestMessage())
                         .requestDate(request.getCreatedAt())
-                        .status(request.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -97,15 +96,6 @@ public class LessonService {
             lessonRequest = lessonRequest.toBuilder()
                     .status(RequestStatus.ACCEPTED)
                     .build();
-
-            Lesson lesson = Lesson.builder()
-                    .teacher(lessonRequest.getTeacher())
-                    .student(lessonRequest.getStudent())
-                    .lessonDate(LocalDateTime.now())
-                    .content("Initial Lesson")
-                    .build();
-
-            lessonRepository.save(lesson);
         } else {
             lessonRequest = lessonRequest.toBuilder()
                     .status(RequestStatus.REJECTED)
