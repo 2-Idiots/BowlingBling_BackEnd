@@ -1,6 +1,10 @@
 package com.capstone.bowlingbling.domain.member.service;
 
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
+import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
+import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
+import com.capstone.bowlingbling.domain.lessoninfo.repository.LessonInfoRepository;
+import com.capstone.bowlingbling.domain.lessoninfo.service.LessonInfoService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
 import com.capstone.bowlingbling.domain.member.dto.MemberInfoResponseDto;
@@ -18,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberService {
@@ -25,11 +30,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TeacherRequestRepository teacherRequestRepository;
     private final S3ImageService s3ImageService;
+    private final LessonInfoRepository lessonInfoRepository;
 
-    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository, S3ImageService s3ImageService) {
+    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository, S3ImageService s3ImageService, LessonInfoRepository lessonInfoRepository) {
         this.memberRepository = memberRepository;
         this.teacherRequestRepository = teacherRequestRepository;
         this.s3ImageService = s3ImageService;
+        this.lessonInfoRepository = lessonInfoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -124,5 +131,32 @@ public class MemberService {
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
+    }
+
+    public List<LessonInfoResponseDto> getMyLikedLessons(String memberEmail) {
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        List<LessonInfo> likedLessons = lessonInfoRepository.findLikedLessonsByMember(member);
+        return likedLessons.stream()
+                .map(lesson -> LessonInfoResponseDto.builder()
+                        .id(lesson.getId())
+                        .title(lesson.getTitle())
+                        .introduction(lesson.getIntro())
+                        .teacherName(lesson.getTeacherName())
+                        .contents(lesson.getContents())
+                        .location(lesson.getAddress())
+                        .qualifications(lesson.getQualifications())
+                        .lat(lesson.getLat())
+                        .lng(lesson.getLng())
+                        .place(lesson.getPlace())
+                        .category(lesson.getCategory())
+                        .price(lesson.getPrice())
+                        .hasFreeParking(lesson.getHasFreeParking())
+                        .careerHistory(lesson.getCareerHistory())
+                        .program(lesson.getProgram())
+                        .operatingHours(lesson.getOperatingHours())
+                        .imageUrls(lesson.getImages())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

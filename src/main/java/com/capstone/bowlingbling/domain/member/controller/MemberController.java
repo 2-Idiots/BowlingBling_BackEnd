@@ -1,5 +1,6 @@
 package com.capstone.bowlingbling.domain.member.controller;
 
+import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
 import com.capstone.bowlingbling.domain.member.dto.MemberInfoResponseDto;
@@ -85,5 +86,16 @@ public class MemberController {
 
         memberService.approveTeacherRequest(requestId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/liked-lessons")
+    @Operation(summary = "사용자가 찜한 레슨 목록 조회", description = "사용자가 찜한 레슨 목록을 조회합니다.")
+    public ResponseEntity<List<LessonInfoResponseDto>> getLikedLessons(
+            @AuthenticationPrincipal User sessionMember) {
+
+        String userEmail = sessionMember.getUsername();
+        List<LessonInfoResponseDto> likedLessons = memberService.getMyLikedLessons(userEmail);
+
+        return ResponseEntity.ok(likedLessons);
     }
 }
