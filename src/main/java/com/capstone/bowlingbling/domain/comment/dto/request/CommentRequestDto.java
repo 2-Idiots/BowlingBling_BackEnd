@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunityCommentRequestDto {
+public class CommentRequestDto {
     private String comments;
 }
