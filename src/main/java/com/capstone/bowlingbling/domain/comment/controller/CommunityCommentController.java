@@ -1,7 +1,7 @@
 package com.capstone.bowlingbling.domain.comment.controller;
 
-import com.capstone.bowlingbling.domain.comment.dto.request.CommunityCommentRequestDto;
-import com.capstone.bowlingbling.domain.comment.dto.response.CommunityCommentResponseDto;
+import com.capstone.bowlingbling.domain.comment.dto.request.CommentRequestDto;
+import com.capstone.bowlingbling.domain.comment.dto.response.CommentResponseDto;
 import com.capstone.bowlingbling.domain.comment.service.CommunityCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,24 +21,24 @@ public class CommunityCommentController {
 
     @GetMapping
     @Operation(summary = "게시판 댓글 조회", description = "해당 게시판에 속해있는 댓글들을 페이징하여 조회합니다.")
-    public ResponseEntity<Page<CommunityCommentResponseDto>> getComments(@PathVariable Long communityId) {
-        Page<CommunityCommentResponseDto> comments = communityCommentService.getComments(communityId, Pageable.ofSize(10));
+    public ResponseEntity<Page<CommentResponseDto>> getComments(@PathVariable Long communityId) {
+        Page<CommentResponseDto> comments = communityCommentService.getComments(communityId, Pageable.ofSize(10));
         return ResponseEntity.ok(comments);
     }
 
     @PostMapping("/save")
     @Operation(summary = "게시판 댓글 저장", description = "새로운 댓글을 저장합니다.")
-    public ResponseEntity<CommunityCommentResponseDto> saveComment(@PathVariable Long communityId, @RequestBody CommunityCommentRequestDto requestDto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<CommentResponseDto> saveComment(@PathVariable Long communityId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
         String memberEmail = user.getUsername();
-        CommunityCommentResponseDto responseDto = communityCommentService.saveComment(communityId, requestDto, memberEmail);
+        CommentResponseDto responseDto = communityCommentService.saveComment(communityId, requestDto, memberEmail);
         return ResponseEntity.ok(responseDto);
     }
 
     @PatchMapping("/update/{commentId}")
     @Operation(summary = "게시판 댓글 수정", description = "작성한 댓글을 수정합니다. (작성자만 가능)")
-    public ResponseEntity<CommunityCommentResponseDto> updateComment(@PathVariable Long communityId, @PathVariable Long commentId, @RequestBody CommunityCommentRequestDto requestDto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long communityId, @PathVariable Long commentId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
         String memberEmail = user.getUsername();
-        CommunityCommentResponseDto responseDto = communityCommentService.updateComment(communityId, commentId, requestDto, memberEmail);
+        CommentResponseDto responseDto = communityCommentService.updateComment(communityId, commentId, requestDto, memberEmail);
         return ResponseEntity.ok(responseDto);
     }
 

@@ -5,7 +5,9 @@ import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonRequestMyTeache
 import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonRequestStatusDto;
 import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonRequestStudentListDto;
 import com.capstone.bowlingbling.domain.lessonrequests.service.LessonRequestService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,11 +19,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/lesson-request")
 @RequiredArgsConstructor
+@Tag(name = "Lesson Request", description = "레슨 요청 관리 API")
 public class LessonRequestController {
 
     private final LessonRequestService lessonRequestService;
 
     @PostMapping
+    @Operation(summary = "레슨 요청 생성", description = "학생이 레슨 요청을 생성하는 API입니다.")
     public ResponseEntity<String> createLessonRequest(
             @AuthenticationPrincipal User sessionStudent,
             @RequestBody LessonRequestCreateDto request) {
@@ -31,7 +35,8 @@ public class LessonRequestController {
         return ResponseEntity.ok(result);
     }
 
-    @PatchMapping("/update-status")
+    @PatchMapping("/accept")
+    @Operation(summary = "레슨 요청 상태 업데이트", description = "선생님이 레슨 요청을 수락 또는 거절하는 API입니다.")
     public ResponseEntity<String> updateLessonRequestStatus(
             @AuthenticationPrincipal User sessionTeacher,
             @RequestBody LessonRequestStatusDto request) {
@@ -42,6 +47,7 @@ public class LessonRequestController {
     }
 
     @GetMapping("/my-teachers")
+    @Operation(summary = "내 레슨 요청 조회", description = "학생이 자신이 요청한 레슨 목록을 조회하는 API입니다.")
     public ResponseEntity<List<LessonRequestMyTeachersDto>> getMyLessonRequests(
             @AuthenticationPrincipal User sessionStudent) {
 
@@ -52,6 +58,7 @@ public class LessonRequestController {
     }
 
     @GetMapping("/received-requests")
+    @Operation(summary = "받은 레슨 요청 조회", description = "선생님이 자신에게 온 레슨 요청 목록을 조회하는 API입니다.")
     public ResponseEntity<List<LessonRequestStudentListDto>> getReceivedRequests(
             @AuthenticationPrincipal User sessionTeacher) {
 

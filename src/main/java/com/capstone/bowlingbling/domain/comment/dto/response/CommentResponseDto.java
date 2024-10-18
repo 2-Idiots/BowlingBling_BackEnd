@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarketCommentResponseDto {
+public class CommentResponseDto {
     private Long id;
     private String comments;
     private String memberName;
-    private String marketTitle;
     private LocalDateTime modifiedAt;
     private boolean isDeleted;
 }

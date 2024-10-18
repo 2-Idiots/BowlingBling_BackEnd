@@ -1,6 +1,5 @@
 package com.capstone.bowlingbling.domain.comment.domain;
 
-import com.capstone.bowlingbling.domain.community.domain.Community;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.BaseEntity;
