@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LessonRequestCreateDto {
+public class LessonBookCreateDto {
 
     private Long lessonId;
     private Days dayOfWeek;

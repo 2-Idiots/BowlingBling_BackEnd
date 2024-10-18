@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LessonRequestStudentListDto {
+public class LessonBookedStudentListDto {
     private String studentId;
     private String studentName;
     private Days dayOfWeek;
