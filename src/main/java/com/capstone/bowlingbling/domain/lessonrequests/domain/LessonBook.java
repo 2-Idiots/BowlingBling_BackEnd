@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LessonRequest extends BaseEntity {
+public class LessonBook extends BaseEntity {
 
     @ManyToOne
     private Member student;

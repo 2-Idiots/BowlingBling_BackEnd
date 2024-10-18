@@ -2,12 +2,12 @@ package com.capstone.bowlingbling.domain.lessonrequests.service;
 
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
 import com.capstone.bowlingbling.domain.lessoninfo.repository.LessonInfoRepository;
-import com.capstone.bowlingbling.domain.lessonrequests.domain.LessonRequest;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonRequestCreateDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonRequestMyTeachersDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonRequestStatusDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonRequestStudentListDto;
-import com.capstone.bowlingbling.domain.lessonrequests.repository.LessonRequestRepository;
+import com.capstone.bowlingbling.domain.lessonrequests.domain.LessonBook;
+import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookCreateDto;
+import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookedMyTeachersDto;
+import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookStatusDto;
+import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookedStudentListDto;
+import com.capstone.bowlingbling.domain.lessonrequests.repository.LessonBookRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
@@ -20,26 +20,26 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class LessonRequestService {
+public class LessonBookService {
 
-    private final LessonRequestRepository lessonRequestRepository;
+    private final LessonBookRepository lessonBookRepository;
     private final MemberRepository memberRepository;
     private final LessonInfoRepository lessonInfoRepository;
 
     @Transactional
-    public String createLessonRequest(LessonRequestCreateDto request, String studentEmail) {
+    public String createLessonRequest(LessonBookCreateDto request, String studentEmail) {
         Member student = memberRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("학생을 찾을 수 없습니다."));
         LessonInfo lessonInfo = lessonInfoRepository.findById(request.getLessonId())
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
         Member teacher = lessonInfo.getMember();
 
-        lessonRequestRepository.findByDayOfWeekAndTimeAndTeacher_Id(request.getDayOfWeek(), request.getTime(), teacher.getId())
+        lessonBookRepository.findByDayOfWeekAndTimeAndTeacher_Id(request.getDayOfWeek(), request.getTime(), teacher.getId())
                 .ifPresent(existing -> {
                     throw new IllegalStateException("해당 시간에는 이미 예약된 수업이 있습니다.");
                 });
 
-        LessonRequest lessonRequest = LessonRequest.builder()
+        LessonBook lessonBook = LessonBook.builder()
                 .student(student)
                 .teacher(teacher)
                 .lessonInfo(lessonInfo)
@@ -48,16 +48,16 @@ public class LessonRequestService {
                 .status(RequestStatus.PENDING)
                 .build();
 
-        lessonRequestRepository.save(lessonRequest);
+        lessonBookRepository.save(lessonBook);
         return  lessonInfo.getMember().getName() + "선생님에게" + request.getDayOfWeek() + request.getTime() + "에 예약되었습니다.";
     }
 
     @Transactional
-    public String updateLessonRequestStatus(LessonRequestStatusDto request, String teacherEmail) {
+    public String updateLessonRequestStatus(LessonBookStatusDto request, String teacherEmail) {
         memberRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new IllegalArgumentException("선생을 찾을 수 없습니다."));
 
-        int updatedCount = lessonRequestRepository.updateStatus(
+        int updatedCount = lessonBookRepository.updateStatus(
                 request.getRequestId(),
                 request.getStatus(),
                 teacherEmail
@@ -71,34 +71,34 @@ public class LessonRequestService {
     }
 
     @Transactional
-    public List<LessonRequestMyTeachersDto> getMyLessonRequests(String studentEmail) {
+    public List<LessonBookedMyTeachersDto> getMyLessonRequests(String studentEmail) {
         Member student = memberRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("학생을 찾을 수 없습니다."));
 
-        return lessonRequestRepository.findByStudent(student).stream()
-                .map(lessonRequest -> LessonRequestMyTeachersDto.builder()
-                        .id(lessonRequest.getId())
-                        .teacherName(lessonRequest.getTeacher().getName())
-                        .dayOfWeek(lessonRequest.getDayOfWeek())
-                        .time(lessonRequest.getTime())
-                        .status(lessonRequest.getStatus())
-                        .price(lessonRequest.getLessonInfo().getPrice())
+        return lessonBookRepository.findByStudent(student).stream()
+                .map(lessonBook -> LessonBookedMyTeachersDto.builder()
+                        .id(lessonBook.getId())
+                        .teacherName(lessonBook.getTeacher().getName())
+                        .dayOfWeek(lessonBook.getDayOfWeek())
+                        .time(lessonBook.getTime())
+                        .status(lessonBook.getStatus())
+                        .price(lessonBook.getLessonInfo().getPrice())
                         .build())
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public List<LessonRequestStudentListDto> getReceivedRequests(String teacherEmail) {
+    public List<LessonBookedStudentListDto> getReceivedRequests(String teacherEmail) {
         Member teacher = memberRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new IllegalArgumentException("선생님을 찾을 수 없습니다."));
 
-        return lessonRequestRepository.findByTeacher(teacher).stream()
-                .map(lessonRequest -> LessonRequestStudentListDto.builder()
-                        .studentId(lessonRequest.getStudent().getId().toString())
-                        .studentName(lessonRequest.getStudent().getName())
-                        .dayOfWeek(lessonRequest.getDayOfWeek())
-                        .time(lessonRequest.getTime())
-                        .accepted(lessonRequest.getStatus())
+        return lessonBookRepository.findByTeacher(teacher).stream()
+                .map(lessonBook -> LessonBookedStudentListDto.builder()
+                        .studentId(lessonBook.getStudent().getId().toString())
+                        .studentName(lessonBook.getStudent().getName())
+                        .dayOfWeek(lessonBook.getDayOfWeek())
+                        .time(lessonBook.getTime())
+                        .accepted(lessonBook.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }

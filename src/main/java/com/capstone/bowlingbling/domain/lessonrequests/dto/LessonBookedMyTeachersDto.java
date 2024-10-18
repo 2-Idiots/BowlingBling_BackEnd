@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LessonRequestMyTeachersDto {
+public class LessonBookedMyTeachersDto {
 
     private Long id;
     private String teacherName;

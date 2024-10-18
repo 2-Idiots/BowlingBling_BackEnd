@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LessonRequestStatusDto {
+public class LessonBookStatusDto {
     private Long requestId;
     private RequestStatus status;
 }
