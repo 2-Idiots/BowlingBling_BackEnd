@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface LessonCommentRepository extends JpaRepository<LessonComment, Long> {
-    Page<LessonComment> findByLessonInfo(LessonInfo lessonInfo, Pageable pageable);
+    Page<LessonComment> findByLesson(LessonInfo lessonInfo, Pageable pageable);
 
     @Modifying
     @Transactional
