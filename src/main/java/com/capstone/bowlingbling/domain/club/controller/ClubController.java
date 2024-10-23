@@ -72,10 +72,10 @@ public class ClubController {
 
     @PatchMapping("/{clubId}")
     @Operation(summary = "동호회 수정", description = "동호회 정보를 수정합니다. (동호회장 또는 관리자만 가능)")
-    public ResponseEntity<ClubResponseDto> updateClub(@PathVariable Long clubId, @RequestBody ClubRequestDto clubDto, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<String> updateClub(@PathVariable Long clubId, @RequestBody ClubRequestDto clubDto, @AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
-        ClubResponseDto updatedClub = clubService.updateClub(clubId, clubDto, memberEmail);
-        return ResponseEntity.ok(updatedClub);
+        clubService.updateClub(clubId, clubDto, memberEmail);
+        return ResponseEntity.ok("수정되었습니다.");
     }
 
     @DeleteMapping("/{clubId}")
