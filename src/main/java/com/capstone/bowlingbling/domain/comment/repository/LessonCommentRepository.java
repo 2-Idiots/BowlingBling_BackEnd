@@ -15,6 +15,6 @@ public interface LessonCommentRepository extends JpaRepository<LessonComment, Lo
 
     @Modifying
     @Transactional
-    @Query("UPDATE LessonComment lc SET lc.conmments = :comments WHERE lc.id = :commentId")
+    @Query("UPDATE LessonComment lc SET lc.comments = COALESCE(:comments, lc.comments) WHERE lc.id = :commentId")
     void updateComment(@Param("commentId") Long commentId, @Param("comments") String comments);
 }

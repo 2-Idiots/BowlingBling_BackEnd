@@ -107,6 +107,7 @@ public class LessonInfoService {
             throw new IllegalStateException("권한이 없습니다.");
         }
         lessonInfo.markAsDeleted();
+        lessonInfoRepository.save(lessonInfo);
     }
 
     // 모든 LessonInfo 가져오기 (디테일 포함) deletedAt에 값이 있는 필드 제외
@@ -158,16 +159,27 @@ public class LessonInfoService {
                 .build();
     }
 
+    // 레슨 찜하기
     public void likeLesson(String userEmail, Long lessonId) {
         Member member = memberRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
         LessonInfo lessonInfo = lessonInfoRepository.findById(lessonId)
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
 
+        // 이미 찜한 레슨인지 확인
+        if (member.getLikedLessons().contains(lessonInfo)) {
+            throw new IllegalArgumentException("이미 찜한 레슨입니다.");
+        }
+
         member.getLikedLessons().add(lessonInfo);  // 찜한 레슨에 추가
-        memberRepository.save(member);  // 사용자 업데이트
+        lessonInfo.getLikedMembers().add(member);  // 레슨에 찜한 유저 추가
+
+        // 변경된 엔티티 저장
+        memberRepository.save(member);
+        lessonInfoRepository.save(lessonInfo);
     }
 
+    // 레슨 찜 취소
     public void cancelLikeLesson(String userEmail, Long lessonId) {
         Member member = memberRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
@@ -175,6 +187,10 @@ public class LessonInfoService {
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
 
         member.getLikedLessons().remove(lessonInfo);  // 찜한 레슨에서 삭제
-        memberRepository.save(member);  // 사용자 업데이트
+        lessonInfo.getLikedMembers().remove(member);  // 레슨에서 유저 삭제
+
+        // 변경된 엔티티 저장
+        memberRepository.save(member);
+        lessonInfoRepository.save(lessonInfo);
     }
 }

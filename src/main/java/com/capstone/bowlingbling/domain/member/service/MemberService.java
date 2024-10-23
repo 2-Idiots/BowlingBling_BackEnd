@@ -59,6 +59,10 @@ public class MemberService {
                 .build();
     }
 
+    public void logout(String email) {
+        memberRepository.deleteRefreshTokenByEmail(email);
+    }
+
     @Transactional
     public void updateProfile(MemberProfileUpdateRequest request, String email, MultipartFile files) throws IOException {
         Member member = memberRepository.findByEmail(email)

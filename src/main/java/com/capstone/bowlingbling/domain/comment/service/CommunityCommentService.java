@@ -38,8 +38,9 @@ public class CommunityCommentService {
                     boolean isDeleted = comment.getDeletedAt() != null;
                     return CommentResponseDto.builder()
                             .id(comment.getId())
-                            .comments(isDeleted ? "삭제된 댓글입니다." : comment.getConmments())
+                            .comments(comment.getComments())
                             .memberName(comment.getMember().getNickname())
+                            .image(comment.getMember().getImage())
                             .modifiedAt(comment.getModifiedAt())
                             .isDeleted(isDeleted)
                             .build();
@@ -56,14 +57,14 @@ public class CommunityCommentService {
         CommunityComment comment = CommunityComment.builder()
                 .member(member)
                 .community(community)
-                .conmments(requestDto.getComments())
+                .comments(requestDto.getComments())
                 .build();
 
         CommunityComment savedComment = communityCommentRepository.save(comment);
 
         return CommentResponseDto.builder()
                 .id(savedComment.getId())
-                .comments(savedComment.getConmments())
+                .comments(savedComment.getComments())
                 .memberName(savedComment.getMember().getNickname())
                 .modifiedAt(savedComment.getModifiedAt())
                 .isDeleted(false)
@@ -84,14 +85,14 @@ public class CommunityCommentService {
         }
 
         comment = comment.toBuilder()
-                .conmments(requestDto.getComments())
+                .comments(requestDto.getComments())
                 .build();
 
         CommunityComment updatedComment = communityCommentRepository.save(comment);
 
         return CommentResponseDto.builder()
                 .id(updatedComment.getId())
-                .comments(updatedComment.getConmments())
+                .comments(updatedComment.getComments())
                 .memberName(updatedComment.getMember().getNickname())
                 .modifiedAt(updatedComment.getModifiedAt())
                 .isDeleted(updatedComment.getDeletedAt() != null)

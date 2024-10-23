@@ -23,5 +23,5 @@ public class CenterComment extends BaseEntity {
     private Center center;
 
     @Column(nullable = false)
-    private String conmments;
+    private String comments;
 }

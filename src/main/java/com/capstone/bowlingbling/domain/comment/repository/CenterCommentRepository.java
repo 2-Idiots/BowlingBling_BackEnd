@@ -15,6 +15,6 @@ public interface CenterCommentRepository extends JpaRepository<CenterComment, Lo
 
     @Modifying
     @Transactional
-    @Query("UPDATE CenterComment lc SET lc.conmments = :comments WHERE lc.id = :commentId")
+    @Query("UPDATE CenterComment lc SET lc.comments = COALESCE(:comments, lc.comments) WHERE lc.id = :commentId")
     void updateComment(@Param("commentId") Long commentId, @Param("comments") String comments);
 }

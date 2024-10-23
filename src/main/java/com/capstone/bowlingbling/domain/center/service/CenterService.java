@@ -126,7 +126,9 @@ public class CenterService {
             throw new SecurityException("삭제 권한이 없습니다.");
         }
 
+        center.markAsDeleted();
+
         // 권한이 있으면 센터 삭제
-        centerRepository.delete(center);
+        centerRepository.save(center);
     }
 }

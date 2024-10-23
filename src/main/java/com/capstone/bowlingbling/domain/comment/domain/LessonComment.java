@@ -23,5 +23,5 @@ public class LessonComment extends BaseEntity {
     private LessonInfo lesson;
 
     @Column(nullable = false)
-    private String conmments;
+    private String comments;
 }
