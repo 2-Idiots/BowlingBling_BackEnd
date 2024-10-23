@@ -38,8 +38,9 @@ public class CommunityCommentService {
                     boolean isDeleted = comment.getDeletedAt() != null;
                     return CommentResponseDto.builder()
                             .id(comment.getId())
-                            .comments(isDeleted ? "삭제된 댓글입니다." : comment.getComments())
+                            .comments(comment.getComments())
                             .memberName(comment.getMember().getNickname())
+                            .image(comment.getMember().getImage())
                             .modifiedAt(comment.getModifiedAt())
                             .isDeleted(isDeleted)
                             .build();

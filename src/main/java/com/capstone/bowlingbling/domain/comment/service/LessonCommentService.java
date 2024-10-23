@@ -37,6 +37,7 @@ public class LessonCommentService {
                         .id(comment.getId())
                         .comments(comment.getComments())
                         .memberName(comment.getMember().getNickname())
+                        .image(comment.getMember().getImage())
                         .modifiedAt(comment.getModifiedAt())
                         .isDeleted(comment.getDeletedAt() != null)
                         .build());

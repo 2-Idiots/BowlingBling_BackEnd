@@ -36,6 +36,7 @@ public class MarketCommentService {
                 .map(comment -> CommentResponseDto.builder()
                         .id(comment.getId())
                         .comments(comment.getComments())
+                        .image(comment.getMember().getImage())
                         .memberName(comment.getMember().getNickname())
                         .build());
     }
