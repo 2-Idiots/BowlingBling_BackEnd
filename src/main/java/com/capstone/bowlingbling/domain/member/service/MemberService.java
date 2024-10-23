@@ -2,8 +2,10 @@ package com.capstone.bowlingbling.domain.member.service;
 
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
+import com.capstone.bowlingbling.domain.lessoninfo.domain.LikedLesson;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.lessoninfo.repository.LessonInfoRepository;
+import com.capstone.bowlingbling.domain.lessoninfo.repository.LikedLessonRepository;
 import com.capstone.bowlingbling.domain.lessoninfo.service.LessonInfoService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
@@ -30,13 +32,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TeacherRequestRepository teacherRequestRepository;
     private final S3ImageService s3ImageService;
-    private final LessonInfoRepository lessonInfoRepository;
+    private final LikedLessonRepository likedLessonRepository;
 
-    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository, S3ImageService s3ImageService, LessonInfoRepository lessonInfoRepository) {
+    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository, S3ImageService s3ImageService, LikedLessonRepository likedLessonRepository) {
         this.memberRepository = memberRepository;
         this.teacherRequestRepository = teacherRequestRepository;
         this.s3ImageService = s3ImageService;
-        this.lessonInfoRepository = lessonInfoRepository;
+        this.likedLessonRepository = likedLessonRepository;
     }
 
     @Transactional(readOnly = true)
@@ -140,7 +142,12 @@ public class MemberService {
     public List<LessonInfoResponseDto> getMyLikedLessons(String memberEmail) {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        List<LessonInfo> likedLessons = lessonInfoRepository.findLikedLessonsByMember(member);
+
+        // LikedLessonRepository를 이용해 회원이 찜한 레슨 가져오기
+        List<LessonInfo> likedLessons = likedLessonRepository.findByMember(member).stream()
+                .map(LikedLesson::getLessonInfo) // LikedLesson에서 LessonInfo 추출
+                .collect(Collectors.toList());
+
         return likedLessons.stream()
                 .map(lesson -> LessonInfoResponseDto.builder()
                         .id(lesson.getId())

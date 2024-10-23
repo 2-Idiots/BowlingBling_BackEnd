@@ -43,7 +43,4 @@ public interface LessonInfoRepository extends JpaRepository<LessonInfo, Long> {
                           @Param("hasFreeParking") Boolean hasFreeParking);
 
     Page<LessonInfo> findAllByDeletedAtIsNull(Pageable pageable);
-
-    @Query("SELECT l FROM Member m JOIN m.likedLessons l WHERE m = :member AND l.deletedAt IS NULL")
-    List<LessonInfo> findLikedLessonsByMember(@Param("member") Member member);
 }
