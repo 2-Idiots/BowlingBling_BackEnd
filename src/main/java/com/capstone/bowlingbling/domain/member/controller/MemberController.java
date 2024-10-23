@@ -98,4 +98,12 @@ public class MemberController {
 
         return ResponseEntity.ok(likedLessons);
     }
+
+    @Operation(summary = "로그아웃", description = "로그아웃 시 리프레시 토큰을 삭제합니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal User sessionMember) {
+        String memberEmail = sessionMember.getUsername();
+        memberService.logout(memberEmail);
+        return ResponseEntity.ok().build();
+    }
 }

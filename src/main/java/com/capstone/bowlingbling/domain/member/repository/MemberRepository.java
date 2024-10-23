@@ -23,6 +23,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByEmail(String email);
 
     @Modifying
+    @Query("UPDATE Member m SET m.refreshToken = null WHERE m.email = :email")
+    void deleteRefreshTokenByEmail(@Param("email") String email);
+
+    @Modifying
     @Transactional
     @Query("UPDATE Member m SET m.name = :name, m.nickname = :nickname, m.email = :email, " +
             "m.image = :image, m.phonenum = :phonenum, m.city = :city, m.sex = :sex, " +
