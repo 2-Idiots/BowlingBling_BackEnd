@@ -6,7 +6,6 @@ import com.capstone.bowlingbling.domain.club.dto.response.ClubJoinResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubResponseListDto;
 import com.capstone.bowlingbling.domain.club.service.ClubService;
-import com.capstone.bowlingbling.domain.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

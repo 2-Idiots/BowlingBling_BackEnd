@@ -2,10 +2,12 @@ package com.capstone.bowlingbling.domain.lessoninfo.service;
 
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
+import com.capstone.bowlingbling.domain.lessoninfo.domain.LikedLesson;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoCreateDetailRequestDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.request.LessonInfoDetailUpdateRequestDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.lessoninfo.repository.LessonInfoRepository;
+import com.capstone.bowlingbling.domain.lessoninfo.repository.LikedLessonRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.global.enums.Role;
@@ -25,6 +27,7 @@ public class LessonInfoService {
     private final LessonInfoRepository lessonInfoRepository;
     private final MemberRepository memberRepository;
     private final S3ImageService s3ImageService;
+    private final LikedLessonRepository likedLessonRepository;
 
     // 레슨 생성
     public void createLesson(LessonInfoCreateDetailRequestDto request, String teacherEmail, List<MultipartFile> files) throws IOException {
@@ -167,16 +170,17 @@ public class LessonInfoService {
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
 
         // 이미 찜한 레슨인지 확인
-        if (member.getLikedLessons().contains(lessonInfo)) {
+        if (likedLessonRepository.existsByMemberAndLessonInfo(member, lessonInfo)) {
             throw new IllegalArgumentException("이미 찜한 레슨입니다.");
         }
 
-        member.getLikedLessons().add(lessonInfo);  // 찜한 레슨에 추가
-        lessonInfo.getLikedMembers().add(member);  // 레슨에 찜한 유저 추가
+        // LikedLesson 엔티티 생성 및 저장
+        LikedLesson likedLesson = LikedLesson.builder()
+                .member(member)
+                .lessonInfo(lessonInfo)
+                .build();
 
-        // 변경된 엔티티 저장
-        memberRepository.save(member);
-        lessonInfoRepository.save(lessonInfo);
+        likedLessonRepository.save(likedLesson);
     }
 
     // 레슨 찜 취소
@@ -186,11 +190,11 @@ public class LessonInfoService {
         LessonInfo lessonInfo = lessonInfoRepository.findById(lessonId)
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
 
-        member.getLikedLessons().remove(lessonInfo);  // 찜한 레슨에서 삭제
-        lessonInfo.getLikedMembers().remove(member);  // 레슨에서 유저 삭제
+        // 찜 기록이 있는지 확인
+        LikedLesson likedLesson = likedLessonRepository.findByMemberAndLessonInfo(member, lessonInfo)
+                .orElseThrow(() -> new IllegalArgumentException("찜한 레슨이 아닙니다."));
 
-        // 변경된 엔티티 저장
-        memberRepository.save(member);
-        lessonInfoRepository.save(lessonInfo);
+        // LikedLesson 삭제
+        likedLessonRepository.delete(likedLesson);
     }
 }
