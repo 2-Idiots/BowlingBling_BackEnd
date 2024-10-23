@@ -172,7 +172,7 @@ public class ClubService {
         }
     }
 
-    public ClubResponseDto updateClub(Long id, ClubRequestDto clubDto, String memberEmail) {
+    public void updateClub(Long id, ClubRequestDto clubDto, String memberEmail) {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
@@ -183,23 +183,7 @@ public class ClubService {
             throw new IllegalArgumentException("인가되지 않은 권합입니다.");
         }
 
-        club.toBuilder()
-                .clubname(clubDto.getClubname())
-                .introduction(clubDto.getIntroduction())
-                .leader(club.getLeader())
-                .members(club.getMembers())
-                .memberCount(club.getMemberCount())
-                .build();
-
-        clubRepository.save(club);
-
-        return ClubResponseDto.builder()
-                .id(club.getId())
-                .clubname(club.getClubname())
-                .introduction(club.getIntroduction())
-                .memberCount(club.getMemberCount())
-                .leaderNickname(club.getLeader().getNickname())
-                .build();
+        clubRepository.updateClubInfo(id, clubDto.getClubname(), clubDto.getIntroduction());
     }
 
     public void deleteClub(Long id, String memberEmail) {
