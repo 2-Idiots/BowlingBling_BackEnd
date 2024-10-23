@@ -35,7 +35,7 @@ public class MarketCommentService {
         return marketCommentRepository.findByMarket(market, pageable)
                 .map(comment -> CommentResponseDto.builder()
                         .id(comment.getId())
-                        .comments(comment.getConmments())
+                        .comments(comment.getComments())
                         .memberName(comment.getMember().getNickname())
                         .build());
     }
@@ -50,14 +50,14 @@ public class MarketCommentService {
         MarketComment comment = MarketComment.builder()
                 .member(member)
                 .market(market)
-                .conmments(requestDto.getComments())
+                .comments(requestDto.getComments())
                 .build();
 
         MarketComment savedComment = marketCommentRepository.save(comment);
 
         return CommentResponseDto.builder()
                 .id(savedComment.getId())
-                .comments(savedComment.getConmments())
+                .comments(savedComment.getComments())
                 .memberName(savedComment.getMember().getNickname())
                 .build();
     }
@@ -75,14 +75,14 @@ public class MarketCommentService {
         }
 
         comment = comment.toBuilder()
-                .conmments(requestDto.getComments())
+                .comments(requestDto.getComments())
                 .build();
 
         MarketComment updatedComment = marketCommentRepository.save(comment);
 
         return CommentResponseDto.builder()
                 .id(updatedComment.getId())
-                .comments(updatedComment.getConmments())
+                .comments(updatedComment.getComments())
                 .memberName(updatedComment.getMember().getNickname())
                 .build();
     }

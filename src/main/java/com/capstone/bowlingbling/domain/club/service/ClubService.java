@@ -197,6 +197,7 @@ public class ClubService {
             throw new IllegalArgumentException("인가되지 않은 권한입니다.");
         }
 
-        clubRepository.delete(club);
+        club.markAsDeleted();
+        clubRepository.save(club);
     }
 }

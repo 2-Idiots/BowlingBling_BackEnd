@@ -69,19 +69,13 @@ public class CommunityService {
     }
 
     public void updateCommunity(Long communityId, CommunitySaveRequestDto communityDTO, String memberEmail){
-        Member member = memberRepository.findByEmail(memberEmail)
+        memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        Community community = communityRepository.findById(communityId)
+        communityRepository.findById(communityId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        community = community.toBuilder()
-                .title(communityDTO.getTitle() != null ? communityDTO.getTitle() : community.getTitle())
-                .contents(communityDTO.getContents() != null ? communityDTO.getContents() : community.getContents())
-                .category(communityDTO.getCategory() != null ? communityDTO.getCategory() : community.getCategory())
-                .build();
-
-        communityRepository.save(community);
+        communityRepository.updateCommunityInfo(communityId, communityDTO.getTitle(), communityDTO.getContents(), communityDTO.getCategory());
     }
 
 }

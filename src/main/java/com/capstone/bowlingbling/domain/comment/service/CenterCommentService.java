@@ -35,7 +35,7 @@ public class CenterCommentService {
         return centerCommentRepository.findByCenter(center, pageable)
                 .map(comment -> CommentResponseDto.builder()
                         .id(comment.getId())
-                        .comments(comment.getConmments())
+                        .comments(comment.getComments())
                         .memberName(comment.getMember().getNickname())
                         .modifiedAt(comment.getModifiedAt())
                         .isDeleted(comment.getDeletedAt() != null)
@@ -52,7 +52,7 @@ public class CenterCommentService {
         CenterComment comment = CenterComment.builder()
                 .member(member)
                 .center(center)
-                .conmments(requestDto.getComments())
+                .comments(requestDto.getComments())
                 .build();
 
         centerCommentRepository.save(comment);

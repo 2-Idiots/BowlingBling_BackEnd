@@ -13,9 +13,15 @@ import java.util.List;
 public interface CenterRepository extends JpaRepository<Center, Long> {
 
     @Modifying
-    @Query("UPDATE Center c SET c.businessName = :businessName, c.location = :location, c.operatingHours = :operatingHours, " +
-            "c.announcements = :announcements, c.laneCount = :laneCount, c.images = :images WHERE c.id = :centerId")
-    int updateCenter(@Param("centerId") Long centerId,
+    @Query("UPDATE Center c SET " +
+            "c.businessName = COALESCE(:businessName, c.businessName), " +
+            "c.location = COALESCE(:location, c.location), " +
+            "c.operatingHours = COALESCE(:operatingHours, c.operatingHours), " +
+            "c.announcements = COALESCE(:announcements, c.announcements), " +
+            "c.laneCount = COALESCE(:laneCount, c.laneCount), " +
+            "c.images = COALESCE(:images, c.images) " +
+            "WHERE c.id = :centerId")
+    void updateCenter(@Param("centerId") Long centerId,
                      @Param("businessName") String businessName,
                      @Param("location") String location,
                      @Param("operatingHours") String operatingHours,

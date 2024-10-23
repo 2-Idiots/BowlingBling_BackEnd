@@ -23,5 +23,5 @@ public class MarketComment extends BaseEntity {
     private Market market;
 
     @Column(nullable = false)
-    private String conmments;
+    private String comments;
 }

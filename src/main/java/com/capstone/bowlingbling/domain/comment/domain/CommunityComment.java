@@ -23,5 +23,5 @@ public class CommunityComment extends BaseEntity {
     private Community community;
 
     @Column(nullable = false)
-    private String conmments;
+    private String comments;
 }

@@ -35,7 +35,7 @@ public class LessonCommentService {
         return lessonCommentRepository.findByLesson(lesson, pageable)
                 .map(comment -> CommentResponseDto.builder()
                         .id(comment.getId())
-                        .comments(comment.getConmments())
+                        .comments(comment.getComments())
                         .memberName(comment.getMember().getNickname())
                         .modifiedAt(comment.getModifiedAt())
                         .isDeleted(comment.getDeletedAt() != null)
@@ -52,7 +52,7 @@ public class LessonCommentService {
         LessonComment comment = LessonComment.builder()
                 .member(member)
                 .lesson(lesson)
-                .conmments(requestDto.getComments())
+                .comments(requestDto.getComments())
                 .build();
 
         lessonCommentRepository.save(comment);

@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 public interface ClubRepository extends JpaRepository<Club, Long> {
 
     @Modifying
-    @Query("UPDATE Club c SET c.clubname = :clubname, c.introduction = :introduction WHERE c.id = :id")
+    @Query("UPDATE Club c SET " +
+            "c.clubname = COALESCE(:clubname, c.clubname), " +
+            "c.introduction = COALESCE(:introduction, c.introduction) " +
+            "WHERE c.id = :id")
     void updateClubInfo(@Param("id") Long id, @Param("clubname") String clubname, @Param("introduction") String introduction);
+
 }

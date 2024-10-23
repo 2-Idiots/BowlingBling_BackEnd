@@ -40,4 +40,7 @@ public class LessonInfo extends BaseEntity {
 
     @ManyToOne
     private Member member; // 강사 정보
+
+    @ManyToMany(mappedBy = "likedLessons")
+    private List<Member> likedMembers;
 }
