@@ -21,5 +21,6 @@ public interface CenterCommentRepository extends JpaRepository<CenterComment, Lo
 
     Page<CenterComment> findByCenterAndDeletedAtIsNull(Center center, Pageable pageable);
 
-    List<CenterComment> findByMember(Member member);
+    @Query("SELECT cc FROM CenterComment cc WHERE cc.member = :member AND cc.deletedAt IS NULL")
+    List<CenterComment> findByMemberAndDeletedAtIsNull(@Param("member") Member member);
 }
