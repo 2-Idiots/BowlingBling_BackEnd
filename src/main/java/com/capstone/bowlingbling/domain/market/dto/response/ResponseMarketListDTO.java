@@ -13,5 +13,6 @@ public class ResponseMarketListDTO {
     //TODO place 추가
     private Long id;
     private String title;
+    private String imageUrl;
     private int sales;
 }
