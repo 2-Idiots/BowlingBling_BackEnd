@@ -1,5 +1,6 @@
 package com.capstone.bowlingbling.domain.member.controller;
 
+import com.capstone.bowlingbling.domain.comment.dto.response.MyCommentResponseDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
@@ -97,6 +98,13 @@ public class MemberController {
         List<LessonInfoResponseDto> likedLessons = memberService.getMyLikedLessons(userEmail);
 
         return ResponseEntity.ok(likedLessons);
+    }
+
+    @GetMapping("/mycomment")
+    @Operation(summary = "사용자가 작성한 댓글 조회", description = "사용자가 작성한 댓글 목록을 조회합니다.")
+    public List<MyCommentResponseDto> getMyComments(@AuthenticationPrincipal User sessionMember) {
+        String userEmail = sessionMember.getUsername();
+        return memberService.getAllUserComments(userEmail);
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃 시 리프레시 토큰을 삭제합니다.")
