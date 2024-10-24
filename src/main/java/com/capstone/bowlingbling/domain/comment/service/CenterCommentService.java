@@ -32,7 +32,7 @@ public class CenterCommentService {
         Center center = centerRepository.findById(centerId)
                 .orElseThrow(() -> new IllegalArgumentException("레슨을 찾을 수 없습니다."));
 
-        return centerCommentRepository.findByCenter(center, pageable)
+        return centerCommentRepository.findByCenterAndDeletedAtIsNull(center, pageable)
                 .map(comment -> CommentResponseDto.builder()
                         .id(comment.getId())
                         .comments(comment.getComments())

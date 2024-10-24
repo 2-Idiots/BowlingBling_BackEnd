@@ -32,7 +32,7 @@ public class LessonCommentService {
         LessonInfo lesson = lessonInfoRepository.findById(lessonId)
                 .orElseThrow(() -> new IllegalArgumentException("레슨을 찾을 수 없습니다."));
 
-        return lessonCommentRepository.findByLesson(lesson, pageable)
+        return lessonCommentRepository.findByLessonAndDeletedAtIsNull(lesson, pageable)
                 .map(comment -> CommentResponseDto.builder()
                         .id(comment.getId())
                         .comments(comment.getComments())
