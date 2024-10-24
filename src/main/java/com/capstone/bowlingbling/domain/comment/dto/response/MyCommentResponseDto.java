@@ -19,4 +19,5 @@ public class MyCommentResponseDto {
     private LocalDateTime modifiedAt;
     private boolean isDeleted;
     private String commentType; // 댓글 타입을 나타내는 필드 추가 (LESSON, CENTER)
+    private Long commentId;
 }
