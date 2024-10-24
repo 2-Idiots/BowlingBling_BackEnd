@@ -204,6 +204,7 @@ public class MemberService {
                     .modifiedAt(comment.getModifiedAt())
                     .isDeleted(comment.getDeletedAt() != null)
                     .commentType("LESSON")
+                    .commentId(comment.getLesson().getId()) // 레슨 ID 추가
                     .build());
         });
 
@@ -217,10 +218,10 @@ public class MemberService {
                     .modifiedAt(comment.getModifiedAt())
                     .isDeleted(comment.getDeletedAt() != null)
                     .commentType("CENTER")
+                    .commentId(comment.getCenter().getId()) // 센터 ID 추가
                     .build());
         });
 
         return responseDtos;
     }
-
 }
