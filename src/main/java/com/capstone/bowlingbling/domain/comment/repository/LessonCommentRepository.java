@@ -22,5 +22,6 @@ public interface LessonCommentRepository extends JpaRepository<LessonComment, Lo
 
     Page<LessonComment> findByLessonAndDeletedAtIsNull(LessonInfo lessonInfo, Pageable pageable);
 
-    List<LessonComment> findByMember(Member member);
+    @Query("SELECT lc FROM LessonComment lc WHERE lc.member = :member AND lc.deletedAt IS NULL")
+    List<LessonComment> findByMemberAndDeletedAtIsNull(@Param("member") Member member);
 }

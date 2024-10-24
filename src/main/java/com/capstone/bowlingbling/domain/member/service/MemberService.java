@@ -189,8 +189,8 @@ public class MemberService {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        List<LessonComment> lessonComments = lessonCommentRepository.findByMember(member);
-        List<CenterComment> centerComments = centerCommentRepository.findByMember(member);
+        List<LessonComment> lessonComments = lessonCommentRepository.findByMemberAndDeletedAtIsNull(member);
+        List<CenterComment> centerComments = centerCommentRepository.findByMemberAndDeletedAtIsNull(member);
 
         List<MyCommentResponseDto> responseDtos = new ArrayList<>();
 
