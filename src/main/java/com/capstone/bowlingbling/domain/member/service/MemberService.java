@@ -1,12 +1,15 @@
 package com.capstone.bowlingbling.domain.member.service;
 
+import com.capstone.bowlingbling.domain.comment.domain.CenterComment;
+import com.capstone.bowlingbling.domain.comment.domain.LessonComment;
+import com.capstone.bowlingbling.domain.comment.dto.response.MyCommentResponseDto;
+import com.capstone.bowlingbling.domain.comment.repository.CenterCommentRepository;
+import com.capstone.bowlingbling.domain.comment.repository.LessonCommentRepository;
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LikedLesson;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
-import com.capstone.bowlingbling.domain.lessoninfo.repository.LessonInfoRepository;
 import com.capstone.bowlingbling.domain.lessoninfo.repository.LikedLessonRepository;
-import com.capstone.bowlingbling.domain.lessoninfo.service.LessonInfoService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.domain.TeacherRequest;
 import com.capstone.bowlingbling.domain.member.dto.MemberInfoResponseDto;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,12 +37,21 @@ public class MemberService {
     private final TeacherRequestRepository teacherRequestRepository;
     private final S3ImageService s3ImageService;
     private final LikedLessonRepository likedLessonRepository;
+    private final CenterCommentRepository centerCommentRepository;
+    private final LessonCommentRepository lessonCommentRepository;
 
-    public MemberService(MemberRepository memberRepository, TeacherRequestRepository teacherRequestRepository, S3ImageService s3ImageService, LikedLessonRepository likedLessonRepository) {
+    public MemberService(MemberRepository memberRepository,
+                         TeacherRequestRepository teacherRequestRepository,
+                         S3ImageService s3ImageService,
+                         LikedLessonRepository likedLessonRepository,
+                         CenterCommentRepository centerCommentRepository,
+                         LessonCommentRepository lessonCommentRepository) {
         this.memberRepository = memberRepository;
         this.teacherRequestRepository = teacherRequestRepository;
         this.s3ImageService = s3ImageService;
         this.likedLessonRepository = likedLessonRepository;
+        this.centerCommentRepository = centerCommentRepository;
+        this.lessonCommentRepository = lessonCommentRepository;
     }
 
     @Transactional(readOnly = true)
@@ -170,4 +183,44 @@ public class MemberService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<MyCommentResponseDto> getAllUserComments(String memberEmail) {
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        List<LessonComment> lessonComments = lessonCommentRepository.findByMember(member);
+        List<CenterComment> centerComments = centerCommentRepository.findByMember(member);
+
+        List<MyCommentResponseDto> responseDtos = new ArrayList<>();
+
+        // LessonComments를 DTO로 변환, commentType은 'LESSON'
+        lessonComments.forEach(comment -> {
+            responseDtos.add(MyCommentResponseDto.builder()
+                    .id(comment.getId())
+                    .comments(comment.getComments())
+                    .memberName(comment.getMember().getNickname())
+                    .image(comment.getMember().getImage())
+                    .modifiedAt(comment.getModifiedAt())
+                    .isDeleted(comment.getDeletedAt() != null)
+                    .commentType("LESSON")
+                    .build());
+        });
+
+        // CenterComments를 DTO로 변환, commentType은 'CENTER'
+        centerComments.forEach(comment -> {
+            responseDtos.add(MyCommentResponseDto.builder()
+                    .id(comment.getId())
+                    .comments(comment.getComments())
+                    .memberName(comment.getMember().getNickname())
+                    .image(comment.getMember().getImage())
+                    .modifiedAt(comment.getModifiedAt())
+                    .isDeleted(comment.getDeletedAt() != null)
+                    .commentType("CENTER")
+                    .build());
+        });
+
+        return responseDtos;
+    }
+
 }
