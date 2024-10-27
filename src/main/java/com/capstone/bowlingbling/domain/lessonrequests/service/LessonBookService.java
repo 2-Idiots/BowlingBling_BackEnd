@@ -34,7 +34,7 @@ public class LessonBookService {
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
         Member teacher = lessonInfo.getMember();
 
-        lessonBookRepository.findByDayOfWeekAndTimeAndTeacher_Id(request.getDayofweek(), request.getTime(), teacher.getId())
+        lessonBookRepository.findByDayOfWeekAndTimeAndTeacher_Id(request.getDate(), request.getTime(), teacher.getId())
                 .ifPresent(existing -> {
                     throw new IllegalStateException("해당 시간에는 이미 예약된 수업이 있습니다.");
                 });
@@ -43,13 +43,13 @@ public class LessonBookService {
                 .student(student)
                 .teacher(teacher)
                 .lessonInfo(lessonInfo)
-                .dayOfWeek(request.getDayofweek())
+                .date(request.getDate())
                 .time(request.getTime())
                 .status(RequestStatus.PENDING)
                 .build();
 
         lessonBookRepository.save(lessonBook);
-        return  lessonInfo.getMember().getName() + " 선생님에게 " + request.getDayofweek() + " " + request.getTime() + " 에 예약되었습니다.";
+        return  lessonInfo.getMember().getName() + " 선생님에게 " + request.getDate() + " " + request.getTime() + " 에 예약되었습니다.";
     }
 
     @Transactional
@@ -79,7 +79,7 @@ public class LessonBookService {
                 .map(lessonBook -> LessonBookedMyTeachersDto.builder()
                         .id(lessonBook.getId())
                         .teacherName(lessonBook.getTeacher().getName())
-                        .dayOfWeek(lessonBook.getDayOfWeek())
+                        .date(lessonBook.getDate())
                         .time(lessonBook.getTime())
                         .status(lessonBook.getStatus())
                         .price(lessonBook.getLessonInfo().getPrice())
@@ -96,7 +96,7 @@ public class LessonBookService {
                 .map(lessonBook -> LessonBookedStudentListDto.builder()
                         .studentId(lessonBook.getStudent().getId().toString())
                         .studentName(lessonBook.getStudent().getName())
-                        .dayOfWeek(lessonBook.getDayOfWeek())
+                        .date(lessonBook.getDate())
                         .time(lessonBook.getTime())
                         .accepted(lessonBook.getStatus())
                         .build())

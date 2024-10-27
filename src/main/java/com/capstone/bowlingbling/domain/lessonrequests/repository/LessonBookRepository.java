@@ -2,7 +2,6 @@ package com.capstone.bowlingbling.domain.lessonrequests.repository;
 
 import com.capstone.bowlingbling.domain.lessonrequests.domain.LessonBook;
 import com.capstone.bowlingbling.domain.member.domain.Member;
-import com.capstone.bowlingbling.global.enums.Days;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,8 +14,8 @@ import java.util.Optional;
 
 public interface LessonBookRepository extends JpaRepository<LessonBook, Long> {
 
-    @Query("SELECT lr FROM LessonBook lr WHERE lr.dayOfWeek = :dayOfWeek AND lr.time = :time AND lr.teacher.id = :teacherId")
-    Optional<LessonBook> findByDayOfWeekAndTimeAndTeacher_Id(@Param("dayOfWeek") Days dayOfWeek, @Param("time") String time, @Param("teacherId") Long teacherId);
+    @Query("SELECT lr FROM LessonBook lr WHERE lr.date = :date AND lr.time = :time AND lr.teacher.id = :teacherId")
+    Optional<LessonBook> findByDayOfWeekAndTimeAndTeacher_Id(@Param("date") String date, @Param("time") String time, @Param("teacherId") Long teacherId);
 
     List<LessonBook> findByStudent(Member student);  // 학생이 신청한 요청 목록
 

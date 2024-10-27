@@ -12,7 +12,7 @@ public class LessonBookedMyTeachersDto {
 
     private Long id;
     private String teacherName;
-    private Days dayOfWeek;
+    private String date;
     private String time;
     private RequestStatus status;
     private Integer price;
