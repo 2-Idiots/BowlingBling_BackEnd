@@ -8,7 +8,6 @@ import com.capstone.bowlingbling.domain.lessonrequests.service.LessonBookService
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/lesson-booking")
 @RequiredArgsConstructor
@@ -32,7 +30,6 @@ public class LessonBookController {
             @RequestBody LessonBookCreateDto request) {
 
         String studentEmail = sessionStudent.getUsername();
-        log.info("controller" + request.getLessonid());
         String result = lessonBookService.createLessonRequest(request, studentEmail);
         return ResponseEntity.ok(result);
     }

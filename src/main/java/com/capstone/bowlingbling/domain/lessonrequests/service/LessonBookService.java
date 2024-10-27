@@ -12,14 +12,12 @@ import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LessonBookService {
@@ -32,7 +30,6 @@ public class LessonBookService {
     public String createLessonRequest(LessonBookCreateDto request, String studentEmail) {
         Member student = memberRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("학생을 찾을 수 없습니다."));
-        log.info("service" + request.getLessonid());
         LessonInfo lessonInfo = lessonInfoRepository.findById(request.getLessonid())
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
         Member teacher = lessonInfo.getMember();
@@ -52,7 +49,7 @@ public class LessonBookService {
                 .build();
 
         lessonBookRepository.save(lessonBook);
-        return  lessonInfo.getMember().getName() + "선생님에게" + request.getDayofweek() + request.getTime() + "에 예약되었습니다.";
+        return  lessonInfo.getMember().getName() + " 선생님에게 " + request.getDayofweek() + " " + request.getTime() + " 에 예약되었습니다.";
     }
 
     @Transactional
