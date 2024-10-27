@@ -30,11 +30,11 @@ public class LessonBookService {
     public String createLessonRequest(LessonBookCreateDto request, String studentEmail) {
         Member student = memberRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("학생을 찾을 수 없습니다."));
-        LessonInfo lessonInfo = lessonInfoRepository.findById(request.getLessonId())
+        LessonInfo lessonInfo = lessonInfoRepository.findById(request.getLessonid())
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
         Member teacher = lessonInfo.getMember();
 
-        lessonBookRepository.findByDayOfWeekAndTimeAndTeacher_Id(request.getDayOfWeek(), request.getTime(), teacher.getId())
+        lessonBookRepository.findByDayOfWeekAndTimeAndTeacher_Id(request.getDayofweek(), request.getTime(), teacher.getId())
                 .ifPresent(existing -> {
                     throw new IllegalStateException("해당 시간에는 이미 예약된 수업이 있습니다.");
                 });
@@ -43,13 +43,13 @@ public class LessonBookService {
                 .student(student)
                 .teacher(teacher)
                 .lessonInfo(lessonInfo)
-                .dayOfWeek(request.getDayOfWeek())
+                .dayOfWeek(request.getDayofweek())
                 .time(request.getTime())
                 .status(RequestStatus.PENDING)
                 .build();
 
         lessonBookRepository.save(lessonBook);
-        return  lessonInfo.getMember().getName() + "선생님에게" + request.getDayOfWeek() + request.getTime() + "에 예약되었습니다.";
+        return  lessonInfo.getMember().getName() + "선생님에게" + request.getDayofweek() + request.getTime() + "에 예약되었습니다.";
     }
 
     @Transactional
