@@ -34,6 +34,11 @@ public class LessonBookService {
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
         Member teacher = lessonInfo.getMember();
 
+        lessonBookRepository.findByDayOfWeekAndTimeAndTeacher_Id(request.getDayOfWeek(), request.getTime(), teacher.getId())
+                .ifPresent(existing -> {
+                    throw new IllegalStateException("해당 시간에는 이미 예약된 수업이 있습니다.");
+                });
+
         LessonBook lessonBook = LessonBook.builder()
                 .student(student)
                 .teacher(teacher)
