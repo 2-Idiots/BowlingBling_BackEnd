@@ -1,5 +1,6 @@
 package com.capstone.bowlingbling.domain.market.service;
 
+import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.market.domain.Market;
 import com.capstone.bowlingbling.domain.market.dto.request.RequestMarketSaveDTO;
 import com.capstone.bowlingbling.domain.market.dto.response.ResponseMarketDetailDTO;
@@ -12,30 +13,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MarketService {
 
     private final MarketRepository marketRepository;
     private final MemberRepository memberRepository;
+    private final S3ImageService s3ImageService;
 
     @Autowired
-    public MarketService(MarketRepository marketRepository, MemberRepository memberRepository) {
+    public MarketService(MarketRepository marketRepository, MemberRepository memberRepository, S3ImageService s3ImageService) {
         this.marketRepository = marketRepository;
         this.memberRepository = memberRepository;
+        this.s3ImageService = s3ImageService;
     }
 
-    public void saveMarket(RequestMarketSaveDTO marketDTO, String memberEmail) {
+    public void saveMarket(RequestMarketSaveDTO marketDTO, String memberEmail, List<MultipartFile> files) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
+
+        List<String> imageUrls = s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0]));
 
         Market market = Market.builder()
                 .member(member)
                 .title(marketDTO.getTitle())
                 .contents(marketDTO.getContents())
                 .sales(marketDTO.getSales())
+                .images(imageUrls)
                 .build();
 
         marketRepository.save(market);
@@ -67,7 +76,7 @@ public class MarketService {
         }
     }
 
-    public void updateMarket(Long id, RequestMarketSaveDTO marketDTO, String memberEmail) {
+    public void updateMarket(Long id, RequestMarketSaveDTO marketDTO, String memberEmail, List<MultipartFile> files) throws IOException  {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
@@ -78,13 +87,10 @@ public class MarketService {
             throw new SecurityException("수정 권한이 없습니다.");
         }
 
-        market = Market.builder()
-                .title(marketDTO.getTitle())
-                .contents(marketDTO.getContents())
-                .sales(marketDTO.getSales())
-                .build();
+        List<String> imageUrls = s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0]));
 
-        marketRepository.save(market);
+        marketRepository.updateMarket(id, marketDTO.getTitle(), marketDTO.getContents(),
+                marketDTO.getSales(), imageUrls);
     }
 
     public void deleteMarket(Long id, String memberEmail) {

@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter
 @Entity
 @SuperBuilder
@@ -15,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Table(name = "market")
 public class Market extends BaseEntity {
-    //TODO place와 image 추가
+    //TODO place
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
@@ -24,6 +26,9 @@ public class Market extends BaseEntity {
 
     @Column(nullable = false)
     private String contents;
+
+    @ElementCollection
+    private List<String> images;
 
     private int sales;
 }

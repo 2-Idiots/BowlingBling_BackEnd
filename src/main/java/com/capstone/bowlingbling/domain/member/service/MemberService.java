@@ -104,6 +104,7 @@ public class MemberService {
                 request.getSex() != null ? request.getSex() : member.getSex(),
                 request.getAge() != null ? request.getAge() : member.getAge(),
                 request.getIntroduction() != null ? request.getIntroduction() : member.getIntroduction(),
+                request.getMyaver() != null ? request.getMyaver() : member.getMyaver(),
                 email  // 현재 로그인된 사용자의 이메일
         );
     }

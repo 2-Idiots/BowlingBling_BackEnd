@@ -22,5 +22,6 @@ public class MemberInfoResponseDto {
     private String introduction;
     private String sex;
     private Role role;
+    private Integer myaver;
     private SocialType socialType;
 }

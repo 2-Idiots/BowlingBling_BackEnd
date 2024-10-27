@@ -30,12 +30,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Transactional
     @Query("UPDATE Member m SET m.name = :name, m.nickname = :nickname, m.email = :email, " +
             "m.image = :image, m.phonenum = :phonenum, m.city = :city, m.sex = :sex, " +
-            "m.age = :age, m.introduction = :introduction WHERE m.email = :currentEmail")
+            "m.age = :age, m.introduction = :introduction, m.myaver = :myaver WHERE m.email = :currentEmail")
     void updateProfile(@Param("name") String name, @Param("nickname") String nickname,
                        @Param("email") String email, @Param("image") String image,
                        @Param("phonenum") String phonenum, @Param("city") String city,
                        @Param("sex") String sex, @Param("age") Integer age,
-                       @Param("introduction") String introduction, @Param("currentEmail") String currentEmail);
+                       @Param("introduction") String introduction, @Param("myaver") Integer myaver,
+                       @Param("currentEmail") String currentEmail);
 
     /**
      * 소셜 타입과 소셜의 식별값으로 회원 찾는 메소드

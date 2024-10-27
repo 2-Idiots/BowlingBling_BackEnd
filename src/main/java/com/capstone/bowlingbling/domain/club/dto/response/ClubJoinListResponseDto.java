@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClubJoinResponseDto {
+public class ClubJoinListResponseDto {
     private Long id;
     private String imageUrl;
     private String sex;
     private Integer age;
-    private String phonenum;
+    private String phoneNum;
+    private Integer aver;
 }
