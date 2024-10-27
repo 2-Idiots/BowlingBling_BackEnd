@@ -6,7 +6,6 @@ import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookStatusDto;
 import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookedStudentListDto;
 import com.capstone.bowlingbling.domain.lessonrequests.service.LessonBookService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
