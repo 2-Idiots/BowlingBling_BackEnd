@@ -11,7 +11,7 @@ import lombok.*;
 public class LessonBookedStudentListDto {
     private String studentId;
     private String studentName;
-    private Days dayOfWeek;
+    private String date;
     private String time;
     private RequestStatus accepted;
 }

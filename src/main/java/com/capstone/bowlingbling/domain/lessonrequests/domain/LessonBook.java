@@ -27,7 +27,7 @@ public class LessonBook extends BaseEntity {
     @ManyToOne
     private LessonInfo lessonInfo;
 
-    private Days dayOfWeek;  // 요일 (e.g., "Monday", "Tuesday")
+    private String date;  // 날짜
 
     private String time;  // 시간 (e.g., "10:00", "14:00")
 

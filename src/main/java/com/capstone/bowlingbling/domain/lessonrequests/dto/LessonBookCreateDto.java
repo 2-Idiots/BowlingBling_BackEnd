@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class LessonBookCreateDto {
     @JsonProperty("lessonid")
     private Long lessonid;
-    @JsonProperty("dayofweek")
-    private Days dayofweek;
+    @JsonProperty("date")
+    private String date;
     private String time;
 }
