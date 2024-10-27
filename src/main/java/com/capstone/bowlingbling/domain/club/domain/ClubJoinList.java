@@ -7,18 +7,18 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
-@Builder(toBuilder = true)
+@Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "join_request")
-public class ClubJoinRequest extends BaseEntity {
+public class ClubJoinList extends BaseEntity {
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "club_id")
     private Club club;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
 

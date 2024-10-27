@@ -17,5 +17,6 @@ public class MemberProfileUpdateRequest {
     private String city;
     private String sex;
     private String introduction;
+    private Integer myaver;
     private Integer age; // Integer를 사용하여 null을 허용
 }
