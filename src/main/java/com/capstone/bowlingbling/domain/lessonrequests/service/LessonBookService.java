@@ -30,7 +30,8 @@ public class LessonBookService {
     public String createLessonRequest(LessonBookCreateDto request, String studentEmail) {
         Member student = memberRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("학생을 찾을 수 없습니다."));
-        LessonInfo lessonInfo = lessonInfoRepository.findById(request.getLessonid())
+        Long id = request.getLessonid();
+        LessonInfo lessonInfo = lessonInfoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("레슨 정보를 찾을 수 없습니다."));
         Member teacher = lessonInfo.getMember();
 
