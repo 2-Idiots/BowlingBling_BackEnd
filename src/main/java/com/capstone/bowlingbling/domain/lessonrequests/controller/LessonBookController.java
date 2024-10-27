@@ -28,7 +28,7 @@ public class LessonBookController {
     @Operation(summary = "레슨 요청 생성", description = "학생이 레슨 요청을 생성하는 API입니다.")
     public ResponseEntity<String> createLessonRequest(
             @AuthenticationPrincipal User sessionStudent,
-            @RequestBody LessonBookCreateDto request) {
+            @RequestPart LessonBookCreateDto request) {
 
         String studentEmail = sessionStudent.getUsername();
         String result = lessonBookService.createLessonRequest(request, studentEmail);
@@ -39,7 +39,7 @@ public class LessonBookController {
     @Operation(summary = "레슨 요청 상태 업데이트", description = "선생님이 레슨 요청을 수락 또는 거절하는 API입니다.")
     public ResponseEntity<String> updateLessonRequestStatus(
             @AuthenticationPrincipal User sessionTeacher,
-            @RequestBody LessonBookStatusDto request) {
+            @RequestPart LessonBookStatusDto request) {
 
         String teacherEmail = sessionTeacher.getUsername();
         String result = lessonBookService.updateLessonRequestStatus(request, teacherEmail);

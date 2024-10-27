@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonBookCreateDto {
-
     private Long lessonId;
     private Days dayOfWeek;
     private String time;

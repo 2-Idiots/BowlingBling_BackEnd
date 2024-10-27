@@ -48,9 +48,7 @@ public class LessonBookService {
                 .status(RequestStatus.PENDING)
                 .build();
 
-        System.out.println(lessonBook.getId());
         lessonBookRepository.save(lessonBook);
-        System.out.println(lessonBook.getId());
         return  lessonInfo.getMember().getName() + "선생님에게" + request.getDayOfWeek() + request.getTime() + "에 예약되었습니다.";
     }
 
