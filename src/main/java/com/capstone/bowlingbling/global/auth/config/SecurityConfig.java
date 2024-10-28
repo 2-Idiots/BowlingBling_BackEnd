@@ -83,7 +83,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/","/css/**","/images/**","/js/**","/favicon.ico","/swagger", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/sign-up", "/auth/signin").permitAll()
-                        .requestMatchers("/lesson/*", "/lesson", "/market", "/market/*", "/centers", "/centers/*", "/gatherings", "/gatherings/*").permitAll()
+                        .requestMatchers("/lesson/*", "/lesson", "/market", "/market/*", "/centers",
+                                "/centers/*", "/gatherings", "/gatherings/*", "/lesson-booking/*/dates").permitAll()
                         .requestMatchers("/hc", "/env").permitAll()
                         .anyRequest().authenticated())
                 //소셜 로그인 설정

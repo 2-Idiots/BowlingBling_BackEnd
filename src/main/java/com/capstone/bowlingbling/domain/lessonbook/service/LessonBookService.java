@@ -1,13 +1,10 @@
-package com.capstone.bowlingbling.domain.lessonrequests.service;
+package com.capstone.bowlingbling.domain.lessonbook.service;
 
+import com.capstone.bowlingbling.domain.lessonbook.dto.*;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
 import com.capstone.bowlingbling.domain.lessoninfo.repository.LessonInfoRepository;
-import com.capstone.bowlingbling.domain.lessonrequests.domain.LessonBook;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookCreateDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookedMyTeachersDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookStatusDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookedStudentListDto;
-import com.capstone.bowlingbling.domain.lessonrequests.repository.LessonBookRepository;
+import com.capstone.bowlingbling.domain.lessonbook.domain.LessonBook;
+import com.capstone.bowlingbling.domain.lessonbook.repository.LessonBookRepository;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
@@ -50,6 +47,16 @@ public class LessonBookService {
 
         lessonBookRepository.save(lessonBook);
         return  lessonInfo.getMember().getName() + " 선생님에게 " + request.getDate() + " " + request.getTime() + " 에 예약되었습니다.";
+    }
+
+    public List<LessonBookDateTimeDto> getLessonDatesAndTimes(Long lessonInfoId) {
+        return lessonBookRepository.findByLessonInfo_Id(lessonInfoId)
+                .stream()
+                .map(lessonBook -> LessonBookDateTimeDto.builder()
+                        .date(lessonBook.getDate())
+                        .time(lessonBook.getTime())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional

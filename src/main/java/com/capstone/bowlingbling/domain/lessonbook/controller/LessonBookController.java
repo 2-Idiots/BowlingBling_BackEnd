@@ -1,10 +1,7 @@
-package com.capstone.bowlingbling.domain.lessonrequests.controller;
+package com.capstone.bowlingbling.domain.lessonbook.controller;
 
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookCreateDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookedMyTeachersDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookStatusDto;
-import com.capstone.bowlingbling.domain.lessonrequests.dto.LessonBookedStudentListDto;
-import com.capstone.bowlingbling.domain.lessonrequests.service.LessonBookService;
+import com.capstone.bowlingbling.domain.lessonbook.dto.*;
+import com.capstone.bowlingbling.domain.lessonbook.service.LessonBookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +29,13 @@ public class LessonBookController {
         String studentEmail = sessionStudent.getUsername();
         String result = lessonBookService.createLessonRequest(request, studentEmail);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{lessonInfoId}/dates")
+    @Operation(summary = "레슨 요청 조회", description = "모든 레슨 요청을 조회하는 APi입니다.")
+    public ResponseEntity<List<LessonBookDateTimeDto>> getLessonDatesAndTimes(@PathVariable Long lessonInfoId) {
+        List<LessonBookDateTimeDto> dateTimeList = lessonBookService.getLessonDatesAndTimes(lessonInfoId);
+        return ResponseEntity.ok(dateTimeList);
     }
 
     @PatchMapping("/accept")
