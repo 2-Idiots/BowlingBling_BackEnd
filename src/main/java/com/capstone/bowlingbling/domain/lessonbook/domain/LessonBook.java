@@ -1,9 +1,8 @@
-package com.capstone.bowlingbling.domain.lessonrequests.domain;
+package com.capstone.bowlingbling.domain.lessonbook.domain;
 
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LessonInfo;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.BaseEntity;
-import com.capstone.bowlingbling.global.enums.Days;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

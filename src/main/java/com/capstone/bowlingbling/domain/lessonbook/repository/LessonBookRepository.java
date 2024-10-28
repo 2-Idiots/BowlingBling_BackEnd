@@ -1,6 +1,6 @@
-package com.capstone.bowlingbling.domain.lessonrequests.repository;
+package com.capstone.bowlingbling.domain.lessonbook.repository;
 
-import com.capstone.bowlingbling.domain.lessonrequests.domain.LessonBook;
+import com.capstone.bowlingbling.domain.lessonbook.domain.LessonBook;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import jakarta.transaction.Transactional;
@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonBookRepository extends JpaRepository<LessonBook, Long> {
+
+    List<LessonBook> findByLessonInfo_Id(Long lessonInfoId);
 
     @Query("SELECT lr FROM LessonBook lr WHERE lr.date = :date AND lr.time = :time AND lr.teacher.id = :teacherId")
     Optional<LessonBook> findByDayOfWeekAndTimeAndTeacher_Id(@Param("date") String date, @Param("time") String time, @Param("teacherId") Long teacherId);
