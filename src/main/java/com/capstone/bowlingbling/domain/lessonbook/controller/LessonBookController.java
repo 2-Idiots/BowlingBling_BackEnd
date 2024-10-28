@@ -71,14 +71,14 @@ public class LessonBookController {
         return ResponseEntity.ok(requests);
     }
 
-    @DeleteMapping("/my-teachers/{lessonId}/cancel")
+    @DeleteMapping("/my-teachers/{lessonBookedId}/cancel")
     @Operation(summary = "내 레슨 요청 취소", description = "학생이 자신이 요청한 레슨을 취소하는 API입니다.")
     public ResponseEntity<String> cancelMyLessonRequest(
-            @PathVariable Long lessonId,
+            @PathVariable Long lessonBookedId,
             @AuthenticationPrincipal User sessionStudent) {
 
         String studentEmail = sessionStudent.getUsername();
-        lessonBookService.cancelMyLessonRequest(lessonId, studentEmail);
+        lessonBookService.cancelMyLessonRequest(lessonBookedId, studentEmail);
 
         return ResponseEntity.ok("레슨 요청이 취소되었습니다.");
     }
