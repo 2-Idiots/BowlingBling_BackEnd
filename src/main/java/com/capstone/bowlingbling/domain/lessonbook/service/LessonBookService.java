@@ -85,6 +85,7 @@ public class LessonBookService {
         return lessonBookRepository.findByStudent(student).stream()
                 .map(lessonBook -> LessonBookedMyTeachersDto.builder()
                         .id(lessonBook.getId())
+                        .lessonId(lessonBook.getLessonInfo().getId())
                         .teacherName(lessonBook.getTeacher().getName())
                         .date(lessonBook.getDate())
                         .time(lessonBook.getTime())

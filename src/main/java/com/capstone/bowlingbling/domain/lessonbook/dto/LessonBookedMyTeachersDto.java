@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LessonBookedMyTeachersDto {
-
     private Long id;
+    private Long lessonId;
     private String teacherName;
     private String date;
     private String time;
