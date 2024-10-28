@@ -1,6 +1,5 @@
-package com.capstone.bowlingbling.domain.lessonrequests.dto;
+package com.capstone.bowlingbling.domain.lessonbook.dto;
 
-import com.capstone.bowlingbling.global.enums.Days;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import lombok.*;
 
@@ -9,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LessonBookedMyTeachersDto {
-
     private Long id;
+    private Long lessonId;
     private String teacherName;
     private String date;
     private String time;

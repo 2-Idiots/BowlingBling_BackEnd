@@ -1,7 +1,6 @@
-package com.capstone.bowlingbling.domain.lessonrequests.dto;
+package com.capstone.bowlingbling.domain.lessonbook.dto;
 
 
-import com.capstone.bowlingbling.global.enums.Days;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

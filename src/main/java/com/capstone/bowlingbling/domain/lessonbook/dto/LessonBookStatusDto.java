@@ -1,4 +1,4 @@
-package com.capstone.bowlingbling.domain.lessonrequests.dto;
+package com.capstone.bowlingbling.domain.lessonbook.dto;
 
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import lombok.AllArgsConstructor;
