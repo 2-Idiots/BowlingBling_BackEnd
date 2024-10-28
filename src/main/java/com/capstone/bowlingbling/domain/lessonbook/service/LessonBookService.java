@@ -8,6 +8,7 @@ import com.capstone.bowlingbling.domain.lessonbook.repository.LessonBookReposito
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
+import com.capstone.bowlingbling.global.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,5 +110,18 @@ public class LessonBookService {
                         .accepted(lessonBook.getStatus())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public void cancelMyLessonRequest(Long lessonBookId, String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
+        LessonBook lessonBook = lessonBookRepository.findById(lessonBookId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 레슨 예약입니다. : " + lessonBookId));
+
+        if (!member.getEmail().equals(lessonBook.getStudent().getEmail()) && !member.getRole().equals(Role.ADMIN)) {
+            throw new IllegalStateException("권한이 없는 사용자입니다.");
+        }
+
+        lessonBookRepository.delete(lessonBook);
     }
 }
