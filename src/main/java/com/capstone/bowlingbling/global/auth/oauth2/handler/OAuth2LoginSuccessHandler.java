@@ -76,14 +76,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         jsonObject.addProperty("refreshToken", refreshToken);
         response.getWriter().write(jsonObject.toString());
 
-        String redirectUrl = UriComponentsBuilder
-                .fromUriString("http://localhost:3000/users/signin")
-                .queryParam("accessToken", accessToken)
-                .queryParam("refreshToken", refreshToken)
-                .build()
-                .toUriString();
+        //param에 accesstoken 넣어서 원하는 주소로 리다이렉트
+//        String redirectUrl = UriComponentsBuilder
+//                .fromUriString("http://localhost:3000/users/signin")
+//                .queryParam("accessToken", accessToken)
+//                .queryParam("refreshToken", refreshToken)
+//                .build()
+//                .toUriString();
 
         // 리다이렉트 수행
-        response.sendRedirect(redirectUrl);
+//        response.sendRedirect(redirectUrl);
     }
 }
