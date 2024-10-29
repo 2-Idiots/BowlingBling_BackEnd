@@ -66,11 +66,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
         jwtService.updateRefreshToken(member.getEmail(), refreshToken);
 
-        Cookie cookie = new Cookie("refreshtoken", refreshToken);
-        cookie.setHttpOnly(true);  //httponly 옵션 설정
-        cookie.setSecure(true); //https 옵션 설정
-        cookie.setPath("/");
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie("refreshtoken", refreshToken);
+//        cookie.setHttpOnly(true);  //httponly 옵션 설정
+//        cookie.setSecure(true); //https 옵션 설정
+//        cookie.setPath("/");
+//        response.addCookie(cookie);
 
         jsonObject.addProperty("accessToken", accessToken);
         jsonObject.addProperty("refreshToken", refreshToken);
