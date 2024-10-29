@@ -34,10 +34,6 @@ public class LessonInfoService {
         Member teacher = memberRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
 
-        if (!teacher.getRole().equals(Role.TEACHER) && !teacher.getRole().equals(Role.ADMIN)) {
-            throw new IllegalStateException("권한이 없는 사용자입니다.");
-        }
-
         if (lessonInfoRepository.existsByMemberAndDeletedAtIsNull(teacher)) {
             throw new IllegalStateException("레슨글이 이미 존재합니다.");
         }
