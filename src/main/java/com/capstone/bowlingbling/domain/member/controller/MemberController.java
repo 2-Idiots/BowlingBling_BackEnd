@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -72,8 +72,8 @@ public class MemberController {
 
     @Operation(summary = "대기 중인 Teacher 요청 목록", description = "대기 중인 Teacher 요청 목록을 조회합니다.")
     @GetMapping("/teacher-requests")
-    public ResponseEntity<Page<TeacherRequest>> getPendingTeacherRequests(Pageable pageable) {
-        Page<TeacherRequest> teacherRequests = memberService.getPendingTeacherRequests(pageable);
+    public ResponseEntity<Page<TeacherRequest>> getPendingTeacherRequests(@RequestParam(defaultValue = "0") int page) {
+        Page<TeacherRequest> teacherRequests = memberService.getPendingTeacherRequests(PageRequest.of(page, 10));
         return ResponseEntity.ok(teacherRequests);
     }
 
