@@ -4,8 +4,10 @@ import com.capstone.bowlingbling.domain.club.dto.request.ClubCreateDto;
 import com.capstone.bowlingbling.domain.club.dto.request.ClubJoinRequestDto;
 import com.capstone.bowlingbling.domain.club.dto.request.ClubMembersRoleUpdateDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubDetailResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubJoinListResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubListResponseDto;
 import com.capstone.bowlingbling.domain.club.dto.response.ClubMemberListResponseDto;
+import com.capstone.bowlingbling.domain.club.service.ClubJoinListService;
 import com.capstone.bowlingbling.domain.club.service.ClubService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +34,7 @@ import java.util.List;
 public class ClubController {
 
     private final ClubService clubService;
+    private final ClubJoinListService clubJoinListService;
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)  // 멀티파트 데이터 타입 지원
     @Operation(
@@ -85,27 +89,35 @@ public class ClubController {
         return ResponseEntity.ok("회원 역할이 성공적으로 변경되었습니다.");
     }
 
-    @PostMapping("/{id}/join")
-    @Operation(summary = "클럽 가입 요청", description = "클럽에 가입 요청을 합니다.")
-    public ResponseEntity<String> requestToJoinClub(
-            @PathVariable Long id,
-            @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember) {
-
+    @PostMapping("/{clubId}/join")
+    @Operation(summary = "가입 신청", description = "클럽 가입을 신청합니다.")
+    public ResponseEntity<Long> createJoinRequest(@PathVariable Long clubId, @RequestBody ClubJoinRequestDto request, @AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
-        clubService.requestToJoinClub(id, memberEmail);
-        return ResponseEntity.ok("클럽 가입 요청이 성공적으로 전송되었습니다.");
+        Long requestId = clubJoinListService.createJoinRequest(clubId, memberEmail, request);
+        return ResponseEntity.ok(requestId);
     }
 
-    @PostMapping("/{id}/join-request")
-    @Operation(summary = "동호회 가입 요청 결정", description = "동호회장이 가입 요청을 수락 또는 거절합니다.")
-    public ResponseEntity<String> decideJoinRequest(
-            @PathVariable Long id,
-            @RequestBody ClubJoinRequestDto requestDto,
-            @Parameter(hidden = true) @AuthenticationPrincipal User sessionLeader) {
+    @GetMapping("/{clubId}/join-requests")
+    @Operation(summary = "가입 신청 목록 조회", description = "클럽의 가입 신청 목록을 조회합니다.")
+    public ResponseEntity<Page<ClubJoinListResponseDto>> getJoinRequests(@PathVariable Long clubId, Pageable pageable, @AuthenticationPrincipal User sessionMember) {
+        String leaderEmail = sessionMember.getUsername();
+        Page<ClubJoinListResponseDto> requests = clubJoinListService.getJoinRequests(clubId, pageable, leaderEmail);
+        return ResponseEntity.ok(requests);
+    }
 
-        String leaderEmail = sessionLeader.getUsername();
-        String state = clubService.decideJoinRequest(id, requestDto, leaderEmail);
+    @PostMapping("/{clubId}/join-requests/{requestId}/approve")
+    @Operation(summary = "가입 신청 승인", description = "클럽 가입 신청을 승인합니다.")
+    public ResponseEntity<Void> approveJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
+        String leaderEmail = sessionMember.getUsername();
+        clubJoinListService.approveJoinRequest(clubId, requestId, leaderEmail);
+        return ResponseEntity.ok().build();
+    }
 
-        return ResponseEntity.ok("가입 요청이 " + state + " 되었습니다.");
+    @PostMapping("/{clubId}/join-requests/{requestId}/reject")
+    @Operation(summary = "가입 신청 거절", description = "클럽 가입 신청을 거절합니다.")
+    public ResponseEntity<Void> rejectJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
+        String leaderEmail = sessionMember.getUsername();
+        clubJoinListService.rejectJoinRequest(clubId, requestId, leaderEmail);
+        return ResponseEntity.ok().build();
     }
 }

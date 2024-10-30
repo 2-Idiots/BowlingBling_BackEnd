@@ -1,14 +1,13 @@
 package com.capstone.bowlingbling.domain.club.dto.request;
 
-import com.capstone.bowlingbling.global.enums.RequestStatus;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ClubJoinRequestDto {
-    private Long memberId;
-    private RequestStatus Status;
+    private int averageScore;
+    private String experience;
+    private String motivation;
+    private List<Boolean> availability;
 }

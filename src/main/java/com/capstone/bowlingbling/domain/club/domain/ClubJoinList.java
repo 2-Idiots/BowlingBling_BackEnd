@@ -15,15 +15,21 @@ import java.util.List;
 @AllArgsConstructor
 public class ClubJoinList extends BaseEntity {
 
-    @OneToOne
-    @JoinColumn(name = "club_id")
+    @ManyToOne
+    @JoinColumn(name = "club_id", nullable = false)
     private Club club;
 
-    @OneToMany
-    @JoinColumn(name = "member_id")
-    private List<Member> member;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    private int averageScore;
+    private String experience;
+    private String motivation;
+
+    @ElementCollection
+    private List<Boolean> availability;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private RequestStatus status;
 }

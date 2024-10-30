@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 public class ClubService {
 
     private final ClubRepository clubRepository;
-    private final ClubJoinListRepository clubJoinListRepository;
     private final MemberRepository memberRepository;
     private final S3ImageService s3ImageService;
 
@@ -148,42 +147,6 @@ public class ClubService {
 
         // 회원의 역할 업데이트
         memberRepository.updateMemberRole(userId, clubId, request.getRole());
-    }
-
-    public void requestToJoinClub(Long clubId, String memberEmail) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 클럽 ID 입니다. " + clubId));
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 이메일입니다. " + memberEmail));
-
-        ClubJoinList joinRequest = ClubJoinList.builder()
-                .club(club)
-                .member(List.of(member))
-                .status(RequestStatus.PENDING)
-                .build();
-
-        clubJoinListRepository.save(joinRequest);
-    }
-
-    public String decideJoinRequest(Long clubId, ClubJoinRequestDto requestDto, String leaderEmail) {
-        Member member = memberRepository.findByEmail(leaderEmail)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 이메일입니다. " + leaderEmail));
-
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 클럽입니다."));
-
-        // 요청한 사용자가 동호회장인지 확인하거나 ADMIN 권한을 갖고 있는지 확인
-        if (!club.getLeader().getEmail().equals(leaderEmail) && !member.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("가입 요청을 결정할 권한이 없습니다.");
-        }
-        // ClubJoinList에 요청한 상태를 업데이트
-        ClubJoinList joinList = clubJoinListRepository.findByClubAndMember(club, requestDto.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("가입 요청이 존재하지 않습니다."));
-
-        // 요청 상태를 ACCEPTED 또는 REJECTED로 업데이트
-        clubJoinListRepository.save(joinList);
-
-        return requestDto.getStatus().name();
     }
 
     public List<String> convertMeetingDays(List<Boolean> meetingDays) {
