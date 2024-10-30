@@ -1,19 +1,23 @@
 package com.capstone.bowlingbling.domain.club.dto.response;
 
-import lombok.AllArgsConstructor;
+import com.capstone.bowlingbling.global.enums.RequestStatus;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class ClubJoinListResponseDto {
     private Long id;
-    private String imageUrl;
-    private String sex;
-    private Integer age;
-    private String phoneNum;
-    private Integer aver;
+    private Long userId;
+    private Long clubId;
+    private int averageScore;
+    private String experience;
+    private String motivation;
+    private List<Boolean> availability;
+    private RequestStatus status;
+    private LocalDateTime createdAt;
+    private ClubMemberResponseDto user;
 }
