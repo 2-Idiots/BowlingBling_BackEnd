@@ -48,9 +48,14 @@ public class LessonInfoService {
                 .contents(request.getContents())
                 .qualifications(request.getQualifications())
                 .careerHistory(request.getCareerHistory())
+                .lat(request.getLat())
+                .lng(request.getLng())
+                .category(request.getCategory())
                 .program(request.getProgram())
                 .address(request.getLocation())
                 .operatingHours(request.getOperatingHours())
+                .price(request.getPrice())
+                .hasFreeParking(request.getHasFreeParking())
                 .images(imageUrls)  // 이미지 URL 저장
                 .member(teacher)
                 .build();
