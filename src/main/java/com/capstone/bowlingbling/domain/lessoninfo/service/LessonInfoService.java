@@ -34,9 +34,9 @@ public class LessonInfoService {
         Member teacher = memberRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
 
-        if (lessonInfoRepository.existsByMemberAndDeletedAtIsNull(teacher)) {
-            throw new IllegalStateException("레슨글이 이미 존재합니다.");
-        }
+//        if (lessonInfoRepository.existsByMemberAndDeletedAtIsNull(teacher)) {
+//            throw new IllegalStateException("레슨글이 이미 존재합니다.");
+//        }
 
         // 이미지 업로드 처리 및 URL 받아오기
         List<String> imageUrls = s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0]));
