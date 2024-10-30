@@ -2,6 +2,7 @@ package com.capstone.bowlingbling.domain.club.domain;
 
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.BaseEntity;
+import com.capstone.bowlingbling.global.enums.ClubRole;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,6 +30,9 @@ public class ClubJoinList extends BaseEntity {
 
     @ElementCollection
     private List<Boolean> availability;
+
+    private ClubRole clubRole;
+    private String clubJoinedAt;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;

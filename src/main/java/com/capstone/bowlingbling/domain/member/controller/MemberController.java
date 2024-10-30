@@ -1,5 +1,8 @@
 package com.capstone.bowlingbling.domain.member.controller;
 
+import com.capstone.bowlingbling.domain.club.dto.response.ClubDetailResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubJoinListResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubListResponseDto;
 import com.capstone.bowlingbling.domain.comment.dto.response.MyCommentResponseDto;
 import com.capstone.bowlingbling.domain.lessoninfo.dto.response.LessonInfoResponseDto;
 import com.capstone.bowlingbling.domain.member.domain.Member;
@@ -105,6 +108,27 @@ public class MemberController {
     public List<MyCommentResponseDto> getMyComments(@AuthenticationPrincipal User sessionMember) {
         String userEmail = sessionMember.getUsername();
         return memberService.getAllUserComments(userEmail);
+    }
+
+    @GetMapping("/clubs")
+    public ResponseEntity<List<ClubListResponseDto>> getMyClubs(@AuthenticationPrincipal User sessionMember) {
+        String memberEmail = sessionMember.getUsername();
+        List<ClubListResponseDto> myClubs = memberService.getMyClubs(memberEmail);
+        return ResponseEntity.ok(myClubs);
+    }
+
+    @GetMapping("/managing-clubs")
+    public ResponseEntity<List<ClubListResponseDto>> getManagingClubs(@AuthenticationPrincipal User sessionMember) {
+        String memberEmail = sessionMember.getUsername();
+        List<ClubListResponseDto> managingClubs = memberService.getManagingClubs(memberEmail);
+        return ResponseEntity.ok(managingClubs);
+    }
+
+    @GetMapping("/club-applications")
+    public ResponseEntity<List<ClubJoinListResponseDto>> getMyApplications(@AuthenticationPrincipal User sessionMember) {
+        String memberEmail = sessionMember.getUsername();
+        List<ClubJoinListResponseDto> myApplications = memberService.getMyApplications(memberEmail);
+        return ResponseEntity.ok(myApplications);
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃 시 리프레시 토큰을 삭제합니다.")

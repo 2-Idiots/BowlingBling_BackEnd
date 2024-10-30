@@ -15,4 +15,11 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     @Query("SELECT c.members FROM Club c WHERE c.id = :clubId")
     List<Member> findMembersByClubId(@Param("clubId") Long clubId);
+
+    @Query("SELECT c FROM Club c " +
+            "JOIN c.members m " +
+            "WHERE m.id = :memberId AND (m.clubRole = com.capstone.bowlingbling.global.enums.ClubRole.LEADER " +
+            "OR m.clubRole = com.capstone.bowlingbling.global.enums.ClubRole.MANAGER)")
+    List<Club> findManagingClubsByMemberId(@Param("memberId") Long memberId);
+
 }

@@ -1,6 +1,7 @@
 package com.capstone.bowlingbling.domain.member.domain;
 
 import com.capstone.bowlingbling.domain.club.domain.Club;
+import com.capstone.bowlingbling.domain.club.domain.ClubJoinList;
 import com.capstone.bowlingbling.domain.lessoninfo.domain.LikedLesson;
 import com.capstone.bowlingbling.global.BaseEntity;
 import com.capstone.bowlingbling.global.enums.ClubRole;
@@ -43,10 +44,8 @@ public class Member extends BaseEntity {
 
     private String refreshToken; // 리프레시 토큰
 
-    @ManyToOne
-    private Club club;
-    private ClubRole clubRole;
-    private String clubJoinedAt;
+    @OneToMany
+    private List<ClubJoinList> clubJoinList;
 
     @OneToMany(mappedBy = "member")
     private List<LikedLesson> likedLessons;

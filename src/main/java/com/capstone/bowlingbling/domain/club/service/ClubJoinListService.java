@@ -53,7 +53,7 @@ public class ClubJoinListService {
         Member leader = memberRepository.findByEmail(leaderEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
 
-        if (!isAuthorizedForClub(clubId, leader)) {
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new IllegalStateException("권한이 없습니다. 가입 조회 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
@@ -77,22 +77,14 @@ public class ClubJoinListService {
     public void approveJoinRequest(Long clubId, Long requestId, String leaderEmail) {
         Member leader = memberRepository.findByEmail(leaderEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
-
-        ClubJoinList joinRequest = clubJoinListRepository.findById(requestId)
+        clubJoinListRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("가입 신청을 찾을 수 없습니다."));
 
-        if (!isAuthorizedForClub(clubId, leader)) {
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new IllegalStateException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
         clubJoinListRepository.updateJoinRequestStatus(requestId, RequestStatus.APPROVED);
-
-        Club club = joinRequest.getClub();
-        Member member = joinRequest.getMember();
-        club.getMembers().add(member);
-
-        // 변경 사항 저장
-        clubRepository.save(club);
     }
 
     @Transactional
@@ -102,7 +94,7 @@ public class ClubJoinListService {
         clubJoinListRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("가입 신청을 찾을 수 없습니다."));
 
-        if (!isAuthorizedForClub(clubId, leader)) {
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new IllegalStateException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
@@ -110,7 +102,12 @@ public class ClubJoinListService {
     }
 
     private boolean isAuthorizedForClub(Long clubId, Member member) {
-        return member.getClub().getId().equals(clubId) &&
-                (member.getClubRole() == ClubRole.LEADER || member.getClubRole() == ClubRole.MANAGER || member.getRole().equals(Role.ADMIN));
+        // 클럽 ID와 멤버 ID로 ClubJoinList를 조회
+        ClubJoinList clubJoinList = clubJoinListRepository.findByClub_IdAndMember_Id(clubId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 클럽에 멤버가 존재하지 않습니다."));
+
+        // ClubRole이 LEADER, MANAGER 역할인 경우 true 반환
+        return (clubJoinList.getClubRole() == ClubRole.LEADER ||
+                clubJoinList.getClubRole() == ClubRole.MANAGER);
     }
 }
