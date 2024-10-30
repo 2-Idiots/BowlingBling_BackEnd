@@ -1,6 +1,5 @@
 package com.capstone.bowlingbling.domain.club.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClubListResponseDto {
+public class ClubDetailResponseDto {
     private Long id;
     private String name;
     private String description;

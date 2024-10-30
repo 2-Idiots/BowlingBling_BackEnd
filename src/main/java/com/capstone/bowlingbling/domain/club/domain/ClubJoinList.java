@@ -6,21 +6,22 @@ import com.capstone.bowlingbling.global.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "join_request")
 public class ClubJoinList extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "club_id")
     private Club club;
 
-    @OneToOne
+    @OneToMany
     @JoinColumn(name = "member_id")
-    private Member member;
+    private List<Member> member;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

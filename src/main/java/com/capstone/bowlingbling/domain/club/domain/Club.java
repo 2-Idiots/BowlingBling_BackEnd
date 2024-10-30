@@ -24,17 +24,22 @@ public class Club extends BaseEntity {
     private Member leader; //회장
     @Column(nullable = false)
     private String clubName;  //동호회 명
-    @Column(nullable = false)
-    private String introduction; //짧은 소개글
-    private String contents; //긴 소개글
-    private String thumbNail; //동호회 대표 이미지
+    private String description; //긴 소개글
+    private String location;
+    private int maxMembers;
+    @Convert
+    private List<String> meetingDays;
+    private String category;
+    private int averageScore;
+    private String requirements;
+    private int monthlyFee;
+    private boolean isRecruiting;
+    @OneToMany
+    private List<Member> members;
+
+    @ElementCollection
+    private List<String> images; //동호회 소개 이미지
+
     @OneToOne
-    private ClubJoinList members; //멤버 리스트
-    private int MaxCount;
-    private int MinAverage;
-    private int dues;
-    private String address;
-    @ManyToOne
-    private Center center;
-    private ClubTags clubTags;
+    private ClubJoinList joinList; //멤버 리스트
 }
