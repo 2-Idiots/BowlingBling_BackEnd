@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,8 @@ public class GatheringController {
 
     @GetMapping
     @Operation(summary = "전체 번개 모임 조회", description = "모든 번개 모임을 페이징 처리하여 조회합니다.")
-    public ResponseEntity<Page<GatheringDetailResponseDto>> getAllGatherings() {
-        Page<GatheringDetailResponseDto> gatherings = gatheringService.getAllGatherings(Pageable.ofSize(10));
+    public ResponseEntity<Page<GatheringDetailResponseDto>> getAllGatherings(@RequestParam(defaultValue = "0") int page) {
+        Page<GatheringDetailResponseDto> gatherings = gatheringService.getAllGatherings(PageRequest.of(page, 10));
         return ResponseEntity.ok(gatherings);
     }
 
@@ -63,9 +64,9 @@ public class GatheringController {
 
     @GetMapping("/my")
     @Operation(summary = "내 번개 모임 조회", description = "내가 생성하거나 가입한 번개 모임 목록을 조회합니다.")
-    public ResponseEntity<Page<GatheringDetailResponseDto>> getMyGatherings(@AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<Page<GatheringDetailResponseDto>> getMyGatherings(@AuthenticationPrincipal User sessionMember, @RequestParam(defaultValue = "0") int page) {
         String memberEmail = sessionMember.getUsername();
-        Page<GatheringDetailResponseDto> gatherings = gatheringService.getMemberGatherings(memberEmail, Pageable.ofSize(10));
+        Page<GatheringDetailResponseDto> gatherings = gatheringService.getMemberGatherings(memberEmail, PageRequest.of(page, 10));
         return ResponseEntity.ok(gatherings);
     }
 

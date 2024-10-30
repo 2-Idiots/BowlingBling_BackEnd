@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,8 +48,8 @@ public class MarketController {
 
     @Operation(summary = "중고장터 전체 목록 조회")
     @GetMapping
-    public Page<ResponseMarketListDTO> getMarketList() {
-        return marketService.getAllMarkets(Pageable.ofSize(10));
+    public Page<ResponseMarketListDTO> getMarketList(@RequestParam(defaultValue = "0") int page) {
+        return marketService.getAllMarkets(PageRequest.of(page, 10));
     }
 
     @Operation(summary = "중고장터 상세 품목 조회")

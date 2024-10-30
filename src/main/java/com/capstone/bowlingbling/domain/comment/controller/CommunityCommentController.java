@@ -6,6 +6,7 @@ import com.capstone.bowlingbling.domain.comment.service.CommunityCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,8 +22,8 @@ public class CommunityCommentController {
 
     @GetMapping
     @Operation(summary = "게시판 댓글 조회", description = "해당 게시판에 속해있는 댓글들을 페이징하여 조회합니다.")
-    public ResponseEntity<Page<CommentResponseDto>> getComments(@PathVariable Long communityId) {
-        Page<CommentResponseDto> comments = communityCommentService.getComments(communityId, Pageable.ofSize(10));
+    public ResponseEntity<Page<CommentResponseDto>> getComments(@PathVariable Long communityId, @RequestParam(defaultValue = "0") int page) {
+        Page<CommentResponseDto> comments = communityCommentService.getComments(communityId, PageRequest.of(page, 10));
         return ResponseEntity.ok(comments);
     }
 

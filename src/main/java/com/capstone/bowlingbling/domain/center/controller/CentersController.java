@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,8 +45,9 @@ public class CentersController {
 
     @Operation(summary = "센터 목록 조회", description = "모든 센터를 조회합니다.")
     @GetMapping
-    public Page<CenterListResponseDto> getAllCenters() {
-        return centerService.getAllCenters(Pageable.ofSize(10));
+    public Page<CenterListResponseDto> getAllCenters(@RequestParam(defaultValue = "0") int page
+    ) {
+        return centerService.getAllCenters(PageRequest.of(page, 10));
     }
 
     @Operation(summary = "센터 디테일 조회", description = "아이디에 해당하는 센터를 조회합니다.")
