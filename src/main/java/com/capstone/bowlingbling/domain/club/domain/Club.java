@@ -35,7 +35,7 @@ public class Club extends BaseEntity {
     private int monthlyFee;
     private boolean isRecruiting;
     @OneToMany(mappedBy = "club")
-    private List<ClubJoinList> members;
+    private List<Member> members;
 
     @ElementCollection
     private List<String> images; //동호회 소개 이미지
