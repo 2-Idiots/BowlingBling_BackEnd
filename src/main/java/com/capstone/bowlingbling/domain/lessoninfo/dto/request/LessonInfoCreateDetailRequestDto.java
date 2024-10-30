@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class LessonInfoCreateDetailRequestDto {
     private String title;
-    private String teacherName;
     private String introduction;
     private String qualifications;
     private String careerHistory;
