@@ -20,10 +20,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 version = "v0.0.1"
         ),
         security = {
-                @SecurityRequirement(name = "https://bowlingbling.duckdns.org")
+                @SecurityRequirement(name = "bearerAuth")
         },
         servers = {
-                @Server(url = "/")
+                @Server(url = "https://bowlingbling.duckdns.org/login")
         }
 )
 @SecurityScheme(
