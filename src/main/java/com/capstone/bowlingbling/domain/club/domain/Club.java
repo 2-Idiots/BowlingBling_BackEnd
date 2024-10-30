@@ -27,14 +27,14 @@ public class Club extends BaseEntity {
     private String description; //긴 소개글
     private String location;
     private int maxMembers;
-    @Convert
+    @ElementCollection
     private List<String> meetingDays;
     private String category;
     private int averageScore;
     private String requirements;
     private int monthlyFee;
     private boolean isRecruiting;
-    @OneToMany
+    @OneToMany(mappedBy = "club")
     private List<Member> members;
 
     @ElementCollection

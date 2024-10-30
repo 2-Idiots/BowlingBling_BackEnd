@@ -73,6 +73,7 @@ public class ClubService {
         memberRepository.updateMemberClubInfo(memberEmail, club, ClubRole.LEADER, LocalDate.now().toString());
     }
 
+    @Transactional
     public Page<ClubListResponseDto> getClubs(Pageable pageable) {
         return clubRepository.findAllByDeletedAtIsNull(pageable)
                 .map(club -> ClubListResponseDto.builder()
@@ -95,6 +96,7 @@ public class ClubService {
                 );
     }
 
+    @Transactional
     public ClubDetailResponseDto getClubDetail(Long id) {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 클럽입니다."));
@@ -118,6 +120,7 @@ public class ClubService {
                 .build();
     }
 
+    @Transactional
     public List<ClubMemberListResponseDto> getClubMembers(Long clubId) {
         List<Member> members = clubRepository.findMembersByClubId(clubId);
 
@@ -149,6 +152,7 @@ public class ClubService {
         memberRepository.updateMemberRole(userId, clubId, request.getRole());
     }
 
+    @Transactional
     public List<String> convertMeetingDays(List<Boolean> meetingDays) {
         List<String> dayNames = Arrays.asList("월", "화", "수", "목", "금", "토", "일");
         List<String> result = new ArrayList<>();
