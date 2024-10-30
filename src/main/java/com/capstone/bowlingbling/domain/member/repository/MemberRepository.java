@@ -40,18 +40,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
                        @Param("introduction") String introduction, @Param("myaver") Integer myaver,
                        @Param("currentEmail") String currentEmail);
 
-    @Modifying
-    @Query("UPDATE Member m SET m.club = :club, m.clubRole = :clubRole, m.clubJoinedAt = :clubJoinedAt WHERE m.email = :email")
-    void updateMemberClubInfo(@Param("email") String email,
-                              @Param("club") Club club,
-                              @Param("clubRole") ClubRole clubRole,
-                              @Param("clubJoinedAt") String clubJoinedAt);
-
-    @Modifying
-    @Query("UPDATE Member m SET m.clubRole = :clubRole WHERE m.id = :userId AND m.club.id = :clubId")
-    void updateMemberRole(@Param("userId") Long userId,
-                          @Param("clubId") Long clubId,
-                          @Param("clubRole") ClubRole clubRole);
 
     /**
      * 소셜 타입과 소셜의 식별값으로 회원 찾는 메소드

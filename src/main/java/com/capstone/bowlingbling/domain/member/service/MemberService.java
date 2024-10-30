@@ -1,5 +1,12 @@
 package com.capstone.bowlingbling.domain.member.service;
 
+import com.capstone.bowlingbling.domain.club.domain.ClubJoinList;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubDetailResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubJoinListResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubListResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.response.ClubMemberResponseDto;
+import com.capstone.bowlingbling.domain.club.repository.ClubJoinListRepository;
+import com.capstone.bowlingbling.domain.club.repository.ClubRepository;
 import com.capstone.bowlingbling.domain.comment.domain.CenterComment;
 import com.capstone.bowlingbling.domain.comment.domain.LessonComment;
 import com.capstone.bowlingbling.domain.comment.dto.response.MyCommentResponseDto;
@@ -17,8 +24,10 @@ import com.capstone.bowlingbling.domain.member.dto.MemberProfileUpdateRequest;
 import com.capstone.bowlingbling.domain.member.dto.TeacherRequestDto;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.domain.member.repository.TeacherRequestRepository;
+import com.capstone.bowlingbling.global.enums.ClubRole;
 import com.capstone.bowlingbling.global.enums.Role;
 import com.capstone.bowlingbling.global.enums.TeacherStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,11 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -39,20 +51,7 @@ public class MemberService {
     private final LikedLessonRepository likedLessonRepository;
     private final CenterCommentRepository centerCommentRepository;
     private final LessonCommentRepository lessonCommentRepository;
-
-    public MemberService(MemberRepository memberRepository,
-                         TeacherRequestRepository teacherRequestRepository,
-                         S3ImageService s3ImageService,
-                         LikedLessonRepository likedLessonRepository,
-                         CenterCommentRepository centerCommentRepository,
-                         LessonCommentRepository lessonCommentRepository) {
-        this.memberRepository = memberRepository;
-        this.teacherRequestRepository = teacherRequestRepository;
-        this.s3ImageService = s3ImageService;
-        this.likedLessonRepository = likedLessonRepository;
-        this.centerCommentRepository = centerCommentRepository;
-        this.lessonCommentRepository = lessonCommentRepository;
-    }
+    private final ClubJoinListRepository clubJoinListRepository;
 
     @Transactional(readOnly = true)
     public MemberInfoResponseDto getMemberInfo(String email) {
@@ -224,5 +223,79 @@ public class MemberService {
         });
 
         return responseDtos;
+    }
+
+    public List<ClubListResponseDto> getMyClubs(String memberEmail) {
+        List<ClubJoinList> clubJoinLists = clubJoinListRepository.findClubsByMemberEmail(memberEmail);
+        return clubJoinLists.stream()
+                .map(clubList -> ClubListResponseDto.builder()
+                        .id(clubList.getClub().getId())
+                        .name(clubList.getClub().getClubName())
+                        .description(clubList.getClub().getDescription())
+                        .location(clubList.getClub().getLocation())
+                        .memberCount(clubList.getClub().getMembers().size())
+                        .maxMembers(clubList.getClub().getMaxMembers())
+                        .averageScore(clubList.getClub().getAverageScore())
+                        .meetingDays(clubList.getClub().getMeetingDays())
+                        .images(clubList.getClub().getImages())
+                        .leader(new ClubMemberResponseDto(clubList.getClub().getLeader()))
+                        .isRecruiting(clubList.getClub().isRecruiting())
+                        .category(clubList.getClub().getCategory())
+                        .requirements(clubList.getClub().getRequirements())
+                        .monthlyFee(clubList.getClub().getMonthlyFee())
+                        .establishedAt(clubList.getClub().getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    // 사용자가 매니징하는 클럽 리스트 가져오기
+    public List<ClubListResponseDto> getManagingClubs(String memberEmail) {
+        List<ClubRole> roles = Arrays.asList(ClubRole.LEADER, ClubRole.MANAGER);
+        List<ClubJoinList> managingClubs = clubJoinListRepository.findManagingClubsByMemberEmail(memberEmail, roles);
+
+        if (managingClubs.isEmpty()) {
+            throw new IllegalArgumentException("관리 중인 클럽이 없습니다.");
+        }
+
+        return managingClubs.stream()
+                .map(clubList -> ClubListResponseDto.builder()
+                        .id(clubList.getClub().getId())
+                        .name(clubList.getClub().getClubName())
+                        .description(clubList.getClub().getDescription())
+                        .location(clubList.getClub().getLocation())
+                        .memberCount(clubList.getClub().getMembers().size())
+                        .maxMembers(clubList.getClub().getMaxMembers())
+                        .averageScore(clubList.getClub().getAverageScore())
+                        .meetingDays(clubList.getClub().getMeetingDays())
+                        .images(clubList.getClub().getImages())
+                        .leader(new ClubMemberResponseDto(clubList.getClub().getLeader()))
+                        .isRecruiting(clubList.getClub().isRecruiting())
+                        .category(clubList.getClub().getCategory())
+                        .requirements(clubList.getClub().getRequirements())
+                        .monthlyFee(clubList.getClub().getMonthlyFee())
+                        .establishedAt(clubList.getClub().getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    // 사용자가 신청 대기 중인 클럽 리스트 가져오기
+    public List<ClubJoinListResponseDto> getMyApplications(String memberEmail) {
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        List<ClubJoinList> pendingApplications = clubJoinListRepository.findPendingApplicationsByMemberEmail(memberEmail);
+        return pendingApplications.stream()
+                .map(clubJoinList -> ClubJoinListResponseDto.builder()
+                        .id(clubJoinList.getClub().getId())
+                        .clubId(clubJoinList.getClub().getId())
+                        .averageScore(clubJoinList.getClub().getAverageScore())
+                        .experience(clubJoinList.getExperience())
+                        .motivation(clubJoinList.getMotivation())
+                        .availability(clubJoinList.getAvailability())
+                        .status(clubJoinList.getStatus())
+                        .createdAt(clubJoinList.getCreatedAt())
+                        .user(new ClubMemberResponseDto(member))
+                        .build())
+                .collect(Collectors.toList());
     }
 }

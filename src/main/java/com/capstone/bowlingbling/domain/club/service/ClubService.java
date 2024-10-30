@@ -40,6 +40,7 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final MemberRepository memberRepository;
     private final S3ImageService s3ImageService;
+    private final ClubJoinListRepository clubJoinListRepository;
 
     @Transactional
     public void createClub(ClubCreateDto request, String memberEmail, List<MultipartFile> files) throws IOException {
@@ -70,7 +71,16 @@ public class ClubService {
 
         // 생성된 Club 엔티티 저장
         clubRepository.save(club);
-        memberRepository.updateMemberClubInfo(memberEmail, club, ClubRole.LEADER, LocalDate.now().toString());
+
+        ClubJoinList clubJoinList = ClubJoinList.builder()
+                .club(club)
+                .member(leader)
+                .averageScore(leader.getMyaver())
+                .clubRole(ClubRole.LEADER)  // 리더로 설정
+                .status(RequestStatus.APPROVED)  // 가입 승인 상태로 설정
+                .build();
+
+        clubJoinListRepository.save(clubJoinList);
     }
 
     @Transactional
@@ -122,17 +132,17 @@ public class ClubService {
 
     @Transactional
     public List<ClubMemberListResponseDto> getClubMembers(Long clubId) {
-        List<Member> members = clubRepository.findMembersByClubId(clubId);
+        List<ClubJoinList> clubJoinLists = clubJoinListRepository.findByClub_Id(clubId);
 
-        if (members.isEmpty()) {
+        if (clubJoinLists.isEmpty()) {
             throw new IllegalArgumentException("해당 클럽에 멤버가 없습니다.");
         }
 
-        return members.stream().map(member -> ClubMemberListResponseDto.builder()
-                .members(new ClubMemberResponseDto(member))
-                .role(member.getClubRole())  // member 엔티티의 role 필드 사용
-                .joinedAt(member.getClubJoinedAt())  // member 엔티티의 joinedAt 필드 사용 및 포맷팅
-                .averageScore(member.getMyaver())  // averageScore도 member 엔티티에서 가져옴
+        return clubJoinLists.stream().map(clubJoinList -> ClubMemberListResponseDto.builder()
+                .members(new ClubMemberResponseDto(clubJoinList.getMember()))
+                .role(clubJoinList.getClubRole())
+                .joinedAt(clubJoinList.getClubJoinedAt())
+                .averageScore(clubJoinList.getAverageScore())
                 .build()).collect(Collectors.toList());
     }
 
@@ -140,16 +150,18 @@ public class ClubService {
     public void updateMemberRole(Long clubId, Long userId, ClubMembersRoleUpdateDto request, String leaderEmail) {
         Member leader = memberRepository.findByEmail(leaderEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
-        if (!leader.getClubRole().equals(ClubRole.LEADER) && !leader.getRole().equals(Role.ADMIN)) {
+        ClubJoinList leaderJoinList = clubJoinListRepository.findByClub_IdAndMember_Id(clubId, leader.getId())
+                .orElseThrow(() -> new IllegalArgumentException("클럽에서 권한이 없는 사용자입니다."));
+
+        if (!leaderJoinList.getClubRole().equals(ClubRole.LEADER) && !leader.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("권한이 없는 사용자입니다.");
         }
 
-        if (!memberRepository.existsById(userId)) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-        }
+        ClubJoinList targetMemberJoinList = clubJoinListRepository.findByClub_IdAndMember_Id(clubId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // 회원의 역할 업데이트
-        memberRepository.updateMemberRole(userId, clubId, request.getRole());
+        clubJoinListRepository.updateClubRole(clubId, userId, request.getRole());
     }
 
     @Transactional
