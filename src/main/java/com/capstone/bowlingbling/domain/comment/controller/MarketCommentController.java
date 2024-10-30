@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -23,8 +23,8 @@ public class MarketCommentController {
 
     @Operation(summary = "댓글 조회", description = "특정 마켓에 달린 모든 댓글을 조회합니다. 한 번에 10개씩 조회됩니다.")
     @GetMapping
-    public ResponseEntity<Page<CommentResponseDto>> getComments(@PathVariable Long marketId) {
-        Page<CommentResponseDto> comments = marketCommentService.getComments(marketId, Pageable.ofSize(10));
+    public ResponseEntity<Page<CommentResponseDto>> getComments(@PathVariable Long marketId, @RequestParam(defaultValue = "0") int page) {
+        Page<CommentResponseDto> comments = marketCommentService.getComments(marketId, PageRequest.of(page, 10));
         return ResponseEntity.ok(comments);
     }
 

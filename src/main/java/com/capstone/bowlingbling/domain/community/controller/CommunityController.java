@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,14 +48,14 @@ public class CommunityController {
 
     @Operation(summary = "게시글 목록 조회", description = "모든 게시글을 조회합니다. 한 번에 10개씩 조회됩니다.")
     @GetMapping
-    public Page<CommunityListResponseDto> getAllCommunity() {
-        return communityService.getAllCommunity(Pageable.ofSize(10));
+    public Page<CommunityListResponseDto> getAllCommunity(@RequestParam(defaultValue = "0") int page) {
+        return communityService.getAllCommunity(PageRequest.of(page, 10));
     }
 
     @Operation(summary = "카테고리별 게시글 조회", description = "카테고리를 기반으로 게시글을 조회합니다.")
     @GetMapping("/searchCategory/{category}")
-    public Page<CommunityListResponseDto> getCommunityByCategory(@PathVariable String category){
-        return communityService.getCommunityByCategory(category, Pageable.ofSize(10));
+    public Page<CommunityListResponseDto> getCommunityByCategory(@PathVariable String category, @RequestParam(defaultValue = "0") int page){
+        return communityService.getCommunityByCategory(category, PageRequest.of(page, 10));
     }
 
     @Operation(summary = "게시글 수정", description = "기존 게시글을 수정합니다.")

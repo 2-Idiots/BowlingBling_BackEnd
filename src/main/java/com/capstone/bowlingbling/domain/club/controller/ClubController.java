@@ -99,9 +99,9 @@ public class ClubController {
 
     @GetMapping("/{clubId}/join-requests")
     @Operation(summary = "가입 신청 목록 조회", description = "클럽의 가입 신청 목록을 조회합니다.")
-    public ResponseEntity<Page<ClubJoinListResponseDto>> getJoinRequests(@PathVariable Long clubId, Pageable pageable, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<Page<ClubJoinListResponseDto>> getJoinRequests(@PathVariable Long clubId, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal User sessionMember) {
         String leaderEmail = sessionMember.getUsername();
-        Page<ClubJoinListResponseDto> requests = clubJoinListService.getJoinRequests(clubId, pageable, leaderEmail);
+        Page<ClubJoinListResponseDto> requests = clubJoinListService.getJoinRequests(clubId, PageRequest.of(page, 10), leaderEmail);
         return ResponseEntity.ok(requests);
     }
 
