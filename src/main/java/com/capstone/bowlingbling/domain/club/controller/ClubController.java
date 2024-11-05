@@ -39,10 +39,10 @@ public class ClubController {
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
             @RequestPart(value = "request") ClubCreateDto request,
             @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {  // 파일 업로드 파트 추가
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {  // 파일 업로드 파트 추가
 
         String leaderEmail = sessionMember.getUsername();
-        clubService.createClub(request, leaderEmail, files);
+        clubService.createClub(request, leaderEmail, images);
 
         return ResponseEntity.ok("클럽이 성공적으로 생성되었습니다.");
     }
@@ -53,6 +53,7 @@ public class ClubController {
             @PathVariable Long clubId,
             @AuthenticationPrincipal User sessionMember,
             @RequestPart("data") ClubUpdateDto updateDto,
+            @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
 
         String memberEmail = sessionMember.getUsername();
