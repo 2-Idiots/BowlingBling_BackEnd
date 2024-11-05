@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClubJoinListRepository extends JpaRepository<ClubJoinList, Long> {
-    Page<ClubJoinList> findByClubIdAndStatus(Long clubId, RequestStatus status, Pageable pageable);
+    @Query("SELECT c FROM ClubJoinList c WHERE c.club.id = :clubId AND c.status IN :statuses")
+    Page<ClubJoinList> findByClubIdAndStatuses(@Param("clubId") Long clubId, @Param("statuses") List<RequestStatus> statuses, Pageable pageable);
 
     List<ClubJoinList> findByClub_Id(Long clubId);
 

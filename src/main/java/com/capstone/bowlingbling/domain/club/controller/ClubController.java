@@ -47,6 +47,31 @@ public class ClubController {
         return ResponseEntity.ok("클럽이 성공적으로 생성되었습니다.");
     }
 
+    @PatchMapping("/{clubId}/settings")
+    @Operation(summary = "동호회 설정 수정", description = "동호회 설정을 수정합니다.")
+    public ResponseEntity<?> updateClubSettings(
+            @PathVariable Long clubId,
+            @AuthenticationPrincipal User sessionMember,
+            @RequestPart("data") ClubUpdateDto updateDto,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+
+        String memberEmail = sessionMember.getUsername();
+        clubService.updateClubSettings(clubId, memberEmail, updateDto, images);
+        return ResponseEntity.ok("동호회 설정이 성공적으로 수정되었습니다.");
+    }
+
+    @PatchMapping("/{clubId}/recruitment")
+    @Operation(summary = "모집 상태 변경", description = "동호회의 모집 상태를 변경합니다.")
+    public ResponseEntity<?> updateRecruitmentStatus(
+            @PathVariable Long clubId,
+            @AuthenticationPrincipal User sessionMember,
+            @RequestBody ClubRecruitmentUpdateDto recruitmentDto) {
+
+        String memberEmail = sessionMember.getUsername();
+        clubService.updateRecruitmentStatus(clubId, memberEmail, recruitmentDto);
+        return ResponseEntity.ok("모집 상태가 성공적으로 변경되었습니다.");
+    }
+
     @GetMapping
     @Operation(summary = "동호회 목록 조회", description = "페이지네이션 된 동호회 목록을 조회합니다.")
     public ResponseEntity<Page<ClubListResponseDto>> getClubs(

@@ -2,9 +2,7 @@ package com.capstone.bowlingbling.domain.club.service;
 
 import com.capstone.bowlingbling.domain.club.domain.Club;
 import com.capstone.bowlingbling.domain.club.domain.ClubJoinList;
-import com.capstone.bowlingbling.domain.club.dto.request.ClubCreateDto;
-import com.capstone.bowlingbling.domain.club.dto.request.ClubMemberStatusUpdateDto;
-import com.capstone.bowlingbling.domain.club.dto.request.ClubMembersRoleUpdateDto;
+import com.capstone.bowlingbling.domain.club.dto.request.*;
 import com.capstone.bowlingbling.domain.club.dto.response.*;
 import com.capstone.bowlingbling.domain.club.repository.ClubJoinListRepository;
 import com.capstone.bowlingbling.domain.club.repository.ClubRepository;
@@ -60,6 +58,7 @@ public class ClubService {
                 .category(request.getCategory())
                 .requirements(request.getRequirements())
                 .monthlyFee(request.getMonthlyFee())
+                .isRecruiting(true)
                 .images(imageUrls)
                 .leader(leader)
                 .meetingDays(convertMeetingDays(request.getMeetingDays()))
@@ -77,6 +76,52 @@ public class ClubService {
                 .build();
 
         clubJoinListRepository.save(clubJoinList);
+    }
+
+    @Transactional
+    public void updateClubSettings(Long clubId, String memberEmail, ClubUpdateDto updateDto, List<MultipartFile> images) throws IOException {
+        Member leader = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
+
+        clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 클럽을 찾을 수 없습니다."));
+
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
+        }
+
+        // S3에 파일 업로드 및 URL 리스트로 변환
+        List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
+
+        // 클럽 설정 업데이트
+        clubRepository.updateClubSettings(
+                clubId,
+                updateDto.getName(),
+                updateDto.getDescription(),
+                updateDto.getLocation(),
+                updateDto.getMaxMembers(),
+                updateDto.getCategory(),
+                updateDto.getRequirements(),
+                updateDto.getMonthlyFee(),
+                updateDto.getMeetingDays(),
+                updateDto.getAverageScore(),
+                imageUrls
+        );
+    }
+
+    @Transactional
+    public void updateRecruitmentStatus(Long clubId, String memberEmail, ClubRecruitmentUpdateDto recruitmentDto) {
+        Member leader = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
+
+        clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 클럽을 찾을 수 없습니다."));
+
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
+        }
+
+        clubRepository.updateRecruitmentStatus(clubId, recruitmentDto.isRecruiting());
     }
 
     @Transactional
