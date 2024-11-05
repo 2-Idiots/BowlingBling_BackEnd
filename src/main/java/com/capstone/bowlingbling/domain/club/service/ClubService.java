@@ -103,11 +103,11 @@ public class ClubService {
                 updateDto.getAverageScore()
         );
 
-        if (!updateDto.getMeetingDays().isEmpty()) {
+        if (updateDto.getMeetingDays() != null && !updateDto.getMeetingDays().isEmpty()) {
             clubRepository.updateClubMeetingDays(clubId, updateDto.getMeetingDays());
         }
 
-        if (!images.isEmpty()) {
+        if (images != null && !images.isEmpty()) {
             List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
             clubRepository.updateClubImages(clubId, imageUrls);
         }
