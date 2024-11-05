@@ -108,10 +108,10 @@ public class ClubController {
 
     @PostMapping("/{clubId}/join")
     @Operation(summary = "가입 신청", description = "클럽 가입을 신청합니다.")
-    public ResponseEntity<Long> createJoinRequest(@PathVariable Long clubId, @RequestBody ClubJoinRequestDto request, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<String> createJoinRequest(@PathVariable Long clubId, @RequestBody ClubJoinRequestDto request, @AuthenticationPrincipal User sessionMember) {
         String memberEmail = sessionMember.getUsername();
         Long requestId = clubJoinListService.createJoinRequest(clubId, memberEmail, request);
-        return ResponseEntity.ok(requestId);
+        return ResponseEntity.ok("가입 요청이 성공적으로 되었습니다. 요청 ID : " + requestId);
     }
 
     @GetMapping("/{clubId}/join-requests")
