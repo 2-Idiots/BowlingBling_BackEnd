@@ -83,11 +83,11 @@ public class ClubService {
         Member leader = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
 
-        Club club = clubRepository.findById(clubId)
+        clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 클럽을 찾을 수 없습니다."));
 
-        if (!club.getLeader().equals(leader)) {
-            throw new IllegalStateException("동호회 설정 수정 권한이 없습니다.");
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
         // S3에 파일 업로드 및 URL 리스트로 변환
@@ -96,16 +96,16 @@ public class ClubService {
         // 클럽 설정 업데이트
         clubRepository.updateClubSettings(
                 clubId,
-                updateDto.getName(),            // null이면 기존값 사용
-                updateDto.getDescription(),     // null이면 기존값 사용
-                updateDto.getLocation(),        // null이면 기존값 사용
-                updateDto.getMaxMembers(),      // null이면 기존값 사용
-                updateDto.getCategory(),        // null이면 기존값 사용
-                updateDto.getRequirements(),     // null이면 기존값 사용
-                updateDto.getMonthlyFee(),      // null이면 기존값 사용
-                updateDto.getMeetingDays(),     // null이면 기존값 사용
-                updateDto.getAverageScore(),    // null이면 기존값 사용
-                imageUrls                        // null이면 기존값 사용
+                updateDto.getName(),
+                updateDto.getDescription(),
+                updateDto.getLocation(),
+                updateDto.getMaxMembers(),
+                updateDto.getCategory(),
+                updateDto.getRequirements(),
+                updateDto.getMonthlyFee(),
+                updateDto.getMeetingDays(),
+                updateDto.getAverageScore(),
+                imageUrls
         );
     }
 
@@ -114,11 +114,11 @@ public class ClubService {
         Member leader = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
 
-        Club club = clubRepository.findById(clubId)
+        clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 클럽을 찾을 수 없습니다."));
 
-        if (!club.getLeader().equals(leader)) {
-            throw new IllegalStateException("모집 상태 변경 권한이 없습니다.");
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
         clubRepository.updateRecruitmentStatus(clubId, recruitmentDto.isRecruiting());
