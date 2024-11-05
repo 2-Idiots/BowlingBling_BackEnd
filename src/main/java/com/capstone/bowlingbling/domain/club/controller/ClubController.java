@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/club")
+@RequestMapping("/clubs")
 @RequiredArgsConstructor
 @Tag(name = "Club", description = "동호회 API")
 public class ClubController {
