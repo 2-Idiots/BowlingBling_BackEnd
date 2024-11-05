@@ -107,9 +107,7 @@ public class ClubService {
             clubRepository.updateClubMeetingDays(clubId, updateDto.getMeetingDays());
         }
 
-        System.out.println("Images size: " + (images != null ? images.size() : "null"));
-
-        if (images != null && !images.isEmpty()) {
+        if (images != null && !images.isEmpty() && !images.get(0).isEmpty()) {
             List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
             clubRepository.updateClubImages(clubId, imageUrls);
         }
