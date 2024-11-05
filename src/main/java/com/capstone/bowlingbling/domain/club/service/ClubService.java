@@ -104,9 +104,15 @@ public class ClubService {
                 null
         );
 
+        // Step 2: 이미지가 있을 경우에만 S3 업로드 및 업데이트
         if (images != null && !images.isEmpty() && images.stream().anyMatch(file -> !file.isEmpty())) {
-            List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
-            clubRepository.updateClubImages(clubId, imageUrls);  // 업로드 후 이미지만 업데이트
+            try {
+                List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
+                clubRepository.updateClubImages(clubId, imageUrls);  // 업로드 후 이미지만 업데이트
+            } catch (Exception e) {
+                // 예외 처리를 추가하여 이미지 업로드 실패 시 클럽 설정은 유지되도록 처리
+                throw new IOException("이미지 업로드 중 오류가 발생했습니다.", e);
+            }
         }
     }
 
