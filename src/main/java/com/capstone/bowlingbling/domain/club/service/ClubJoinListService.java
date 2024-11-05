@@ -91,7 +91,7 @@ public class ClubJoinListService {
         // 변경 사항 저장
         clubRepository.save(club);
 
-        clubJoinListRepository.updateJoinRequestStatus(requestId, RequestStatus.APPROVED);
+        clubJoinListRepository.updateJoinRequestStatus(requestId, RequestStatus.ACTIVE);
     }
 
     @Transactional

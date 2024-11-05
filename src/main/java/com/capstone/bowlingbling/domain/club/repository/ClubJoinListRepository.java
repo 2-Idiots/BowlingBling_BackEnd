@@ -1,6 +1,8 @@
 package com.capstone.bowlingbling.domain.club.repository;
 
+import com.capstone.bowlingbling.domain.club.domain.Club;
 import com.capstone.bowlingbling.domain.club.domain.ClubJoinList;
+import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.enums.ClubRole;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,10 @@ public interface ClubJoinListRepository extends JpaRepository<ClubJoinList, Long
     @Modifying
     @Query("UPDATE ClubJoinList cj SET cj.clubRole = :role WHERE cj.club.id = :clubId AND cj.member.id = :memberId")
     void updateClubRole(@Param("clubId") Long clubId, @Param("memberId") Long memberId, @Param("role") ClubRole role);
+
+    @Modifying
+    @Query("UPDATE ClubJoinList cj SET cj.status = :status, cj.inactiveReason = :reason WHERE cj.club.id = :clubId AND cj.member.id = :memberId")
+    void updateClubStatus(@Param("clubId") Long clubId, @Param("memberId") Long memberId, @Param("status") RequestStatus status, @Param("reason") String reason);
 
     @Query("SELECT cj FROM ClubJoinList cj WHERE cj.member.email = :email AND cj.status = 'ACCEPTED'")
     List<ClubJoinList> findClubsByMemberEmail(@Param("email") String email);
