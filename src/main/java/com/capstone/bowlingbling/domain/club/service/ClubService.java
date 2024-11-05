@@ -89,8 +89,10 @@ public class ClubService {
         if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
-        List<String> imageUrls = (images != null && !images.isEmpty()) ?
-                s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0])) : null;
+        List<String> imageUrls = null;
+        if (images != null && !images.isEmpty()) {
+            imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
+        }
         // 클럽 설정 업데이트
         clubRepository.updateClubSettings(
                 clubId,
