@@ -33,6 +33,12 @@ public class ClubJoinList extends BaseEntity {
 
     private ClubRole clubRole;
     private String clubJoinedAt;
+    private Integer attendanceRate;
+    private String lastAttendance;
+    private String inactiveReason;
+
+    @ElementCollection
+    private List<Integer> recentScores;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;

@@ -1,5 +1,5 @@
 package com.capstone.bowlingbling.global.enums;
 
 public enum RequestStatus {
-    PENDING, APPROVED, REJECTED
+    PENDING, APPROVED, REJECTED, ACTIVE, INACTIVE
 }

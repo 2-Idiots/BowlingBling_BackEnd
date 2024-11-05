@@ -11,11 +11,11 @@ public class ClubMemberResponseDto {
     private String nickname;
     private String image;
 
-    public ClubMemberResponseDto(Member leader) {
-        this.id = leader.getId();
-        this.email = leader.getEmail();
-        this.name = leader.getName();
-        this.nickname = leader.getNickname();
-        this.image = leader.getImage();
+    public ClubMemberResponseDto(Member member) {
+        this.id = member.getId();
+        this.email = member.getEmail();
+        this.name = member.getName();
+        this.nickname = member.getNickname();
+        this.image = member.getImage();
     }
 }

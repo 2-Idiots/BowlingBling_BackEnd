@@ -1,12 +1,7 @@
 package com.capstone.bowlingbling.domain.club.controller;
 
-import com.capstone.bowlingbling.domain.club.dto.request.ClubCreateDto;
-import com.capstone.bowlingbling.domain.club.dto.request.ClubJoinRequestDto;
-import com.capstone.bowlingbling.domain.club.dto.request.ClubMembersRoleUpdateDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubDetailResponseDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubJoinListResponseDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubListResponseDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubMemberListResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.request.*;
+import com.capstone.bowlingbling.domain.club.dto.response.*;
 import com.capstone.bowlingbling.domain.club.service.ClubJoinListService;
 import com.capstone.bowlingbling.domain.club.service.ClubService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -75,6 +70,16 @@ public class ClubController {
         return ResponseEntity.ok(members);
     }
 
+    @GetMapping("/{clubId}/members/{userId}")
+    @Operation(summary = "동호회 회원 디테일 조회", description = "동호회의 회원 디테일을 조회합니다.")
+    public ResponseEntity<ClubMemberDetailResponseDto> getClubMemberDetail(@AuthenticationPrincipal User sessionMember,
+                                                                      @PathVariable Long clubId,
+                                                                      @PathVariable Long userId) {
+        String leaderEmail = sessionMember.getUsername();
+        ClubMemberDetailResponseDto member = clubService.getClubMemberDetail(clubId, userId ,leaderEmail);
+        return ResponseEntity.ok(member);
+    }
+
     @PatchMapping("/{clubId}/members/{userId}/role")
     @Operation(summary = "회원 역할 변경", description = "동호회 회원의 역할을 변경합니다.")
     public ResponseEntity<String> changeMemberRole(
@@ -86,6 +91,19 @@ public class ClubController {
         String leaderEmail = sessionMember.getUsername();
         clubService.updateMemberRole(clubId, userId, request, leaderEmail);
         return ResponseEntity.ok("회원 역할이 성공적으로 변경되었습니다.");
+    }
+
+    @PatchMapping("/{clubId}/members/{userId}/status")
+    @Operation(summary = "회원 상태 변경", description = "동호회 회원의 상태를 변경합니다.")
+    public ResponseEntity<String> changeMemberStatus(
+            @AuthenticationPrincipal User sessionMember,
+            @PathVariable Long clubId,
+            @PathVariable Long userId,
+            @RequestBody ClubMemberStatusUpdateDto request) {
+
+        String leaderEmail = sessionMember.getUsername();
+        clubService.updateMemberStatus(clubId, userId, request, leaderEmail);
+        return ResponseEntity.ok("회원 상태가 성공적으로 변경되었습니다.");
     }
 
     @PostMapping("/{clubId}/join")
@@ -118,5 +136,19 @@ public class ClubController {
         String leaderEmail = sessionMember.getUsername();
         clubJoinListService.rejectJoinRequest(clubId, requestId, leaderEmail);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{clubId}/members/{userId}")
+    @Operation(summary = "회원 강제 탈퇴", description = "동호회 회원을 강제로 탈퇴시킵니다.")
+    public ResponseEntity<String> removeClubMember(
+            @AuthenticationPrincipal User sessionMember,
+            @PathVariable Long clubId,
+            @PathVariable Long userId,
+            @RequestBody ClubMemberRemoveDto request) {
+
+        String leaderEmail = sessionMember.getUsername();
+        clubService.removeMember(clubId, userId, request.getReason(), leaderEmail);
+
+        return ResponseEntity.ok("회원이 강제 탈퇴되었습니다.");
     }
 }

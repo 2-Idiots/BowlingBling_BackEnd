@@ -3,12 +3,9 @@ package com.capstone.bowlingbling.domain.club.service;
 import com.capstone.bowlingbling.domain.club.domain.Club;
 import com.capstone.bowlingbling.domain.club.domain.ClubJoinList;
 import com.capstone.bowlingbling.domain.club.dto.request.ClubCreateDto;
-import com.capstone.bowlingbling.domain.club.dto.request.ClubJoinRequestDto;
+import com.capstone.bowlingbling.domain.club.dto.request.ClubMemberStatusUpdateDto;
 import com.capstone.bowlingbling.domain.club.dto.request.ClubMembersRoleUpdateDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubDetailResponseDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubMemberListResponseDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubMemberResponseDto;
-import com.capstone.bowlingbling.domain.club.dto.response.ClubListResponseDto;
+import com.capstone.bowlingbling.domain.club.dto.response.*;
 import com.capstone.bowlingbling.domain.club.repository.ClubJoinListRepository;
 import com.capstone.bowlingbling.domain.club.repository.ClubRepository;
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
@@ -26,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -143,7 +139,35 @@ public class ClubService {
                 .role(clubJoinList.getClubRole())
                 .joinedAt(clubJoinList.getClubJoinedAt())
                 .averageScore(clubJoinList.getAverageScore())
+                .status(clubJoinList.getStatus())
                 .build()).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ClubMemberDetailResponseDto getClubMemberDetail(Long clubId, Long userId, String leaderEmail) {
+        // 리더 정보 확인 (리더 권한이 있는지 확인)
+        Member leader = memberRepository.findByEmail(leaderEmail)
+                .orElseThrow(() -> new SecurityException("유효하지 않은 사용자입니다."));
+
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
+        }
+
+        // 조회 대상 회원의 상세 정보 조회
+        ClubJoinList memberJoinList = clubJoinListRepository.findByClub_IdAndMember_Id(clubId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 클럽에 존재하지 않는 회원입니다."));
+
+        // ClubMemberDetailResponseDto 객체로 반환
+        return ClubMemberDetailResponseDto.builder()
+                .members(new ClubMemberResponseDto(memberJoinList.getMember()))
+                .role(memberJoinList.getClubRole())
+                .joinedAt(memberJoinList.getClubJoinedAt())
+                .averageScore(memberJoinList.getAverageScore())
+                .status(memberJoinList.getStatus())
+                .attendanceRate(memberJoinList.getAttendanceRate())
+                .lastAttendance(memberJoinList.getLastAttendance())
+                .recentScores(memberJoinList.getRecentScores())
+                .build();
     }
 
     @Transactional
@@ -157,11 +181,69 @@ public class ClubService {
             throw new IllegalArgumentException("권한이 없는 사용자입니다.");
         }
 
-        ClubJoinList targetMemberJoinList = clubJoinListRepository.findByClub_IdAndMember_Id(clubId, userId)
+        clubJoinListRepository.findByClub_IdAndMember_Id(clubId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // 회원의 역할 업데이트
         clubJoinListRepository.updateClubRole(clubId, userId, request.getRole());
+    }
+
+    @Transactional
+    public void updateMemberStatus(Long clubId, Long userId, ClubMemberStatusUpdateDto request, String leaderEmail) {
+        Member leader = memberRepository.findByEmail(leaderEmail)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
+        ClubJoinList leaderJoinList = clubJoinListRepository.findByClub_IdAndMember_Id(clubId, leader.getId())
+                .orElseThrow(() -> new IllegalArgumentException("클럽에서 권한이 없는 사용자입니다."));
+
+        if (!leaderJoinList.getClubRole().equals(ClubRole.LEADER) && !leader.getRole().equals(Role.ADMIN)) {
+            throw new IllegalArgumentException("권한이 없는 사용자입니다.");
+        }
+
+        clubJoinListRepository.findByClub_IdAndMember_Id(clubId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 상태가 INACTIVE일 때만 사유를 업데이트
+        String reason = request.getStatus() == RequestStatus.INACTIVE ? request.getReason() : null;
+
+        // 회원의 상태와 이유 업데이트
+        clubJoinListRepository.updateClubStatus(clubId, userId, request.getStatus(), reason);
+    }
+
+    @Transactional
+    public void removeMember(Long clubId, Long userId, String leaderEmail, String reason) {
+        // 클럽과 사용자 유효성 검증
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 클럽입니다."));
+
+        Member leader = memberRepository.findByEmail(leaderEmail)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
+
+        if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
+        }
+
+        Member memberToRemove = memberRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        if (!club.getMembers().contains(memberToRemove)) {
+            throw new IllegalArgumentException("해당 회원은 클럽에 속해 있지 않습니다.");
+        }
+
+        // 클럽의 멤버 목록에서 제거
+        club.getMembers().remove(memberToRemove);
+
+        // 리포지토리에서 필드 업데이트
+        clubJoinListRepository.updateClubStatus(clubId, userId, RequestStatus.INACTIVE, reason);
+    }
+
+    private boolean isAuthorizedForClub(Long clubId, Member member) {
+        // 클럽 ID와 멤버 ID로 ClubJoinList를 조회
+        ClubJoinList clubJoinList = clubJoinListRepository.findByClub_IdAndMember_Id(clubId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 클럽에 멤버가 존재하지 않습니다."));
+
+        // ClubRole이 LEADER, MANAGER 역할인 경우 true 반환
+        return (clubJoinList.getClubRole() == ClubRole.LEADER ||
+                clubJoinList.getClubRole() == ClubRole.MANAGER);
     }
 
     @Transactional
