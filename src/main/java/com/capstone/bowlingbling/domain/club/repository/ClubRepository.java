@@ -24,18 +24,26 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
             "c.category = COALESCE(:category, c.category), " +
             "c.requirements = COALESCE(:requirements, c.requirements), " +
             "c.monthlyFee = COALESCE(:monthlyFee, c.monthlyFee), " +
-            "c.meetingDays = COALESCE(:meetingDays, c.meetingDays), " +
-            "c.averageScore = COALESCE(:averageScore, c.averageScore), " +
-            "c.images = COALESCE(:images, c.images) " +
+            "c.averageScore = COALESCE(:averageScore, c.averageScore) " +
             "WHERE c.id = :clubId")
     void updateClubSettings(Long clubId, String name, String description, String location, Integer maxMembers,
-                            String category, String requirements, Integer monthlyFee, List<String> meetingDays,
-                            Integer averageScore, List<String> images);
+                                 String category, String requirements, Integer monthlyFee, Integer averageScore);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Club c SET c.meetingDays = :meetingDays WHERE c.id = :clubId")
+    void updateClubMeetingDays(@Param("clubId") Long clubId, @Param("meetingDays") List<String> meetingDays);
 
     @Modifying
     @Transactional
     @Query("UPDATE Club c SET c.images = :images WHERE c.id = :clubId")
-    void updateClubImages(Long clubId, List<String> images);
+    void updateClubImages(@Param("clubId") Long clubId, @Param("images") List<String> images);
+
+    // 별도로 List를 업데이트하는 메서드 추가
+    @Modifying
+    @Transactional
+    @Query("UPDATE Club c SET c.meetingDays = :meetingDays, c.images = :images WHERE c.id = :clubId")
+    void updateClubMeetingDaysAndImages(Long clubId, List<String> meetingDays, List<String> images);
 
     @Modifying
     @Query("UPDATE Club c SET c.isRecruiting = :isRecruiting WHERE c.id = :clubId")
