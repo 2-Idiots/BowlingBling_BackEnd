@@ -33,6 +33,11 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
                             Integer averageScore, List<String> images);
 
     @Modifying
+    @Transactional
+    @Query("UPDATE Club c SET c.images = :images WHERE c.id = :clubId")
+    void updateClubImages(Long clubId, List<String> images);
+
+    @Modifying
     @Query("UPDATE Club c SET c.isRecruiting = :isRecruiting WHERE c.id = :clubId")
     void updateRecruitmentStatus(@Param("clubId") Long clubId, @Param("isRecruiting") boolean isRecruiting);
 }

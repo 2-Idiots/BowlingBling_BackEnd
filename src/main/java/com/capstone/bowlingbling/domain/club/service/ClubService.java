@@ -89,10 +89,6 @@ public class ClubService {
         if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
-        List<String> imageUrls = null;
-        if (images != null && !images.isEmpty() && images.stream().anyMatch(file -> !file.isEmpty())) {
-            imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
-        }
         // 클럽 설정 업데이트
         clubRepository.updateClubSettings(
                 clubId,
@@ -105,8 +101,13 @@ public class ClubService {
                 updateDto.getMonthlyFee(),
                 updateDto.getMeetingDays(),
                 updateDto.getAverageScore(),
-                imageUrls
+                null
         );
+
+        if (images != null && !images.isEmpty() && images.stream().anyMatch(file -> !file.isEmpty())) {
+            List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
+            clubRepository.updateClubImages(clubId, imageUrls);  // 업로드 후 이미지만 업데이트
+        }
     }
 
     @Transactional
