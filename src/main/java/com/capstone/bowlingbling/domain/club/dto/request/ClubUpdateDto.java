@@ -11,10 +11,10 @@ public class ClubUpdateDto {
     private String name;
     private String description;
     private String location;
-    private int maxMembers;
+    private Integer maxMembers;
     private String category;
     private String requirements;
-    private int monthlyFee;
+    private Integer monthlyFee;
     private List<String> meetingDays;
-    private int averageScore;
+    private Integer averageScore;
 }
