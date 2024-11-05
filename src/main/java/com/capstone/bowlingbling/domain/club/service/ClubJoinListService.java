@@ -18,6 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ClubJoinListService {
@@ -57,7 +60,8 @@ public class ClubJoinListService {
             throw new IllegalStateException("권한이 없습니다. 가입 조회 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
-        Page<ClubJoinList> joinRequests = clubJoinListRepository.findByClubIdAndStatus(clubId, RequestStatus.PENDING, pageable);
+        List<RequestStatus> statuses = Arrays.asList(RequestStatus.PENDING, RequestStatus.ACTIVE);
+        Page<ClubJoinList> joinRequests = clubJoinListRepository.findByClubIdAndStatuses(clubId, statuses, pageable);
 
         return joinRequests.map(request -> ClubJoinListResponseDto.builder()
                 .id(request.getId())
@@ -87,9 +91,6 @@ public class ClubJoinListService {
         Club club = clubJoinList.getClub();
         Member member = clubJoinList.getMember();
         club.getMembers().add(member);
-
-        // 변경 사항 저장
-        clubRepository.save(club);
 
         clubJoinListRepository.updateJoinRequestStatus(requestId, RequestStatus.ACTIVE);
     }

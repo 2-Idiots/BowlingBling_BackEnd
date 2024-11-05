@@ -60,6 +60,7 @@ public class ClubService {
                 .category(request.getCategory())
                 .requirements(request.getRequirements())
                 .monthlyFee(request.getMonthlyFee())
+                .isRecruiting(true)
                 .images(imageUrls)
                 .leader(leader)
                 .meetingDays(convertMeetingDays(request.getMeetingDays()))
