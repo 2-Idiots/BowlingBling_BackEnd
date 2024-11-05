@@ -89,10 +89,7 @@ public class ClubService {
         if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
-
-        // S3에 파일 업로드 및 URL 리스트로 변환
-        List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
-
+        List<String> imageUrls = (images != null) ? s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0])) : null;
         // 클럽 설정 업데이트
         clubRepository.updateClubSettings(
                 clubId,
