@@ -109,8 +109,11 @@ public class ClubService {
 
         if (images != null && !images.isEmpty() && !images.get(0).isEmpty()) {
             List<String> imageUrls = s3ImageService.uploadMultiple(images.toArray(new MultipartFile[0]));
-            clubRepository.updateClubImages(clubId, imageUrls);
+            club.getImages().clear();  // 기존 이미지 제거
+            club.getImages().addAll(imageUrls);
         }
+
+        clubRepository.save(club);
     }
 
     @Transactional
