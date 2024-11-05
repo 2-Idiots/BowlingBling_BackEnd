@@ -83,7 +83,7 @@ public class ClubService {
         Member leader = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
 
-        clubRepository.findById(clubId)
+        Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 클럽을 찾을 수 없습니다."));
 
         if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
@@ -96,11 +96,11 @@ public class ClubService {
                 updateDto.getName(),
                 updateDto.getDescription(),
                 updateDto.getLocation(),
-                updateDto.getMaxMembers(),
+                updateDto.getMaxMembers() != null ? updateDto.getMaxMembers() : club.getMaxMembers(),
                 updateDto.getCategory(),
                 updateDto.getRequirements(),
-                updateDto.getMonthlyFee(),
-                updateDto.getAverageScore()
+                updateDto.getMonthlyFee() != null ? updateDto.getMonthlyFee() : club.getMonthlyFee(),
+                updateDto.getAverageScore() != null ? updateDto.getAverageScore() : club.getAverageScore()
         );
 
         if (updateDto.getMeetingDays() != null && !updateDto.getMeetingDays().isEmpty()) {
