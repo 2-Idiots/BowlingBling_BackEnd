@@ -12,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
-    @Query("SELECT DISTINCT c FROM Club c LEFT JOIN FETCH c.members WHERE c.deletedAt IS NULL")
     Page<Club> findAllByDeletedAtIsNull(Pageable pageable);
 
     @Modifying
