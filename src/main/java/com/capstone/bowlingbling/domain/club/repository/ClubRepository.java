@@ -35,17 +35,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     void updateClubMeetingDays(Long clubId, List<String> meetingDays);
 
     @Modifying
-    @Transactional
-    @Query("UPDATE Club c SET c.images = :images WHERE c.id = :clubId")
-    void updateClubImages(@Param("clubId") Long clubId, @Param("images") List<String> images);
-
-    // 별도로 List를 업데이트하는 메서드 추가
-    @Modifying
-    @Transactional
-    @Query("UPDATE Club c SET c.meetingDays = :meetingDays, c.images = :images WHERE c.id = :clubId")
-    void updateClubMeetingDaysAndImages(Long clubId, List<String> meetingDays, List<String> images);
-
-    @Modifying
     @Query("UPDATE Club c SET c.isRecruiting = :isRecruiting WHERE c.id = :clubId")
     void updateRecruitmentStatus(@Param("clubId") Long clubId, @Param("isRecruiting") boolean isRecruiting);
 }
