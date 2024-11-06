@@ -90,8 +90,9 @@ public class ClubJoinListService {
 
         Club club = clubJoinList.getClub();
         Member member = clubJoinList.getMember();
-        club.getMembers().add(member);
-
+        if (!club.getMembers().contains(member)) {
+            club.getMembers().add(member);
+        }
         clubJoinListRepository.updateJoinRequestStatus(requestId, RequestStatus.ACTIVE);
     }
 
