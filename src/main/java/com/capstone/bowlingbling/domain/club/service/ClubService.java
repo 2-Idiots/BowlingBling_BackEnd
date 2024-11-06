@@ -104,7 +104,8 @@ public class ClubService {
         );
 
         if (updateDto.getMeetingDays() != null && !updateDto.getMeetingDays().isEmpty()) {
-            clubRepository.updateClubMeetingDays(clubId, updateDto.getMeetingDays());
+            club.getMeetingDays().clear();
+            club.getMeetingDays().addAll(updateDto.getMeetingDays());
         }
 
         if (images != null && !images.isEmpty() && !images.get(0).isEmpty()) {
