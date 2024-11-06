@@ -31,5 +31,5 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     @Modifying
     @Query("UPDATE Club c SET c.isRecruiting = :isRecruiting WHERE c.id = :clubId")
-    void updateRecruitmentStatus(@Param("clubId") Long clubId, @Param("isRecruiting") boolean isRecruiting);
+    void updateRecruitmentStatus(@Param("clubId") Long clubId, @Param("isRecruiting") Boolean isRecruiting);
 }
