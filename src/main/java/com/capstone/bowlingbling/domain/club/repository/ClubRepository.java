@@ -30,11 +30,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
                                  String category, String requirements, Integer monthlyFee, Integer averageScore);
 
     @Modifying
-    @Transactional
-    @Query("UPDATE Club c SET c.meetingDays = :meetingDays WHERE c.id = :clubId")
-    void updateClubMeetingDays(Long clubId, List<String> meetingDays);
-
-    @Modifying
     @Query("UPDATE Club c SET c.isRecruiting = :isRecruiting WHERE c.id = :clubId")
     void updateRecruitmentStatus(@Param("clubId") Long clubId, @Param("isRecruiting") boolean isRecruiting);
 }
