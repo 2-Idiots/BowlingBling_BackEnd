@@ -31,7 +31,8 @@ public class Club extends BaseEntity {
     private String requirements;
     private int monthlyFee;
     private boolean isRecruiting;
-    @OneToMany
+
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Member> members;
 
     @ElementCollection
