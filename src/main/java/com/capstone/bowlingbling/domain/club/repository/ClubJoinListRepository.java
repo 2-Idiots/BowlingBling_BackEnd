@@ -39,6 +39,8 @@ public interface ClubJoinListRepository extends JpaRepository<ClubJoinList, Long
     @Query("UPDATE ClubJoinList cj SET cj.status = :status, cj.inactiveReason = :reason WHERE cj.club.id = :clubId AND cj.member.id = :memberId")
     void updateClubStatus(@Param("clubId") Long clubId, @Param("memberId") Long memberId, @Param("status") RequestStatus status, @Param("reason") String reason);
 
+    Optional<ClubJoinList> findByClubIdAndMemberId(Long clubId, Long memberId);
+
     @Query("SELECT cj FROM ClubJoinList cj WHERE cj.member.email = :email AND cj.status = 'ACCEPTED'")
     List<ClubJoinList> findClubsByMemberEmail(@Param("email") String email);
 

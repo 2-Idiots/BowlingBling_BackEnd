@@ -285,8 +285,8 @@ public class ClubService {
         // 클럽의 멤버 목록에서 제거
         club.getMembers().remove(memberToRemove);
 
-        // 리포지토리에서 필드 업데이트
-        clubJoinListRepository.updateClubStatus(clubId, userId, RequestStatus.INACTIVE, reason);
+        clubJoinListRepository.findByClubIdAndMemberId(clubId, userId)
+                .ifPresent(clubJoinListRepository::delete);
     }
 
     private boolean isAuthorizedForClub(Long clubId, Member member) {
