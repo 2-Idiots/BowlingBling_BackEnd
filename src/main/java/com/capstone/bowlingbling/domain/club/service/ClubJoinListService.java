@@ -37,6 +37,11 @@ public class ClubJoinListService {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
 
+        boolean exists = clubJoinListRepository.existsByClubIdAndMemberId(clubId, member.getId());
+        if (exists) {
+            throw new IllegalStateException("이미 가입 요청이 존재합니다.");
+        }
+
         ClubJoinList joinRequest = ClubJoinList.builder()
                 .club(club)
                 .member(member)
