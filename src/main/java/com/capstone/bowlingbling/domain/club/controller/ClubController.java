@@ -150,18 +150,18 @@ public class ClubController {
 
     @PostMapping("/{clubId}/join-requests/{requestId}/approve")
     @Operation(summary = "가입 신청 승인", description = "클럽 가입 신청을 승인합니다.")
-    public ResponseEntity<Void> approveJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<String> approveJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
         String leaderEmail = sessionMember.getUsername();
         clubJoinListService.approveJoinRequest(clubId, requestId, leaderEmail);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("요청 " + requestId + "ID 에 대한 가입 승인이 정상적으로 처리되었습니다.");
     }
 
     @PostMapping("/{clubId}/join-requests/{requestId}/reject")
     @Operation(summary = "가입 신청 거절", description = "클럽 가입 신청을 거절합니다.")
-    public ResponseEntity<Void> rejectJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<String> rejectJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
         String leaderEmail = sessionMember.getUsername();
         clubJoinListService.rejectJoinRequest(clubId, requestId, leaderEmail);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("요청 " + requestId + "ID 에 대한 가입 거절이 정상적으로 처리되었습니다.");
     }
 
     @DeleteMapping("/{clubId}/members/{userId}")
