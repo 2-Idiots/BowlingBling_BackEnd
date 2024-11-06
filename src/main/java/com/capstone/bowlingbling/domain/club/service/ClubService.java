@@ -263,7 +263,7 @@ public class ClubService {
     }
 
     @Transactional
-    public void removeMember(Long clubId, Long userId, String leaderEmail, String reason) {
+    public void removeMember(Long clubId, Long userId, String reason, String leaderEmail) {
         // 클럽과 사용자 유효성 검증
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 클럽입니다."));
