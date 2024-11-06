@@ -32,7 +32,7 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Club c SET c.meetingDays = :meetingDays WHERE c.id = :clubId")
-    void updateClubMeetingDays(@Param("clubId") Long clubId, @Param("meetingDays") List<String> meetingDays);
+    void updateClubMeetingDays(Long clubId, List<String> meetingDays);
 
     @Modifying
     @Transactional
