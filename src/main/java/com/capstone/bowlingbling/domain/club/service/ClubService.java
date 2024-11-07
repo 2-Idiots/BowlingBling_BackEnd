@@ -275,6 +275,10 @@ public class ClubService {
             throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
+        if(club.getLeader() == leader){
+            throw new IllegalArgumentException("LEADER는 탈퇴시킬 수 없습니다.");
+        }
+
         Member memberToRemove = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 

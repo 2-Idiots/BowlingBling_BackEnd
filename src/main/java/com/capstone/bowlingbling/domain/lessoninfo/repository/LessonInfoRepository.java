@@ -20,27 +20,25 @@ public interface LessonInfoRepository extends JpaRepository<LessonInfo, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE LessonInfo l SET l.title = :title, l.intro = :intro, l.contents = :contents, " +
-            "l.qualifications = :qualifications, l.careerHistory = :careerHistory, " +
-            "l.program = :program, l.address = :location, l.operatingHours = :operatingHours, " +
-            "l.images = :images, l.lat = :lat, l.lng = :lng, l.place = :place, " +
-            "l.category = :category, l.price = :price, l.hasFreeParking = :hasFreeParking WHERE l.id = :id")
-    void updateLessonInfo(@Param("id") Long id,
-                          @Param("title") String title,
-                          @Param("intro") String intro,
-                          @Param("contents") String contents,
-                          @Param("qualifications") String qualifications,
-                          @Param("careerHistory") String careerHistory,
-                          @Param("program") BowlingStyle program,
-                          @Param("location") String location,
-                          @Param("operatingHours") String operatingHours,
-                          @Param("images") List<String> images,
-                          @Param("lat") String lat,
-                          @Param("lng") String lng,
-                          @Param("place") String place,
-                          @Param("category") String category,
-                          @Param("price") Integer price,
-                          @Param("hasFreeParking") Boolean hasFreeParking);
+    @Query("UPDATE LessonInfo l SET " +
+            "l.title = COALESCE(:title, l.title), " +
+            "l.intro = COALESCE(:introduction, l.intro), " +
+            "l.contents = COALESCE(:contents, l.contents), " +
+            "l.qualifications = COALESCE(:qualifications, l.qualifications), " +
+            "l.careerHistory = COALESCE(:careerHistory, l.careerHistory), " +
+            "l.program = COALESCE(:program, l.program), " +
+            "l.address = COALESCE(:location, l.address), " +
+            "l.operatingHours = COALESCE(:operatingHours, l.operatingHours), " +
+            "l.lat = COALESCE(:lat, l.lat), " +
+            "l.lng = COALESCE(:lng, l.lng), " +
+            "l.place = COALESCE(:place, l.place), " +
+            "l.category = COALESCE(:category, l.category), " +
+            "l.price = COALESCE(:price, l.price), " +
+            "l.hasFreeParking = COALESCE(:hasFreeParking, l.hasFreeParking) " +
+            "WHERE l.id = :id")
+    void updateLessonInfo(Long id, String title, String introduction, String contents, String qualifications,
+                          String careerHistory, BowlingStyle program, String location, String operatingHours,
+                          String lat, String lng, String place, String category, Integer price, Boolean hasFreeParking);
 
     Page<LessonInfo> findAllByDeletedAtIsNull(Pageable pageable);
 }

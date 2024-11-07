@@ -74,29 +74,33 @@ public class LessonInfoService {
         if (!existingLessonInfo.getMember().equals(teacher) && !teacher.getRole().equals(Role.ADMIN)) {
             throw new IllegalStateException("권한이 없습니다.");
         }
-
-        // 새로 업로드된 이미지 처리
-        List<String> imageUrls = newImages != null ? s3ImageService.uploadMultiple(newImages.toArray(new MultipartFile[0])) : existingLessonInfo.getImages();
-
         // LessonInfo 업데이트
         lessonInfoRepository.updateLessonInfo(
                 id,
-                request.getTitle() != null ? request.getTitle() : existingLessonInfo.getTitle(),
-                request.getIntroduction() != null ? request.getIntroduction() : existingLessonInfo.getIntro(),
-                request.getContents() != null ? request.getContents() : existingLessonInfo.getContents(),
-                request.getQualifications() != null ? request.getQualifications() : existingLessonInfo.getQualifications(),
-                request.getCareerHistory() != null ? request.getCareerHistory() : existingLessonInfo.getCareerHistory(),
+                request.getTitle(),
+                request.getIntroduction(),
+                request.getContents(),
+                request.getQualifications(),
+                request.getCareerHistory(),
                 request.getProgram() != null ? request.getProgram() : existingLessonInfo.getProgram(),
-                request.getLocation() != null ? request.getLocation() : existingLessonInfo.getAddress(),
-                request.getOperatingHours() != null ? request.getOperatingHours() : existingLessonInfo.getOperatingHours(),
-                imageUrls,
-                request.getLat() != null ? request.getLat() : existingLessonInfo.getLat(),
-                request.getLng() != null ? request.getLng() : existingLessonInfo.getLng(),
-                request.getPlace() != null ? request.getPlace() : existingLessonInfo.getPlace(),
-                request.getCategory() != null ? request.getCategory() : existingLessonInfo.getCategory(),
+                request.getLocation(),
+                request.getOperatingHours(),
+                request.getLat(),
+                request.getLng(),
+                request.getPlace(),
+                request.getCategory(),
                 request.getPrice() != null ? request.getPrice() : existingLessonInfo.getPrice(),
                 request.getHasFreeParking() != null ? request.getHasFreeParking() : existingLessonInfo.getHasFreeParking()
         );
+
+        if (newImages != null && !newImages.isEmpty() && !newImages.get(0).isEmpty()) {
+            List<String> imageUrls = s3ImageService.uploadMultiple(newImages.toArray(new MultipartFile[0]));
+            existingLessonInfo.getImages().clear();  // 기존 이미지 제거
+            existingLessonInfo.getImages().addAll(imageUrls);
+        }
+
+        // 변경된 레슨 정보를 저장
+        lessonInfoRepository.save(existingLessonInfo);
     }
 
     // 레슨 삭제
