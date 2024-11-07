@@ -1,16 +1,11 @@
-package com.capstone.bowlingbling.domain.gathering.dto.response;
+package com.capstone.bowlingbling.domain.gathering.dto.request;
 
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
-@Builder
-public class GatheringDetailResponseDto {
-    private String leadername;
-    private Long id;
+public class GatheringUpdateRequestDto {
     private String title;
     private Integer minAverage;
     private Integer maxAverage;
@@ -18,8 +13,6 @@ public class GatheringDetailResponseDto {
     private String location;
     private LocalDateTime date;
     private Integer maxParticipants;
-    private Integer currentParticipants;
-    private List<String> images;
     private String lat;
     private String lng;
 }

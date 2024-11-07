@@ -3,6 +3,7 @@ package com.capstone.bowlingbling.domain.gathering.service;
 import com.capstone.bowlingbling.domain.gathering.domain.Gathering;
 import com.capstone.bowlingbling.domain.gathering.domain.MemberGathering;
 import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringRequestDto;
+import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringUpdateRequestDto;
 import com.capstone.bowlingbling.domain.gathering.dto.response.GatheringDetailResponseDto;
 import com.capstone.bowlingbling.domain.gathering.repository.GatheringRepository;
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -25,26 +27,12 @@ import java.util.List;
 public class GatheringService {
     private final GatheringRepository gatheringRepository;
     private final MemberRepository memberRepository;
-    private final PlaceRepository placeRepository;
     private final S3ImageService s3ImageService;
 
     @Transactional
     public void createGathering(GatheringRequestDto gatheringRequestDto, String memberEmail, List<MultipartFile> files) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException(memberEmail + " 멤버를 찾을 수 없습니다."));
-
-//        PlaceDto placeDto = gatheringRequestDto.getPlace();
-//        Place place = placeRepository.findById(Long.valueOf(placeDto.getId()))
-//                .orElseGet(() -> placeRepository.save(Place.builder()
-//                        .id(Long.valueOf(placeDto.getId()))
-//                        .addressName(placeDto.getAddressName())
-//                        .roadAddressName(placeDto.getRoadAddressName())
-//                        .buildingName(placeDto.getBuildingName())
-//                        .zoneNo(placeDto.getZoneNo())
-//                        .latitude(placeDto.getY())
-//                        .longitude(placeDto.getX())
-//                        .placeName(placeDto.getPlaceName())
-//                        .build()));
 
         List<String> imageUrls = s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0]));
 
@@ -60,7 +48,6 @@ public class GatheringService {
                 .lat(gatheringRequestDto.getLat())
                 .lng(gatheringRequestDto.getLng())
                 .images(imageUrls)
-//                .place(place)
                 .build();
 
         gatheringRepository.save(gathering);
@@ -68,10 +55,8 @@ public class GatheringService {
 
     @Transactional(readOnly = true)
     public GatheringDetailResponseDto getGathering(Long id) {
-        Gathering gathering = gatheringRepository.findActiveById(id);
-        if (gathering == null) {
-            throw new IllegalArgumentException(id + " 게시물을 찾을 수 없습니다.");
-        }
+        Gathering gathering = gatheringRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("번개모임을 찾을 수 없습니다. id : " + id));
 
         return GatheringDetailResponseDto.builder()
                 .id(gathering.getId())
@@ -110,60 +95,59 @@ public class GatheringService {
     }
 
     @Transactional
-    public GatheringDetailResponseDto updateGathering(Long id, GatheringDetailResponseDto gatheringRequestDto, String memberEmail) {
+    public void updateGathering(Long id, GatheringUpdateRequestDto gatheringRequestDto, String memberEmail, List<MultipartFile> newImages) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException(memberEmail + " 멤버를 찾을 수 없습니다."));
 
-        Gathering gathering = gatheringRepository.findActiveById(id);
-        if (gathering == null) {
-            throw new IllegalArgumentException(id + " 게시물을 찾을 수 없습니다.");
-        }
+        Gathering gathering = gatheringRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("번개모임을 찾을 수 없습니다. id : " + id));
 
         if (!gathering.getLeader().equals(member) && !member.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("인가되지 않은 권한입니다.");
         }
 
-        gathering = gathering.toBuilder()
-                .title(gatheringRequestDto.getTitle() != null ? gatheringRequestDto.getTitle() : gathering.getTitle())
-                .minAverage(gatheringRequestDto.getMinAverage() != null ? gatheringRequestDto.getMinAverage() : gathering.getMinAverage())
-                .maxAverage(gatheringRequestDto.getMaxAverage() != null ? gatheringRequestDto.getMaxAverage() : gathering.getMaxAverage())
-                .description(gatheringRequestDto.getDescription() != null ? gatheringRequestDto.getDescription() : gathering.getDescription())
-                .location(gatheringRequestDto.getLocation() != null ? gatheringRequestDto.getLocation() : gathering.getLocation())
-                .date(gatheringRequestDto.getDate() != null ? gatheringRequestDto.getDate() : gathering.getDate())
-                .maxParticipants(gatheringRequestDto.getMaxParticipants() != null ? gatheringRequestDto.getMaxParticipants() : gathering.getMaxParticipants())
-                .build();
+        gatheringRepository.updateGathering(
+                id,
+                gatheringRequestDto.getTitle(),
+                gatheringRequestDto.getMinAverage() != null ? gatheringRequestDto.getMinAverage() : gathering.getMinAverage(),
+                gatheringRequestDto.getMaxAverage() != null ? gatheringRequestDto.getMaxAverage() : gathering.getMaxAverage(),
+                gatheringRequestDto.getDescription(),
+                gatheringRequestDto.getLocation(),
+                LocalDate.from(gatheringRequestDto.getDate() != null ? gatheringRequestDto.getDate() : gathering.getDate()),
+                gatheringRequestDto.getMaxParticipants() != null ? gatheringRequestDto.getMaxParticipants() : gathering.getMaxParticipants(),
+                gatheringRequestDto.getLat(),
+                gatheringRequestDto.getLng()
+        );
 
-        Gathering updatedGathering = gatheringRepository.save(gathering);
+        if (newImages != null && !newImages.isEmpty() && !newImages.get(0).isEmpty()) {
+            List<String> imageUrls = s3ImageService.uploadMultiple(newImages.toArray(new MultipartFile[0]));
+            gathering.getImages().clear();  // 기존 이미지 제거
+            gathering.getImages().addAll(imageUrls);
+        }
 
-        return GatheringDetailResponseDto.builder()
-                .id(updatedGathering.getId())
-                .title(updatedGathering.getTitle())
-                .minAverage(updatedGathering.getMinAverage())
-                .maxAverage(updatedGathering.getMaxAverage())
-                .description(updatedGathering.getDescription())
-                .location(updatedGathering.getLocation())
-                .date(updatedGathering.getDate())
-                .maxParticipants(updatedGathering.getMaxParticipants())
-                .currentParticipants(updatedGathering.getCurrentParticipants())
-                .build();
+        gatheringRepository.save(gathering);
     }
 
     @Transactional
     public void deleteGathering(Long id, String memberEmail) {
-        Gathering gathering = gatheringRepository.findActiveById(id);
-        if (gathering == null) {
-            throw new IllegalArgumentException(id + " 게시물을 찾을 수 없습니다.");
+        Member member = memberRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new IllegalArgumentException(memberEmail + " 멤버를 찾을 수 없습니다."));
+
+        Gathering gathering = gatheringRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("번개모임을 찾을 수 없습니다. id : " + id));
+
+        if (!gathering.getLeader().equals(member) && !member.getRole().equals(Role.ADMIN)) {
+            throw new IllegalArgumentException("인가되지 않은 권한입니다.");
         }
+
         gathering.markAsDeleted();
         gatheringRepository.save(gathering);
     }
 
     @Transactional
     public void joinGathering(Long gatheringId, String memberEmail) {
-        Gathering gathering = gatheringRepository.findActiveById(gatheringId);
-        if (gathering == null) {
-            throw new IllegalArgumentException(gatheringId + " 게시물을 찾을 수 없습니다.");
-        }
+        Gathering gathering = gatheringRepository.findById(gatheringId)
+                .orElseThrow(() -> new IllegalArgumentException("번개모임을 찾을 수 없습니다. id : " + gatheringId));
 
         if (gathering.getCurrentParticipants() >= gathering.getMaxParticipants()) {
             throw new IllegalStateException("정원이 가득찼습니다.");

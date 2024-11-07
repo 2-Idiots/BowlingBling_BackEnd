@@ -43,10 +43,6 @@ public class Gathering extends BaseEntity {
     private String lat;
     private String lng;
 
-    @OneToOne
-    @JoinColumn(name = "place_id")
-    private Place place;
-
     @OneToMany(mappedBy = "gathering", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<MemberGathering> memberGatherings = new HashSet<>();

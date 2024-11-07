@@ -12,7 +12,7 @@ public class CenterDetailRequestDto {
     private String location;
     private String operatingHours;
     private String announcements;
-    private int laneCount;
+    private Integer laneCount;
     private List<String> images;
     private String ownerName;
     private String lat;
