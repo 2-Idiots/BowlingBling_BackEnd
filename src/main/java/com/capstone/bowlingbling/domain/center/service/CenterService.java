@@ -71,28 +71,34 @@ public class CenterService {
                 .build());
     }
 
-    public void updateCenter(Long centerId, CenterSaveRequestDto centerSaveRequestDto, List<MultipartFile> files, String memberEmail) throws IOException {
+    public void updateCenter(Long centerId, CenterSaveRequestDto centerSaveRequestDto, List<MultipartFile> newImages, String memberEmail) throws IOException {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다."));
 
         Center center = centerRepository.findById(centerId)
                 .orElseThrow(() -> new IllegalArgumentException("센터를 찾을 수 없습니다."));
 
-        if (files != null && files.size() > 3) { // 최대 3개의 이미지만 허용
-            throw new IllegalArgumentException("최대 3개의 이미지만 업로드할 수 있습니다.");
+        if (!center.getOwner().getEmail().equals(memberEmail) && !member.getRole().equals(Role.ADMIN)) {
+            throw new SecurityException("수정할 권한이 없습니다.");
         }
-        // 이미지 업로드 처리
-        List<String> imageUrls = files != null ? s3ImageService.uploadMultiple(files.toArray(new MultipartFile[0])) : center.getImages();
 
+        if (newImages != null && !newImages.isEmpty() && !newImages.get(0).isEmpty()) {
+            List<String> imageUrls = s3ImageService.uploadMultiple(newImages.toArray(new MultipartFile[0]));
+            center.getImages().clear();  // 기존 이미지 제거
+            center.getImages().addAll(imageUrls);
+        }
+
+        centerRepository.save(center);
         // DTO에서 null이 아닌 값만 업데이트
         centerRepository.updateCenter(
                 centerId,
-                centerSaveRequestDto.getBusinessName() != null ? centerSaveRequestDto.getBusinessName() : center.getBusinessName(),
-                centerSaveRequestDto.getLocation() != null ? centerSaveRequestDto.getLocation() : center.getLocation(),
-                centerSaveRequestDto.getOperatingHours() != null ? centerSaveRequestDto.getOperatingHours() : center.getOperatingHours(),
-                centerSaveRequestDto.getAnnouncements() != null ? centerSaveRequestDto.getAnnouncements() : center.getAnnouncements(),
+                centerSaveRequestDto.getBusinessName(),
+                centerSaveRequestDto.getLocation(),
+                centerSaveRequestDto.getOperatingHours(),
+                centerSaveRequestDto.getAnnouncements(),
                 centerSaveRequestDto.getLaneCount() != null ? centerSaveRequestDto.getLaneCount() : center.getLaneCount(),
-                imageUrls
+                centerSaveRequestDto.getLat(),
+                centerSaveRequestDto.getLng()
         );
     }
 

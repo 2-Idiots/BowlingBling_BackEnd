@@ -32,7 +32,7 @@ public class Center extends BaseEntity {
 
     private String announcements;
 
-    private int laneCount;
+    private Integer laneCount;
 
     @ElementCollection
     private List<String> images;

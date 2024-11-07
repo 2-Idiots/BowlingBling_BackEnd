@@ -1,6 +1,7 @@
 package com.capstone.bowlingbling.domain.gathering.controller;
 
 import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringRequestDto;
+import com.capstone.bowlingbling.domain.gathering.dto.request.GatheringUpdateRequestDto;
 import com.capstone.bowlingbling.domain.gathering.dto.response.GatheringDetailResponseDto;
 import com.capstone.bowlingbling.domain.gathering.service.GatheringService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,12 +70,16 @@ public class GatheringController {
         return ResponseEntity.ok(gatherings);
     }
 
-    @PatchMapping("/{gatheringId}")
+    @PatchMapping(value = "/{gatheringId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "번개 모임 수정", description = "번개 모임 정보를 수정합니다.")
-    public ResponseEntity<GatheringDetailResponseDto> updateGathering(@PathVariable Long gatheringId, @RequestBody GatheringDetailResponseDto gatheringRequestDto, @AuthenticationPrincipal User sessionMember) {
+    public ResponseEntity<String> updateGathering(@PathVariable Long gatheringId,
+                                                                      @RequestBody GatheringUpdateRequestDto gatheringRequestDto,
+                                                                      @AuthenticationPrincipal User sessionMember,
+                                                                      @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                                                                          @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
         String memberEmail = sessionMember.getUsername();
-        GatheringDetailResponseDto updatedGathering = gatheringService.updateGathering(gatheringId, gatheringRequestDto, memberEmail);
-        return ResponseEntity.ok(updatedGathering);
+        gatheringService.updateGathering(gatheringId, gatheringRequestDto, memberEmail, files);
+        return ResponseEntity.ok("번개 모임이 성공적으로 수정되었습니다.");
     }
 
     @DeleteMapping("/{gatheringId}")
