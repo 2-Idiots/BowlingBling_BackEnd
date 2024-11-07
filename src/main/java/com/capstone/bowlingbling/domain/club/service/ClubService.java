@@ -275,7 +275,7 @@ public class ClubService {
             throw new AccessDeniedException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
-        if(club.getLeader() == leader){
+        if(club.getLeader().getId().equals(userId)){
             throw new IllegalArgumentException("LEADER는 탈퇴시킬 수 없습니다.");
         }
 
