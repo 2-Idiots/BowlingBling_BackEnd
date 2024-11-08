@@ -16,7 +16,6 @@ import java.util.List;
 
 @Repository
 public interface LessonInfoRepository extends JpaRepository<LessonInfo, Long> {
-    boolean existsByMemberAndDeletedAtIsNull(Member member);
 
     @Modifying
     @Transactional

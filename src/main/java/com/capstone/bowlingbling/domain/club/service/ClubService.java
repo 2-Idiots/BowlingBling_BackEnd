@@ -181,7 +181,8 @@ public class ClubService {
 
     @Transactional
     public List<ClubMemberListResponseDto> getClubMembers(Long clubId) {
-        List<ClubJoinList> clubJoinLists = clubJoinListRepository.findByClub_Id(clubId);
+        List<RequestStatus> allowedStatuses = Arrays.asList(RequestStatus.ACTIVE, RequestStatus.INACTIVE);
+        List<ClubJoinList> clubJoinLists = clubJoinListRepository.findByClub_IdAndStatusIn(clubId, allowedStatuses);
 
         if (clubJoinLists.isEmpty()) {
             throw new IllegalArgumentException("해당 클럽에 멤버가 없습니다.");
