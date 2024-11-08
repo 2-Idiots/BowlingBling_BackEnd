@@ -49,24 +49,21 @@ public class GatheringController {
                                                   @AuthenticationPrincipal User sessionMember,
                                                   @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                                                   @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
-        String memberEmail = sessionMember.getUsername();
-        gatheringService.createGathering(gatheringRequestDto, memberEmail, files);
+        gatheringService.createGathering(gatheringRequestDto, sessionMember.getUsername(), files);
         return ResponseEntity.ok("번개 모임 생성 완료");
     }
 
     @PostMapping("/{gatheringId}/join")
     @Operation(summary = "번개 모임 가입", description = "번개 모임에 가입 신청을 합니다.")
     public ResponseEntity<String> joinGathering(@PathVariable Long gatheringId, @AuthenticationPrincipal User sessionMember) {
-        String memberEmail = sessionMember.getUsername();
-        gatheringService.joinGathering(gatheringId, memberEmail);
+        gatheringService.joinGathering(gatheringId, sessionMember.getUsername());
         return ResponseEntity.ok("가입 신청 완료");
     }
 
     @GetMapping("/my")
     @Operation(summary = "내 번개 모임 조회", description = "내가 생성하거나 가입한 번개 모임 목록을 조회합니다.")
     public ResponseEntity<Page<GatheringDetailResponseDto>> getMyGatherings(@AuthenticationPrincipal User sessionMember, @RequestParam(defaultValue = "0") int page) {
-        String memberEmail = sessionMember.getUsername();
-        Page<GatheringDetailResponseDto> gatherings = gatheringService.getMemberGatherings(memberEmail, PageRequest.of(page, 10));
+        Page<GatheringDetailResponseDto> gatherings = gatheringService.getMemberGatherings(sessionMember.getUsername(), PageRequest.of(page, 10));
         return ResponseEntity.ok(gatherings);
     }
 
@@ -77,16 +74,14 @@ public class GatheringController {
                                                                       @AuthenticationPrincipal User sessionMember,
                                                                       @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                                                                           @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
-        String memberEmail = sessionMember.getUsername();
-        gatheringService.updateGathering(gatheringId, gatheringRequestDto, memberEmail, files);
+        gatheringService.updateGathering(gatheringId, gatheringRequestDto, sessionMember.getUsername(), files);
         return ResponseEntity.ok("번개 모임이 성공적으로 수정되었습니다.");
     }
 
     @DeleteMapping("/{gatheringId}")
     @Operation(summary = "번개 모임 삭제", description = "번개 모임을 삭제합니다.")
     public ResponseEntity<Void> deleteGathering(@PathVariable Long gatheringId, @AuthenticationPrincipal User sessionMember) {
-        String memberEmail = sessionMember.getUsername();
-        gatheringService.deleteGathering(gatheringId, memberEmail);
+        gatheringService.deleteGathering(gatheringId, sessionMember.getUsername());
         return ResponseEntity.ok().build();
     }
 }

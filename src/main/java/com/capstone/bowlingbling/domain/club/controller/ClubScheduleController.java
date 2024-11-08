@@ -36,23 +36,23 @@ public class ClubScheduleController {
 
     @PatchMapping("/{scheduleId}")
     @Operation(summary = "일정 수정", description = "클럽의 일정을 수정합니다.")
-    public ResponseEntity<Void> updateSchedule(
+    public ResponseEntity<String> updateSchedule(
             @PathVariable Long clubId,
             @PathVariable Long scheduleId,
             @RequestBody ClubScheduleUpdateRequestDto request,
             @AuthenticationPrincipal User sessionMember) {
         clubScheduleService.updateSchedule(clubId, scheduleId, request, sessionMember.getUsername());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("일정이 수정되었습니다.");
     }
 
     @DeleteMapping("/{scheduleId}")
     @Operation(summary = "일정 삭제", description = "클럽의 일정을 삭제합니다.")
-    public ResponseEntity<Void> deleteSchedule(
+    public ResponseEntity<String> deleteSchedule(
             @PathVariable Long clubId,
             @PathVariable Long scheduleId,
             @AuthenticationPrincipal User sessionMember) {
         clubScheduleService.deleteSchedule(clubId, scheduleId, sessionMember.getUsername());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("일정이 삭제되었습니다.");
     }
 
     @PostMapping("/{scheduleId}/participation")

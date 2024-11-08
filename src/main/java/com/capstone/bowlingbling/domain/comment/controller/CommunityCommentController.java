@@ -29,24 +29,21 @@ public class CommunityCommentController {
     @PostMapping("/save")
     @Operation(summary = "게시판 댓글 저장", description = "새로운 댓글을 저장합니다.")
     public ResponseEntity<CommentResponseDto> saveComment(@PathVariable Long communityId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
-        String memberEmail = user.getUsername();
-        CommentResponseDto responseDto = communityCommentService.saveComment(communityId, requestDto, memberEmail);
+        CommentResponseDto responseDto = communityCommentService.saveComment(communityId, requestDto, user.getUsername());
         return ResponseEntity.ok(responseDto);
     }
 
     @PatchMapping("/update/{commentId}")
     @Operation(summary = "게시판 댓글 수정", description = "작성한 댓글을 수정합니다. (작성자만 가능)")
     public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long communityId, @PathVariable Long commentId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
-        String memberEmail = user.getUsername();
-        CommentResponseDto responseDto = communityCommentService.updateComment(communityId, commentId, requestDto, memberEmail);
+        CommentResponseDto responseDto = communityCommentService.updateComment(communityId, commentId, requestDto, user.getUsername());
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/delete/{commentId}")
     @Operation(summary = "게시판 댓글 삭제", description = "작성한 댓글을 삭제합니다.")
     public ResponseEntity<Void> deleteComment(@PathVariable Long communityId, @PathVariable Long commentId, @AuthenticationPrincipal User user) {
-        String memberEmail = user.getUsername();
-        communityCommentService.deleteComment(communityId, commentId, memberEmail);
+        communityCommentService.deleteComment(communityId, commentId, user.getUsername());
         return ResponseEntity.noContent().build();
     }
 }

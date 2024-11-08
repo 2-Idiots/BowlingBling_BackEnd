@@ -56,8 +56,7 @@ public class LessonInfoController {
             @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {  // 파일 업로드 파트 추가
 
-        String teacherEmail = sessionMember.getUsername();
-        lessonInfoService.createLesson(request, teacherEmail, files);
+        lessonInfoService.createLesson(request, sessionMember.getUsername(), files);
 
         return ResponseEntity.ok("성공적으로 저장되었습니다.");
     }
@@ -71,8 +70,7 @@ public class LessonInfoController {
             @RequestPart LessonInfoDetailUpdateRequestDto request,
             @RequestPart(required = false) List<MultipartFile> files) throws IOException {  // 이미지 수정 시 파일도 함께 받을 수 있게 함
 
-        String teacherEmail = sessionMember.getUsername();
-        lessonInfoService.updateLesson(id, request, teacherEmail, files);
+        lessonInfoService.updateLesson(id, request, sessionMember.getUsername(), files);
 
         return ResponseEntity.ok("수정이 성공적으로 완료되었습니다.");
     }
@@ -84,8 +82,7 @@ public class LessonInfoController {
             @PathVariable Long id,
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember) {
 
-        String teacherEmail = sessionMember.getUsername();
-        lessonInfoService.deleteLesson(id, teacherEmail);
+        lessonInfoService.deleteLesson(id, sessionMember.getUsername());
 
         return ResponseEntity.noContent().build();
     }
@@ -96,8 +93,7 @@ public class LessonInfoController {
             @AuthenticationPrincipal User sessionMember,
             @PathVariable Long lessonId) {
 
-        String userEmail = sessionMember.getUsername();
-        lessonInfoService.likeLesson(userEmail, lessonId);
+        lessonInfoService.likeLesson(sessionMember.getUsername(), lessonId);
         return ResponseEntity.ok("레슨을 찜했습니다.");
     }
 
@@ -107,8 +103,7 @@ public class LessonInfoController {
             @AuthenticationPrincipal User sessionMember,
             @PathVariable Long lessonId) {
 
-        String userEmail = sessionMember.getUsername();
-        lessonInfoService.cancelLikeLesson(userEmail, lessonId);
+        lessonInfoService.cancelLikeLesson(sessionMember.getUsername(), lessonId);
         return ResponseEntity.ok("레슨 찜을 취소했습니다.");
     }
 }

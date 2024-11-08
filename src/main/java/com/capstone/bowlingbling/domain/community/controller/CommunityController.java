@@ -38,8 +38,7 @@ public class CommunityController {
                                               @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                                               @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
         try {
-            String memberEmail = sessionMember.getUsername();
-            communityService.saveCommunity(communitySaveRequestDto, memberEmail, files);
+            communityService.saveCommunity(communitySaveRequestDto, sessionMember.getUsername(), files);
             return new ResponseEntity<>("게시글이 성공적으로 저장되었습니다", HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>("사용자가 인증되지 않았습니다", HttpStatus.UNAUTHORIZED);
@@ -63,8 +62,7 @@ public class CommunityController {
     public ResponseEntity<String> updateCommunity (@PathVariable Long communityId, @RequestBody CommunitySaveRequestDto communitySaveRequestDto,
                                                    @AuthenticationPrincipal User sessionMember){
         try{
-            String memberEmail = sessionMember.getUsername();
-            communityService.updateCommunity(communityId, communitySaveRequestDto, memberEmail);
+            communityService.updateCommunity(communityId, communitySaveRequestDto, sessionMember.getUsername());
             return ResponseEntity.ok("게시글이 성공적으로 수정되었습니다");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

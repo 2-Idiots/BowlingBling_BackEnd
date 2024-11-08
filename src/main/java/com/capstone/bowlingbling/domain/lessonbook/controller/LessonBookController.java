@@ -26,8 +26,7 @@ public class LessonBookController {
             @AuthenticationPrincipal User sessionStudent,
             @RequestBody LessonBookCreateDto request) {
 
-        String studentEmail = sessionStudent.getUsername();
-        String result = lessonBookService.createLessonRequest(request, studentEmail);
+        String result = lessonBookService.createLessonRequest(request, sessionStudent.getUsername());
         return ResponseEntity.ok(result);
     }
 
@@ -44,8 +43,7 @@ public class LessonBookController {
             @AuthenticationPrincipal User sessionTeacher,
             @RequestBody LessonBookStatusDto request) {
 
-        String teacherEmail = sessionTeacher.getUsername();
-        String result = lessonBookService.updateLessonRequestStatus(request, teacherEmail);
+        String result = lessonBookService.updateLessonRequestStatus(request, sessionTeacher.getUsername());
         return ResponseEntity.ok(result);
     }
 
@@ -54,8 +52,7 @@ public class LessonBookController {
     public ResponseEntity<List<LessonBookedMyTeachersDto>> getMyLessonRequests(
             @AuthenticationPrincipal User sessionStudent) {
 
-        String studentEmail = sessionStudent.getUsername();
-        List<LessonBookedMyTeachersDto> myLessonRequests = lessonBookService.getMyLessonRequests(studentEmail);
+        List<LessonBookedMyTeachersDto> myLessonRequests = lessonBookService.getMyLessonRequests(sessionStudent.getUsername());
 
         return ResponseEntity.ok(myLessonRequests);
     }
@@ -65,8 +62,7 @@ public class LessonBookController {
     public ResponseEntity<List<LessonBookedStudentListDto>> getReceivedRequests(
             @AuthenticationPrincipal User sessionTeacher) {
 
-        String teacherEmail = sessionTeacher.getUsername();
-        List<LessonBookedStudentListDto> requests = lessonBookService.getReceivedRequests(teacherEmail);
+        List<LessonBookedStudentListDto> requests = lessonBookService.getReceivedRequests(sessionTeacher.getUsername());
 
         return ResponseEntity.ok(requests);
     }
@@ -77,8 +73,7 @@ public class LessonBookController {
             @PathVariable Long lessonBookedId,
             @AuthenticationPrincipal User sessionStudent) {
 
-        String studentEmail = sessionStudent.getUsername();
-        lessonBookService.cancelMyLessonRequest(lessonBookedId, studentEmail);
+        lessonBookService.cancelMyLessonRequest(lessonBookedId, sessionStudent.getUsername());
 
         return ResponseEntity.ok("레슨 요청이 취소되었습니다.");
     }

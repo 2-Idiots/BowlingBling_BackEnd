@@ -31,24 +31,21 @@ public class LessonCommentController {
     @Operation(summary = "댓글 작성", description = "특정 레슨에 댓글을 작성합니다.")
     @PostMapping("/save")
     public ResponseEntity<String> saveComment(@PathVariable Long lessonId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
-        String memberEmail = user.getUsername();
-        lessonCommentService.saveComment(lessonId, requestDto, memberEmail);
+        lessonCommentService.saveComment(lessonId, requestDto, user.getUsername());
         return ResponseEntity.ok("댓글 저장 성공");
     }
 
     @Operation(summary = "댓글 수정", description = "특정 레슨 댓글을 수정합니다.")
     @PatchMapping("/{commentId}/update")
     public ResponseEntity<String> updateComment(@PathVariable Long lessonId, @PathVariable Long commentId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
-        String memberEmail = user.getUsername();
-        lessonCommentService.updateComment(lessonId, commentId, requestDto, memberEmail);
+        lessonCommentService.updateComment(lessonId, commentId, requestDto, user.getUsername());
         return ResponseEntity.ok("댓글 수정 성공");
     }
 
     @Operation(summary = "댓글 삭제", description = "특정 레슨 댓글을 삭제합니다.")
     @DeleteMapping("/{commentId}/delete")
     public ResponseEntity<String> deleteComment(@PathVariable Long lessonId, @PathVariable Long commentId, @AuthenticationPrincipal User user) {
-        String memberEmail = user.getUsername();
-        lessonCommentService.deleteComment(lessonId, commentId, memberEmail);
+        lessonCommentService.deleteComment(lessonId, commentId, user.getUsername());
         return ResponseEntity.ok("댓글 삭제 성공");
     }
 }

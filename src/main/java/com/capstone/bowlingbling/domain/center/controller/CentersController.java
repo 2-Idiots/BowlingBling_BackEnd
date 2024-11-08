@@ -37,8 +37,7 @@ public class CentersController {
     public ResponseEntity<String> createCenter(@RequestPart("request") CenterSaveRequestDto centerSaveRequestDto,
                                                @AuthenticationPrincipal User sessionUser,
                                                @RequestPart("files") List<MultipartFile> files) throws IOException {
-        String memberEmail = sessionUser.getUsername();
-        centerService.saveCenter(centerSaveRequestDto, memberEmail, files);
+        centerService.saveCenter(centerSaveRequestDto, sessionUser.getUsername(), files);
         return new ResponseEntity<>("센터가 성공적으로 생성되었습니다", HttpStatus.CREATED);
     }
 
@@ -65,8 +64,7 @@ public class CentersController {
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal User sessionMember) throws IOException {
         try {
-            String memberEmail = sessionMember.getUsername();
-            centerService.updateCenter(centerId, centerSaveRequestDto, files, memberEmail);
+            centerService.updateCenter(centerId, centerSaveRequestDto, files, sessionMember.getUsername());
             return new ResponseEntity<>("센터 정보가 성공적으로 수정되었습니다.", HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
@@ -77,8 +75,7 @@ public class CentersController {
     public ResponseEntity<String> deleteCenter(@PathVariable Long centerId,
                                                @AuthenticationPrincipal User sessionMember) {
         try {
-            String memberEmail = sessionMember.getUsername();
-            centerService.deleteCenter(centerId, memberEmail);
+            centerService.deleteCenter(centerId, sessionMember.getUsername());
             return ResponseEntity.ok("센터가 성공적으로 삭제되었습니다.");
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 권한이 없습니다.");
