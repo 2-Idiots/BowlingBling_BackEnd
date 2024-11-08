@@ -20,7 +20,7 @@ public interface ClubJoinListRepository extends JpaRepository<ClubJoinList, Long
     @Query("SELECT DISTINCT c FROM ClubJoinList c WHERE c.club.id = :clubId AND c.status IN :statuses")
     Page<ClubJoinList> findByClubIdAndStatuses(@Param("clubId") Long clubId, @Param("statuses") List<RequestStatus> statuses, Pageable pageable);
 
-    List<ClubJoinList> findByClub_Id(Long clubId);
+    List<ClubJoinList> findByClub_IdAndStatusIn(Long clubId, List<RequestStatus> statuses);
 
     boolean existsByClubIdAndMemberId(Long clubId, Long memberId);
 
