@@ -72,7 +72,7 @@ public class ClubService {
                 .member(leader)
                 .averageScore(leader.getMyaver())
                 .clubRole(ClubRole.LEADER)  // 리더로 설정
-                .status(RequestStatus.APPROVED)  // 가입 승인 상태로 설정
+                .status(RequestStatus.ACTIVE)  // 가입 승인 상태로 설정
                 .build();
 
         clubJoinListRepository.save(clubJoinList);
