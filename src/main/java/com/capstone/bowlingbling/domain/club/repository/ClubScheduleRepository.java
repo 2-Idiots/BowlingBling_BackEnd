@@ -17,8 +17,9 @@ import java.util.Optional;
 @Repository
 public interface ClubScheduleRepository extends JpaRepository<ClubSchedule, Long> {
     @Query("SELECT cs FROM ClubSchedule cs WHERE cs.club.id = :clubId " +
-            "AND SUBSTRING(cs.startDate, 1, 4) = :year " + // 년 추출
-            "AND SUBSTRING(cs.startDate, 6, 2) = :month") // 월 추출
+            "AND SUBSTRING(cs.startDate, 1, 4) = :year " +  // 년 추출
+            "AND SUBSTRING(cs.startDate, 6, 2) = :month " + // 월 추출
+            "AND cs.deletedAt IS NULL")                     // deletedAt이 null인 데이터만 가져오기
     List<ClubSchedule> findSchedulesByMonth(@Param("clubId") Long clubId,
                                             @Param("year") String year,
                                             @Param("month") String month);
