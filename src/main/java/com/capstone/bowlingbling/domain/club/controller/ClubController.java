@@ -41,7 +41,8 @@ public class ClubController {
             @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {  // 파일 업로드 파트 추가
 
-        clubService.createClub(request, sessionMember.getUsername(), files);
+        String leaderEmail = sessionMember.getUsername();
+        clubService.createClub(request, leaderEmail, files);
 
         return ResponseEntity.ok("클럽이 성공적으로 생성되었습니다.");
     }
@@ -55,7 +56,8 @@ public class ClubController {
             @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
 
-        clubService.updateClubSettings(clubId, sessionMember.getUsername(), updateDto, images);
+        String memberEmail = sessionMember.getUsername();
+        clubService.updateClubSettings(clubId, memberEmail, updateDto, images);
         return ResponseEntity.ok("동호회 설정이 성공적으로 수정되었습니다.");
     }
 
@@ -66,7 +68,8 @@ public class ClubController {
             @AuthenticationPrincipal User sessionMember,
             @RequestBody ClubRecruitmentUpdateDto recruitmentDto) {
 
-        clubService.updateRecruitmentStatus(clubId, sessionMember.getUsername(), recruitmentDto);
+        String memberEmail = sessionMember.getUsername();
+        clubService.updateRecruitmentStatus(clubId, memberEmail, recruitmentDto);
         return ResponseEntity.ok("모집 상태가 성공적으로 변경되었습니다.");
     }
 
@@ -98,7 +101,8 @@ public class ClubController {
     public ResponseEntity<ClubMemberDetailResponseDto> getClubMemberDetail(@AuthenticationPrincipal User sessionMember,
                                                                       @PathVariable Long clubId,
                                                                       @PathVariable Long userId) {
-        ClubMemberDetailResponseDto member = clubService.getClubMemberDetail(clubId, userId ,sessionMember.getUsername());
+        String leaderEmail = sessionMember.getUsername();
+        ClubMemberDetailResponseDto member = clubService.getClubMemberDetail(clubId, userId ,leaderEmail);
         return ResponseEntity.ok(member);
     }
 
@@ -110,7 +114,8 @@ public class ClubController {
             @PathVariable Long userId,
             @RequestBody ClubMembersRoleUpdateDto request) {
 
-        clubService.updateMemberRole(clubId, userId, request, sessionMember.getUsername());
+        String leaderEmail = sessionMember.getUsername();
+        clubService.updateMemberRole(clubId, userId, request, leaderEmail);
         return ResponseEntity.ok("회원 역할이 성공적으로 변경되었습니다.");
     }
 
@@ -122,35 +127,40 @@ public class ClubController {
             @PathVariable Long userId,
             @RequestBody ClubMemberStatusUpdateDto request) {
 
-        clubService.updateMemberStatus(clubId, userId, request, sessionMember.getUsername());
+        String leaderEmail = sessionMember.getUsername();
+        clubService.updateMemberStatus(clubId, userId, request, leaderEmail);
         return ResponseEntity.ok("회원 상태가 성공적으로 변경되었습니다.");
     }
 
     @PostMapping("/{clubId}/join")
     @Operation(summary = "가입 신청", description = "클럽 가입을 신청합니다.")
     public ResponseEntity<String> createJoinRequest(@PathVariable Long clubId, @RequestBody ClubJoinRequestDto request, @AuthenticationPrincipal User sessionMember) {
-        Long requestId = clubJoinListService.createJoinRequest(clubId, sessionMember.getUsername(), request);
+        String memberEmail = sessionMember.getUsername();
+        Long requestId = clubJoinListService.createJoinRequest(clubId, memberEmail, request);
         return ResponseEntity.ok("가입 요청이 성공적으로 되었습니다. 요청 ID : " + requestId);
     }
 
     @GetMapping("/{clubId}/join-requests")
     @Operation(summary = "가입 신청 목록 조회", description = "클럽의 가입 신청 목록을 조회합니다.")
     public ResponseEntity<Page<ClubJoinListResponseDto>> getJoinRequests(@PathVariable Long clubId, @RequestParam(defaultValue = "0") int page, @AuthenticationPrincipal User sessionMember) {
-        Page<ClubJoinListResponseDto> requests = clubJoinListService.getJoinRequests(clubId, PageRequest.of(page, 10), sessionMember.getUsername());
+        String leaderEmail = sessionMember.getUsername();
+        Page<ClubJoinListResponseDto> requests = clubJoinListService.getJoinRequests(clubId, PageRequest.of(page, 10), leaderEmail);
         return ResponseEntity.ok(requests);
     }
 
     @PostMapping("/{clubId}/join-requests/{requestId}/approve")
     @Operation(summary = "가입 신청 승인", description = "클럽 가입 신청을 승인합니다.")
     public ResponseEntity<String> approveJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
-        clubJoinListService.approveJoinRequest(clubId, requestId, sessionMember.getUsername());
+        String leaderEmail = sessionMember.getUsername();
+        clubJoinListService.approveJoinRequest(clubId, requestId, leaderEmail);
         return ResponseEntity.ok("요청 " + requestId + "ID 에 대한 가입 승인이 정상적으로 처리되었습니다.");
     }
 
     @PostMapping("/{clubId}/join-requests/{requestId}/reject")
     @Operation(summary = "가입 신청 거절", description = "클럽 가입 신청을 거절합니다.")
     public ResponseEntity<String> rejectJoinRequest(@PathVariable Long clubId, @PathVariable Long requestId, @AuthenticationPrincipal User sessionMember) {
-        clubJoinListService.rejectJoinRequest(clubId, requestId, sessionMember.getUsername());
+        String leaderEmail = sessionMember.getUsername();
+        clubJoinListService.rejectJoinRequest(clubId, requestId, leaderEmail);
         return ResponseEntity.ok("요청 " + requestId + "ID 에 대한 가입 거절이 정상적으로 처리되었습니다.");
     }
 
@@ -162,7 +172,8 @@ public class ClubController {
             @PathVariable Long userId,
             @RequestBody ClubMemberRemoveDto request) {
 
-        clubService.removeMember(clubId, userId, request.getReason(), sessionMember.getUsername());
+        String leaderEmail = sessionMember.getUsername();
+        clubService.removeMember(clubId, userId, request.getReason(), leaderEmail);
 
         return ResponseEntity.ok("회원이 강제 탈퇴되었습니다.");
     }

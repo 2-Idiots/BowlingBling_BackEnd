@@ -43,7 +43,8 @@ public class MemberController {
     @Operation(summary = "유저 정보 조회", description = "현재 로그인된 유저의 정보를 조회합니다.")
     @GetMapping("/info")
     public ResponseEntity<MemberInfoResponseDto> getUserInfo(@AuthenticationPrincipal User sessionMember) {
-        MemberInfoResponseDto memberInfo = memberService.getMemberInfo(sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        MemberInfoResponseDto memberInfo = memberService.getMemberInfo(memberEmail);
         return ResponseEntity.ok(memberInfo);
     }
 
@@ -54,7 +55,8 @@ public class MemberController {
                                                 @RequestPart(value = "files", required = false) MultipartFile file,
                                                 @AuthenticationPrincipal User sessionMember) throws IOException {
 
-        memberService.updateProfile(request, sessionMember.getUsername(), file);
+        String memberEmail = sessionMember.getUsername();
+        memberService.updateProfile(request, memberEmail, file);
         return ResponseEntity.ok("수정 완료");
     }
 
@@ -63,7 +65,8 @@ public class MemberController {
     public ResponseEntity<TeacherRequest> requestTeacher(@RequestBody TeacherRequestDto request,
                                                          @AuthenticationPrincipal User sessionMember) {
 
-        TeacherRequest teacherRequest = memberService.requestTeacherRole(request, sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        TeacherRequest teacherRequest = memberService.requestTeacherRole(request, memberEmail);
         return ResponseEntity.ok(teacherRequest);
     }
 
@@ -79,7 +82,8 @@ public class MemberController {
     public ResponseEntity<Void> approveTeacherRequest(@PathVariable Long requestId,
                                                       @AuthenticationPrincipal User sessionMember) {
 
-        Member adminMember = memberService.findByEmail(sessionMember.getUsername());
+        String adminEmail = sessionMember.getUsername();
+        Member adminMember = memberService.findByEmail(adminEmail);
         if (adminMember.getRole() != Role.ADMIN) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -93,7 +97,8 @@ public class MemberController {
     public ResponseEntity<List<LessonInfoResponseDto>> getLikedLessons(
             @AuthenticationPrincipal User sessionMember) {
 
-        List<LessonInfoResponseDto> likedLessons = memberService.getMyLikedLessons(sessionMember.getUsername());
+        String userEmail = sessionMember.getUsername();
+        List<LessonInfoResponseDto> likedLessons = memberService.getMyLikedLessons(userEmail);
 
         return ResponseEntity.ok(likedLessons);
     }
@@ -101,31 +106,36 @@ public class MemberController {
     @GetMapping("/mycomment")
     @Operation(summary = "사용자가 작성한 댓글 조회", description = "사용자가 작성한 댓글 목록을 조회합니다.")
     public List<MyCommentResponseDto> getMyComments(@AuthenticationPrincipal User sessionMember) {
-        return memberService.getAllUserComments(sessionMember.getUsername());
+        String userEmail = sessionMember.getUsername();
+        return memberService.getAllUserComments(userEmail);
     }
 
     @GetMapping("/clubs")
     public ResponseEntity<List<ClubListResponseDto>> getMyClubs(@AuthenticationPrincipal User sessionMember) {
-        List<ClubListResponseDto> myClubs = memberService.getMyClubs(sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        List<ClubListResponseDto> myClubs = memberService.getMyClubs(memberEmail);
         return ResponseEntity.ok(myClubs);
     }
 
     @GetMapping("/managing-clubs")
     public ResponseEntity<List<ClubListResponseDto>> getManagingClubs(@AuthenticationPrincipal User sessionMember) {
-        List<ClubListResponseDto> managingClubs = memberService.getManagingClubs(sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        List<ClubListResponseDto> managingClubs = memberService.getManagingClubs(memberEmail);
         return ResponseEntity.ok(managingClubs);
     }
 
     @GetMapping("/club-applications")
     public ResponseEntity<List<ClubJoinListResponseDto>> getMyApplications(@AuthenticationPrincipal User sessionMember) {
-        List<ClubJoinListResponseDto> myApplications = memberService.getMyApplications(sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        List<ClubJoinListResponseDto> myApplications = memberService.getMyApplications(memberEmail);
         return ResponseEntity.ok(myApplications);
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃 시 리프레시 토큰을 삭제합니다.")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal User sessionMember) {
-        memberService.logout(sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        memberService.logout(memberEmail);
         return ResponseEntity.ok().build();
     }
 }

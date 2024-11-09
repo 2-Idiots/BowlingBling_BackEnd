@@ -31,21 +31,24 @@ public class MarketCommentController {
     @Operation(summary = "댓글 작성", description = "특정 마켓에 댓글을 작성합니다.")
     @PostMapping("/save")
     public ResponseEntity<CommentResponseDto> saveComment(@PathVariable Long marketId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
-        CommentResponseDto responseDto = marketCommentService.saveComment(marketId, requestDto, user.getUsername());
+        String memberEmail = user.getUsername();
+        CommentResponseDto responseDto = marketCommentService.saveComment(marketId, requestDto, memberEmail);
         return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "댓글 수정", description = "특정 마켓 댓글을 수정합니다.")
     @PatchMapping("/update/{commentId}")
     public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long marketId, @PathVariable Long commentId, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal User user) {
-        CommentResponseDto responseDto = marketCommentService.updateComment(marketId, commentId, requestDto, user.getUsername());
+        String memberEmail = user.getUsername();
+        CommentResponseDto responseDto = marketCommentService.updateComment(marketId, commentId, requestDto, memberEmail);
         return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "댓글 삭제", description = "특정 마켓 댓글을 삭제합니다.")
     @DeleteMapping("/delete/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long marketId, @PathVariable Long commentId, @AuthenticationPrincipal User user) {
-        marketCommentService.deleteComment(marketId, commentId, user.getUsername());
+        String memberEmail = user.getUsername();
+        marketCommentService.deleteComment(marketId, commentId, memberEmail);
         return ResponseEntity.noContent().build();
     }
 }

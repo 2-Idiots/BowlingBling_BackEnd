@@ -37,7 +37,8 @@ public class MarketController {
                                                @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                                                @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
         try {
-            marketService.saveMarket(requestMarketSaveDTO, sessionMember.getUsername(), files);
+            String memberEmail = sessionMember.getUsername();
+            marketService.saveMarket(requestMarketSaveDTO, memberEmail, files);
             return new ResponseEntity<>("물품이 성공적으로 저장되었습니다", HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>("사용자가 인증되지 않았습니다", HttpStatus.UNAUTHORIZED);
@@ -69,7 +70,8 @@ public class MarketController {
                                                @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                                                    @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
         try{
-            marketService.updateMarket(id, requestMarketSaveDTO, sessionMember.getUsername(), files);
+            String memberEmail = sessionMember.getUsername();
+            marketService.updateMarket(id, requestMarketSaveDTO, memberEmail, files);
             return ResponseEntity.ok("상품이 성공적으로 수정되었습니다");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -80,7 +82,8 @@ public class MarketController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMarket(@PathVariable Long id, @AuthenticationPrincipal User sessionMember) {
         try{
-            marketService.deleteMarket(id, sessionMember.getUsername());
+            String memberEmail = sessionMember.getUsername();
+            marketService.deleteMarket(id, memberEmail);
             return ResponseEntity.ok("상품이 성공적으로 삭제되었습니다.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

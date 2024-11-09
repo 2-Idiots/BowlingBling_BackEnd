@@ -21,7 +21,8 @@ public class ClubScheduleController {
             @PathVariable Long clubId,
             @RequestBody ClubScheduleRequestDto request,
             @AuthenticationPrincipal User sessionMember) {
-        Long scheduleId = clubScheduleService.createSchedule(clubId, sessionMember.getUsername(), request);
+        String memberEmail = sessionMember.getUsername();
+        Long scheduleId = clubScheduleService.createSchedule(clubId, memberEmail, request);
         return ResponseEntity.ok("ID : " + scheduleId + " 으로 스케줄이 생성되었습니다.");
     }
 
@@ -41,7 +42,8 @@ public class ClubScheduleController {
             @PathVariable Long scheduleId,
             @RequestBody ClubScheduleUpdateRequestDto request,
             @AuthenticationPrincipal User sessionMember) {
-        clubScheduleService.updateSchedule(clubId, scheduleId, request, sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        clubScheduleService.updateSchedule(clubId, scheduleId, request, memberEmail);
         return ResponseEntity.ok("일정이 수정되었습니다.");
     }
 
@@ -51,7 +53,8 @@ public class ClubScheduleController {
             @PathVariable Long clubId,
             @PathVariable Long scheduleId,
             @AuthenticationPrincipal User sessionMember) {
-        clubScheduleService.deleteSchedule(clubId, scheduleId, sessionMember.getUsername());
+        String memberEmail = sessionMember.getUsername();
+        clubScheduleService.deleteSchedule(clubId, scheduleId, memberEmail);
         return ResponseEntity.ok("일정이 삭제되었습니다.");
     }
 
@@ -62,7 +65,8 @@ public class ClubScheduleController {
             @PathVariable Long scheduleId,
             @RequestBody ParticipationRequestDto request,
             @AuthenticationPrincipal User sessionMember) {
-        clubScheduleService.setParticipation(clubId, scheduleId, sessionMember.getUsername(), request);
+        String memberEmail = sessionMember.getUsername();
+        clubScheduleService.setParticipation(clubId, scheduleId, memberEmail, request);
         return ResponseEntity.ok("일정 참석이 반영되었습니다.");
     }
 
