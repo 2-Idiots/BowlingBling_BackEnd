@@ -198,7 +198,10 @@ public class ClubBoardService {
 
     @Transactional(readOnly = true)
     public List<ClubBoardDetailDto> getPinnedPosts(Long clubId) {
-        return boardRepository.findByClubIdAndIsPinnedTrue(clubId).stream()
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 클럽을 찾을 수 없습니다."));
+
+        return boardRepository.findByClubAndIsPinnedTrue(club).stream()
                 .map(this::convertToPostDto)
                 .collect(Collectors.toList());
     }

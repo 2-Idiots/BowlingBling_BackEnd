@@ -1,5 +1,6 @@
 package com.capstone.bowlingbling.domain.club.repository;
 
+import com.capstone.bowlingbling.domain.club.domain.Club;
 import com.capstone.bowlingbling.domain.club.domain.ClubBoard;
 import com.capstone.bowlingbling.global.enums.ClubCategory;
 import jakarta.transaction.Transactional;
@@ -11,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ClubBoardRepository extends JpaRepository<ClubBoard, Long>, JpaSpecificationExecutor<ClubBoard> {
-    List<ClubBoard> findByClubIdAndIsPinnedTrue(Long clubId);
+    List<ClubBoard> findByClubAndIsPinnedTrue(Club club);
 
     @Modifying
     @Transactional
