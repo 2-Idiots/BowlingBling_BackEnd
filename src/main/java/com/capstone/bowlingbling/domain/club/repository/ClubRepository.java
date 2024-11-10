@@ -9,9 +9,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
+    boolean existsByClubIdAndMemberId(Long clubId, Long memberId);
+
     Page<Club> findAllByDeletedAtIsNull(Pageable pageable);
 
     @Modifying

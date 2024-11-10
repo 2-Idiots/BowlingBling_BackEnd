@@ -96,8 +96,7 @@ public class ClubJoinListService {
         Club club = clubJoinList.getClub();
         Member member = clubJoinList.getMember();
 
-        if (club.getMembers().stream()
-                .noneMatch(existingMember -> existingMember.getEmail().equals(member.getEmail()))) {
+        if (!clubRepository.existsByClubIdAndMemberId(clubId, member.getId())) {
             club.getMembers().add(member);  // 멤버 추가
         } else {
             throw new IllegalStateException("이미 클럽에 가입된 멤버입니다.");
