@@ -1,10 +1,12 @@
 package com.capstone.bowlingbling.domain.club.service;
 
+import com.capstone.bowlingbling.domain.club.domain.Club;
 import com.capstone.bowlingbling.domain.club.domain.ClubBoard;
 import com.capstone.bowlingbling.domain.club.domain.ClubBoardFile;
 import com.capstone.bowlingbling.domain.club.dto.clubBoard.*;
 import com.capstone.bowlingbling.domain.club.repository.ClubBoardFileRepository;
 import com.capstone.bowlingbling.domain.club.repository.ClubBoardRepository;
+import com.capstone.bowlingbling.domain.club.repository.ClubRepository;
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
@@ -32,6 +34,7 @@ public class ClubBoardService {
     private final S3ImageService s3ImageService;
     private final MemberRepository memberRepository;
     private final ClubBoardFileRepository clubBoardFileRepository;
+    private final ClubRepository clubRepository;
 
     @Transactional(readOnly = true)
     public ClubBoardListResponseDto getPostList(Long clubId, ClubCategory category, String searchType, String keyword, int page, int size) {
@@ -58,17 +61,24 @@ public class ClubBoardService {
     public ClubBoardDetailDto getPostDetail(Long clubId, Long postId) {
         ClubBoard post = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        post.incrementViewCount();
+        boardRepository.save(post);
+
         return convertToPostDto(post);
     }
 
     @Transactional
     public void createPost(Long clubId, ClubBoardCreateDto request, String memberEmail, List<MultipartFile> attachments) throws IOException {
+
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 클럽 ID 입니다."));
         // 작성자 정보 조회
         Member author = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
 
         // ClubBoard 엔티티 생성
         ClubBoard clubBoard = ClubBoard.builder()
+                .club(club)
                 .title(request.getTitle())
                 .content(request.getContent())
                 .clubCategory(request.getCategory())
