@@ -5,9 +5,12 @@ import com.capstone.bowlingbling.domain.club.dto.clubBoard.ClubBoardDetailDto;
 import com.capstone.bowlingbling.domain.club.dto.clubBoard.ClubBoardListResponseDto;
 import com.capstone.bowlingbling.domain.club.service.ClubBoardService;
 import com.capstone.bowlingbling.global.enums.ClubCategory;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -26,6 +29,7 @@ public class ClubBoardController {
 
     // 1. 게시글 목록 조회
     @GetMapping
+    @Operation(summary = "동호회 게시글 목록 조회", description = "동호회 게시글을 목록을 조회합니다.")
     public ResponseEntity<ClubBoardListResponseDto> getPosts(
             @PathVariable Long clubId,
             @RequestParam(required = false) ClubCategory category,
@@ -40,6 +44,7 @@ public class ClubBoardController {
 
     // 2. 게시글 상세 조회
     @GetMapping("/{postId}")
+    @Operation(summary = "동호회 게시글 상세 조회", description = "게시글 상세를 조회합니다.")
     public ResponseEntity<ClubBoardDetailDto> getPost(
             @PathVariable Long clubId,
             @PathVariable Long postId
@@ -50,10 +55,12 @@ public class ClubBoardController {
 
     // 3. 게시글 작성
     @PostMapping
+    @Operation(summary = "동호회 게시글 작성", description = "동호회 게시글을 작성합니다.")
     public ResponseEntity<String> createPost(
             @PathVariable Long clubId,
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
             @RequestPart(value = "request") @Valid ClubBoardCreateDto request,
+            @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
     ) throws IOException {
         String authorEmail = sessionMember.getUsername();
@@ -63,11 +70,13 @@ public class ClubBoardController {
 
     // 4. 게시글 수정
     @PatchMapping("/{postId}")
+    @Operation(summary = "동호회 게시글 수정", description = "동호회 게시글을 수정합니다.")
     public ResponseEntity<String> updatePost(
             @PathVariable Long clubId,
             @PathVariable Long postId,
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
             @RequestPart(value = "request") ClubBoardCreateDto request,
+            @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
             @RequestParam(value = "keepAttachments", required = false) List<Long> keepAttachments
     ) throws IOException {
@@ -78,6 +87,7 @@ public class ClubBoardController {
 
     // 5. 게시글 삭제
     @DeleteMapping("/{postId}")
+    @Operation(summary = "동호회 게시글 삭제", description = "동호회 게시글을 삭제합니다.")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long clubId,
             @PathVariable Long postId,
@@ -90,6 +100,7 @@ public class ClubBoardController {
 
     // 9. 첨부파일 다운로드
     @GetMapping("/{postId}/attachments/{attachmentId}")
+    @Operation(summary = "첨부파일 다운로드", description = "첨부파일을 다운로드 합니다.")
     public ResponseEntity<byte[]> downloadAttachment(
             @PathVariable Long clubId,
             @PathVariable Long postId,
