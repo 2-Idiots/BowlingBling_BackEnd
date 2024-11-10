@@ -35,6 +35,7 @@ public class ClubBoard extends BaseEntity {
     private Integer viewCount;
     private Integer commentCount;
 
+    @Builder.Default
     @OneToMany(mappedBy = "clubBoard", cascade = CascadeType.ALL)
     private List<ClubBoardFile> attachments = new ArrayList<>();;
 
