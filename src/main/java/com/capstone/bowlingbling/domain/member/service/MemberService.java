@@ -25,6 +25,7 @@ import com.capstone.bowlingbling.domain.member.dto.TeacherRequestDto;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
 import com.capstone.bowlingbling.domain.member.repository.TeacherRequestRepository;
 import com.capstone.bowlingbling.global.enums.ClubRole;
+import com.capstone.bowlingbling.global.enums.RequestStatus;
 import com.capstone.bowlingbling.global.enums.Role;
 import com.capstone.bowlingbling.global.enums.TeacherStatus;
 import lombok.RequiredArgsConstructor;
@@ -229,23 +230,26 @@ public class MemberService {
     public List<ClubListResponseDto> getMyClubs(String memberEmail) {
         List<ClubJoinList> clubJoinLists = clubJoinListRepository.findClubsByMemberEmail(memberEmail);
         return clubJoinLists.stream()
-                .map(clubList -> ClubListResponseDto.builder()
-                        .id(clubList.getClub().getId())
-                        .name(clubList.getClub().getClubName())
-                        .description(clubList.getClub().getDescription())
-                        .location(clubList.getClub().getLocation())
-                        .memberCount(clubList.getClub().getMembers().size())
-                        .maxMembers(clubList.getClub().getMaxMembers())
-                        .averageScore(clubList.getClub().getAverageScore())
-                        .meetingDays(clubList.getClub().getMeetingDays())
-                        .images(clubList.getClub().getImages())
-                        .leader(new ClubMemberResponseDto(clubList.getClub().getLeader()))
-                        .isRecruiting(clubList.getClub().isRecruiting())
-                        .category(clubList.getClub().getCategory())
-                        .requirements(clubList.getClub().getRequirements())
-                        .monthlyFee(clubList.getClub().getMonthlyFee())
-                        .establishedAt(clubList.getClub().getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                        .build())
+                .map(clubList -> {
+                    int activeMemberCount = clubJoinListRepository.countByClubIdAndStatus(clubList.getClub().getId(), RequestStatus.ACTIVE);
+                    return ClubListResponseDto.builder()
+                            .id(clubList.getClub().getId())
+                            .name(clubList.getClub().getClubName())
+                            .description(clubList.getClub().getDescription())
+                            .location(clubList.getClub().getLocation())
+                            .memberCount(activeMemberCount)
+                            .maxMembers(clubList.getClub().getMaxMembers())
+                            .averageScore(clubList.getClub().getAverageScore())
+                            .meetingDays(clubList.getClub().getMeetingDays())
+                            .images(clubList.getClub().getImages())
+                            .leader(new ClubMemberResponseDto(clubList.getClub().getLeader()))
+                            .isRecruiting(clubList.getClub().isRecruiting())
+                            .category(clubList.getClub().getCategory())
+                            .requirements(clubList.getClub().getRequirements())
+                            .monthlyFee(clubList.getClub().getMonthlyFee())
+                            .establishedAt(clubList.getClub().getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -259,23 +263,26 @@ public class MemberService {
         }
 
         return managingClubs.stream()
-                .map(clubList -> ClubListResponseDto.builder()
-                        .id(clubList.getClub().getId())
-                        .name(clubList.getClub().getClubName())
-                        .description(clubList.getClub().getDescription())
-                        .location(clubList.getClub().getLocation())
-                        .memberCount(clubList.getClub().getMembers().size())
-                        .maxMembers(clubList.getClub().getMaxMembers())
-                        .averageScore(clubList.getClub().getAverageScore())
-                        .meetingDays(clubList.getClub().getMeetingDays())
-                        .images(clubList.getClub().getImages())
-                        .leader(new ClubMemberResponseDto(clubList.getClub().getLeader()))
-                        .isRecruiting(clubList.getClub().isRecruiting())
-                        .category(clubList.getClub().getCategory())
-                        .requirements(clubList.getClub().getRequirements())
-                        .monthlyFee(clubList.getClub().getMonthlyFee())
-                        .establishedAt(clubList.getClub().getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                        .build())
+                .map(clubList -> {
+                    int activeMemberCount = clubJoinListRepository.countByClubIdAndStatus(clubList.getClub().getId(), RequestStatus.ACTIVE);
+                    return ClubListResponseDto.builder()
+                            .id(clubList.getClub().getId())
+                            .name(clubList.getClub().getClubName())
+                            .description(clubList.getClub().getDescription())
+                            .location(clubList.getClub().getLocation())
+                            .memberCount(activeMemberCount)
+                            .maxMembers(clubList.getClub().getMaxMembers())
+                            .averageScore(clubList.getClub().getAverageScore())
+                            .meetingDays(clubList.getClub().getMeetingDays())
+                            .images(clubList.getClub().getImages())
+                            .leader(new ClubMemberResponseDto(clubList.getClub().getLeader()))
+                            .isRecruiting(clubList.getClub().isRecruiting())
+                            .category(clubList.getClub().getCategory())
+                            .requirements(clubList.getClub().getRequirements())
+                            .monthlyFee(clubList.getClub().getMonthlyFee())
+                            .establishedAt(clubList.getClub().getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 

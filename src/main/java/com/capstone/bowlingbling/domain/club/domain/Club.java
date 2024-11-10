@@ -32,12 +32,9 @@ public class Club extends BaseEntity {
     private int monthlyFee;
     private boolean isRecruiting;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Member> members;
-
     @ElementCollection
     private List<String> images; //동호회 소개 이미지
 
-    @OneToOne
-    private ClubJoinList joinList; //멤버 리스트
+    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY)
+    private List<ClubJoinList> joinList;
 }

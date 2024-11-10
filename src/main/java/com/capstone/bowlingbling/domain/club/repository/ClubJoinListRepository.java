@@ -51,4 +51,6 @@ public interface ClubJoinListRepository extends JpaRepository<ClubJoinList, Long
     // 신청 대기 중인 클럽 (PENDING 상태)
     @Query("SELECT cj FROM ClubJoinList cj WHERE cj.member.email = :email AND cj.status = 'PENDING'")
     List<ClubJoinList> findPendingApplicationsByMemberEmail(@Param("email") String email);
+
+    int countByClubIdAndStatus(Long clubId, RequestStatus status);
 }
