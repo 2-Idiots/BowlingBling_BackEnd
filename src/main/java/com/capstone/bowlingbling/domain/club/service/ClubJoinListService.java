@@ -86,20 +86,11 @@ public class ClubJoinListService {
     public void approveJoinRequest(Long clubId, Long requestId, String leaderEmail) {
         Member leader = memberRepository.findByEmail(leaderEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
-        ClubJoinList clubJoinList = clubJoinListRepository.findById(requestId)
+        clubJoinListRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("가입 신청을 찾을 수 없습니다."));
 
         if (!isAuthorizedForClub(clubId, leader) && !leader.getRole().equals(Role.ADMIN)) {
             throw new IllegalStateException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
-        }
-
-        Club club = clubJoinList.getClub();
-        Member member = clubJoinList.getMember();
-
-        if (!clubRepository.existsByClubIdAndMemberId(clubId, requestId)) {
-            club.getMembers().add(member);  // 멤버 추가
-        } else {
-            throw new IllegalStateException("이미 클럽에 가입된 멤버입니다.");
         }
 
         clubJoinListRepository.updateJoinRequestStatus(requestId, RequestStatus.ACTIVE);

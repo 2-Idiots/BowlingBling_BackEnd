@@ -192,7 +192,7 @@ public class ClubScheduleService {
                 .participant(participantDtos)       // 참가자 리스트
                 .attending(attendingCount)       // 참석 수
                 .notAttending(notAttendingCount) // 불참 수
-                .number(club.getMembers().size())     // 참가자 수
+                .number(club.getJoinList().size())     // 참가자 수
                 .build();
     }
 

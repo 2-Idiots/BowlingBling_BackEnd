@@ -135,24 +135,26 @@ public class ClubService {
     @Transactional
     public Page<ClubListResponseDto> getClubs(Pageable pageable) {
         return clubRepository.findAllByDeletedAtIsNull(pageable)
-                .map(club -> ClubListResponseDto.builder()
-                        .id(club.getId())
-                        .name(club.getClubName())
-                        .description(club.getDescription())
-                        .location(club.getLocation())
-                        .memberCount(club.getMembers().size())
-                        .maxMembers(club.getMaxMembers())
-                        .averageScore(club.getAverageScore())
-                        .meetingDays(club.getMeetingDays())
-                        .images(club.getImages())
-                        .leader(new ClubMemberResponseDto(club.getLeader()))
-                        .isRecruiting(club.isRecruiting())
-                        .category(club.getCategory())
-                        .requirements(club.getRequirements())
-                        .monthlyFee(club.getMonthlyFee())
-                        .establishedAt(club.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                        .build()
-                );
+                .map(club -> {
+                    int activeMemberCount = clubJoinListRepository.countByClubIdAndStatus(club.getId(), RequestStatus.ACTIVE);
+                    return ClubListResponseDto.builder()
+                            .id(club.getId())
+                            .name(club.getClubName())
+                            .description(club.getDescription())
+                            .location(club.getLocation())
+                            .memberCount(activeMemberCount)
+                            .maxMembers(club.getMaxMembers())
+                            .averageScore(club.getAverageScore())
+                            .meetingDays(club.getMeetingDays())
+                            .images(club.getImages())
+                            .leader(new ClubMemberResponseDto(club.getLeader()))
+                            .isRecruiting(club.isRecruiting())
+                            .category(club.getCategory())
+                            .requirements(club.getRequirements())
+                            .monthlyFee(club.getMonthlyFee())
+                            .establishedAt(club.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                            .build();
+                });
     }
 
     @Transactional
@@ -160,12 +162,14 @@ public class ClubService {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 클럽입니다."));
 
+        int activeMemberCount = clubJoinListRepository.countByClubIdAndStatus(club.getId(), RequestStatus.ACTIVE);
+
         return ClubDetailResponseDto.builder()
                 .id(club.getId())
                 .name(club.getClubName())
                 .description(club.getDescription())
                 .location(club.getLocation())
-                .memberCount(club.getMembers().size())
+                .memberCount(activeMemberCount)
                 .maxMembers(club.getMaxMembers())
                 .averageScore(club.getAverageScore())
                 .meetingDays(club.getMeetingDays())
@@ -280,15 +284,14 @@ public class ClubService {
             throw new IllegalArgumentException("LEADER는 탈퇴시킬 수 없습니다.");
         }
 
-        Member memberToRemove = memberRepository.findById(userId)
+        memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        if (!club.getMembers().contains(memberToRemove)) {
-            throw new IllegalArgumentException("해당 회원은 클럽에 속해 있지 않습니다.");
-        }
+        ClubJoinList clubJoinList = clubJoinListRepository.findByClubIdAndMemberId(clubId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원은 클럽에 속해 있지 않습니다."));
 
-        // 클럽의 멤버 목록에서 제거
-        club.getMembers().remove(memberToRemove);
+        // ClubJoinList에서 삭제 (클럽과 멤버 간의 관계 해제)
+        clubJoinListRepository.delete(clubJoinList);
 
         clubJoinListRepository.findByClubIdAndMemberId(clubId, userId)
                 .ifPresent(clubJoinListRepository::delete);

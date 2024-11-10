@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
-    boolean existsByClubIdAndMemberId(Long clubId, Long memberId);
 
     Page<Club> findAllByDeletedAtIsNull(Pageable pageable);
 
