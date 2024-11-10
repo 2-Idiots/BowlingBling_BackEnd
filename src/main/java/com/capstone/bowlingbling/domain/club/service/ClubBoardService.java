@@ -62,6 +62,7 @@ public class ClubBoardService {
         ClubBoard post = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         post.incrementViewCount();
+
         boardRepository.save(post);
 
         return convertToPostDto(post);
@@ -231,10 +232,11 @@ public class ClubBoardService {
 
     private Specification<ClubBoard> buildSpecification(Long clubId, ClubCategory category, String searchType, String keyword) {
         return (root, query, criteriaBuilder) -> {
-            Predicate basePredicate = criteriaBuilder.equal(root.get("clubId"), clubId);
+            // clubId가 아닌 club 필드를 사용해야 합니다.
+            Predicate basePredicate = criteriaBuilder.equal(root.get("club").get("id"), clubId);  // club 엔티티의 id 속성을 사용
 
             Predicate categoryPredicate = category != null
-                    ? criteriaBuilder.equal(root.get("category"), category)
+                    ? criteriaBuilder.equal(root.get("clubCategory"), category) // clubCategory 필드는 바로 사용
                     : criteriaBuilder.conjunction();
 
             Predicate keywordPredicate = keyword != null && searchType != null
