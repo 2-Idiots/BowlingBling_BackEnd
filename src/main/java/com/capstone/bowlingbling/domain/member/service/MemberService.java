@@ -69,6 +69,7 @@ public class MemberService {
                 .introduction(member.getIntroduction())
                 .sex(member.getSex())
                 .role(member.getRole())
+                .myaver(member.getMyaver())
                 .socialType(member.getSocialType())
                 .build();
     }
