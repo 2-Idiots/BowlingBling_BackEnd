@@ -40,4 +40,12 @@ public class ClubBoard extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean isPinned = false;
+
+    public void incrementViewCount() {
+        if (this.viewCount == null) {
+            this.viewCount = 1;
+        } else {
+            this.viewCount += 1;
+        }
+    }
 }

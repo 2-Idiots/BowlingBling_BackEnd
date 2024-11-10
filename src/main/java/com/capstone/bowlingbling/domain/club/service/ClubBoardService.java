@@ -61,6 +61,9 @@ public class ClubBoardService {
     public ClubBoardDetailDto getPostDetail(Long clubId, Long postId) {
         ClubBoard post = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        post.incrementViewCount();
+        boardRepository.save(post);
+
         return convertToPostDto(post);
     }
 
