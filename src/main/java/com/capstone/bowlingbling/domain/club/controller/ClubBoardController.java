@@ -76,9 +76,9 @@ public class ClubBoardController {
             @PathVariable Long postId,
             @Parameter(hidden = true) @AuthenticationPrincipal User sessionMember,
             @RequestPart(value = "request") ClubBoardCreateDto request,
+            @RequestPart(value = "keepAttachments") List<Long> keepAttachments,
             @Parameter(description = "업로드할 파일 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
-            @RequestParam(value = "keepAttachments", required = false) List<Long> keepAttachments
+            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
     ) throws IOException {
         String authorEmail = sessionMember.getUsername();
         clubBoardService.updatePost(clubId, postId, authorEmail, request, keepAttachments, attachments);
