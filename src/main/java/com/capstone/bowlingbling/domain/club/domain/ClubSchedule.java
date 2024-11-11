@@ -14,7 +14,7 @@ import java.util.List;
 
 @Getter
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "club_schedules")
