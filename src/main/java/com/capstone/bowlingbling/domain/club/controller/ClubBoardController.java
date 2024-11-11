@@ -98,17 +98,6 @@ public class ClubBoardController {
         return ResponseEntity.noContent().build();
     }
 
-    // 9. 첨부파일 다운로드
-    @GetMapping("/{postId}/attachments/{attachmentId}")
-    @Operation(summary = "첨부파일 다운로드", description = "첨부파일을 다운로드 합니다.")
-    public ResponseEntity<byte[]> downloadAttachment(
-            @PathVariable Long clubId,
-            @PathVariable Long postId,
-            @PathVariable Long attachmentId
-    ) throws IOException {
-        return clubBoardService.downloadAttachment(clubId, postId, attachmentId);
-    }
-
     // 10. 공지사항 목록 조회 (핀 고정만)
     @GetMapping("/pinned")
     public ResponseEntity<List<ClubBoardDetailDto>> getPinnedPosts(

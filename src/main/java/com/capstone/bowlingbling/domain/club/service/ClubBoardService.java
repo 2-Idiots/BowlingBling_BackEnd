@@ -207,25 +207,6 @@ public class ClubBoardService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public ResponseEntity<byte[]> downloadAttachment(Long clubId, Long postId, Long attachmentId) throws IOException {
-        // 게시글 조회
-        ClubBoard post = boardRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-
-        // 첨부파일 조회 (첨부파일 ID와 게시글 ID를 기준으로 조회)
-        ClubBoardFile attachment = clubBoardFileRepository.findById(attachmentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 첨부파일이 존재하지 않습니다."));
-
-        // 첨부파일이 해당 게시글과 연결되어 있는지 확인
-        if (!attachment.getClubBoard().getId().equals(postId)) {
-            throw new IllegalArgumentException("첨부파일과 게시글이 일치하지 않습니다.");
-        }
-
-        // 파일 다운로드 요청을 FileDownloadService로 위임
-        return s3ImageService.downloadFileFromS3(attachment.getFileUrl(), attachment.getFilename());
-    }
-
     private boolean isAuthorized(Member member, ClubBoard post) {
         return !member.getId().equals(post.getAuthor().getId()) && !member.getRole().equals(Role.ADMIN);
     }
