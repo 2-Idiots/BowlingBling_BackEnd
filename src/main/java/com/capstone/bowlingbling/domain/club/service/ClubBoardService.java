@@ -113,7 +113,7 @@ public class ClubBoardService {
     }
 
     @Transactional
-    public ClubBoardDetailDto updatePost(Long clubId, Long postId, String memberEmail, ClubBoardCreateDto request, List<Long> keepAttachments, List<MultipartFile> attachments) throws IOException {
+    public ClubBoardDetailDto updatePost(Long clubId, Long postId, String memberEmail, ClubBoardCreateDto request, List<MultipartFile> attachments) throws IOException {
         clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 클럽입니다."));
 
@@ -137,23 +137,7 @@ public class ClubBoardService {
                 request.getIsPinned()
         );
 
-        if (keepAttachments != null) {
-            // keepAttachments에 포함되지 않은 파일을 삭제
-            List<ClubBoardFile> filesToRemove = post.getAttachments().stream()
-                    .filter(file -> !keepAttachments.contains(file.getId())) // keepAttachments에 포함되지 않은 파일 삭제
-                    .toList();
-
-            // 기존 첨부파일 삭제
-            for (ClubBoardFile fileToRemove : filesToRemove) {
-                // S3에서 파일 삭제
-                s3ImageService.deleteFile(fileToRemove.getFileUrl());
-
-                // ClubBoardFile 엔티티 삭제
-                clubBoardFileRepository.delete(fileToRemove);
-            }
-        }
-        // 새로운 첨부파일 처리
-        if (attachments != null && !attachments.isEmpty()) {
+        if (attachments != null && !attachments.isEmpty() && !attachments.get(0).isEmpty()) {
             List<String> newAttachments = s3ImageService.uploadMultiple(attachments.toArray(new MultipartFile[0]));
 
             // 새로운 첨부파일 저장
@@ -167,6 +151,7 @@ public class ClubBoardService {
                         .build();
 
                 clubBoardFileRepository.save(newFile);
+                post.getAttachments().add(newFile);
             }
         }
 
