@@ -45,9 +45,9 @@ public class ClubScheduleService {
                 .deadlineDate(request.getDeadlineDate())
                 .cancelableDate(request.getCancelableDate())
                 .createdBy(creator)
-                .frequency(request.getRepeatPattern().getFrequency() != null ? request.getRepeatPattern().getFrequency() : null)
-                .daysOfWeek(request.getRepeatPattern().getDaysOfWeek() != null ? request.getRepeatPattern().getDaysOfWeek() : null)
-                .repeatEndDate(request.getRepeatPattern().getRepeatEndDate() != null ? request.getRepeatPattern().getRepeatEndDate() : null)
+                .frequency(request.getRepeatPattern().getFrequency())
+                .daysOfWeek(request.getRepeatPattern().getDaysOfWeek())
+                .repeatEndDate(request.getRepeatPattern().getRepeatEndDate())
                 .build();
 
         return scheduleRepository.save(schedule).getId();
