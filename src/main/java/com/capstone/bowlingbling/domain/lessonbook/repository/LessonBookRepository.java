@@ -4,6 +4,8 @@ import com.capstone.bowlingbling.domain.lessonbook.domain.LessonBook;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.global.enums.RequestStatus;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +23,9 @@ public interface LessonBookRepository extends JpaRepository<LessonBook, Long> {
 
     List<LessonBook> findByStudent(Member student);  // 학생이 신청한 요청 목록
 
-    List<LessonBook> findByTeacher(Member teacher);  // 선생에게 온 요청 목록
+    Page<LessonBook> findByTeacher(Member teacher, Pageable pageable);  // 선생에게 온 요청 목록
+
+    Optional<LessonBook> findByIdAndTeacherEmail(Long bookingId, String teacherEmail);
 
     @Modifying
     @Transactional

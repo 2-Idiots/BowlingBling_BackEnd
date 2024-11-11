@@ -49,6 +49,31 @@ public class LessonBookController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/{bookingId}/approve")
+    @Operation(summary = "레슨 요청 승인", description = "선생님이 레슨 요청을 승인하는 API입니다.")
+    public ResponseEntity<LessonBookStatusResponseDto> approveLessonRequest(
+            @AuthenticationPrincipal User sessionTeacher,
+            @PathVariable Long bookingId) {
+
+        String teacherEmail = sessionTeacher.getUsername();
+        LessonBookStatusResponseDto response = lessonBookService.approveLessonRequest(bookingId, teacherEmail);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{bookingId}/reject")
+    @Operation(summary = "레슨 요청 거절", description = "선생님이 레슨 요청을 거절하는 API입니다.")
+    public ResponseEntity<LessonBookStatusResponseDto> rejectLessonRequest(
+            @AuthenticationPrincipal User sessionTeacher,
+            @PathVariable Long bookingId,
+            @RequestBody(required = false) String reason) {
+
+        String teacherEmail = sessionTeacher.getUsername();
+        LessonBookStatusResponseDto response = lessonBookService.rejectLessonRequest(bookingId, teacherEmail, reason);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/my-teachers")
     @Operation(summary = "내 레슨 요청 조회", description = "학생이 자신이 요청한 레슨 목록을 조회하는 API입니다.")
     public ResponseEntity<List<LessonBookedMyTeachersDto>> getMyLessonRequests(
@@ -60,13 +85,15 @@ public class LessonBookController {
         return ResponseEntity.ok(myLessonRequests);
     }
 
-    @GetMapping("/received-requests")
+    @GetMapping("/teacher-bookings")
     @Operation(summary = "받은 레슨 요청 조회", description = "선생님이 자신에게 온 레슨 요청 목록을 조회하는 API입니다.")
-    public ResponseEntity<List<LessonBookedStudentListDto>> getReceivedRequests(
-            @AuthenticationPrincipal User sessionTeacher) {
+    public ResponseEntity<PagedLessonBookedStudentDto> getReceivedRequests(
+            @AuthenticationPrincipal User sessionTeacher,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size) {
 
         String teacherEmail = sessionTeacher.getUsername();
-        List<LessonBookedStudentListDto> requests = lessonBookService.getReceivedRequests(teacherEmail);
+        PagedLessonBookedStudentDto requests = lessonBookService.getReceivedRequests(teacherEmail, page, size);
 
         return ResponseEntity.ok(requests);
     }

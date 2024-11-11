@@ -7,6 +7,8 @@ import com.capstone.bowlingbling.domain.club.dto.clubBoard.*;
 import com.capstone.bowlingbling.domain.club.repository.ClubBoardFileRepository;
 import com.capstone.bowlingbling.domain.club.repository.ClubBoardRepository;
 import com.capstone.bowlingbling.domain.club.repository.ClubRepository;
+import com.capstone.bowlingbling.domain.comment.domain.ClubBoardComment;
+import com.capstone.bowlingbling.domain.comment.repository.ClubBoardCommentRepository;
 import com.capstone.bowlingbling.domain.image.service.S3ImageService;
 import com.capstone.bowlingbling.domain.member.domain.Member;
 import com.capstone.bowlingbling.domain.member.repository.MemberRepository;
@@ -17,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ public class ClubBoardService {
     private final MemberRepository memberRepository;
     private final ClubBoardFileRepository clubBoardFileRepository;
     private final ClubRepository clubRepository;
+    private final ClubBoardCommentRepository clubBoardCommentRepository;
 
     @Transactional(readOnly = true)
     public ClubBoardListResponseDto getPostList(Long clubId, ClubCategory category, String searchType, String keyword, int page, int size) {
@@ -169,6 +171,13 @@ public class ClubBoardService {
         // 권한 검사
         if (isAuthorized(member, post)) {
             throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+
+        List<ClubBoardComment> comments = clubBoardCommentRepository.findByClubBoard(post);
+        if (comments != null && !comments.isEmpty()) {
+            for (ClubBoardComment comment : comments) {
+                clubBoardCommentRepository.delete(comment);
+            }
         }
 
         List<ClubBoardFile> files = post.getAttachments();
