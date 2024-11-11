@@ -45,10 +45,18 @@ public class ClubScheduleService {
                 .deadlineDate(request.getDeadlineDate())
                 .cancelableDate(request.getCancelableDate())
                 .createdBy(creator)
-                .frequency(request.getRepeatPattern().getFrequency())
-                .daysOfWeek(request.getRepeatPattern().getDaysOfWeek())
-                .repeatEndDate(request.getRepeatPattern().getRepeatEndDate())
                 .build();
+
+        // 만약 'isRegular'가 true라면, repeatPattern 정보 추가
+        if (request.getIsRegular() != null && request.getIsRegular()) {
+            if (request.getRepeatPattern() != null) {
+                schedule = schedule.toBuilder()
+                        .frequency(request.getRepeatPattern().getFrequency())
+                        .daysOfWeek(request.getRepeatPattern().getDaysOfWeek())
+                        .repeatEndDate(request.getRepeatPattern().getRepeatEndDate())
+                        .build();
+            }
+        }
 
         return scheduleRepository.save(schedule).getId();
     }
