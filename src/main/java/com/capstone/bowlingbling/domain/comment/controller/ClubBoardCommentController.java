@@ -6,6 +6,8 @@ import com.capstone.bowlingbling.domain.comment.service.ClubBoardCommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,9 +28,10 @@ public class ClubBoardCommentController {
     // 7. 댓글 작성
     @PostMapping
     public ResponseEntity<String> createComment(@PathVariable Long clubId,
-                                                           @PathVariable Long postId,
-                                                           @RequestBody CommentRequestDto content,
-                                                           @RequestHeader String memberEmail) {
+                                                @PathVariable Long postId,
+                                                @RequestBody CommentRequestDto content,
+                                                @AuthenticationPrincipal User user) {
+        String memberEmail = user.getUsername();
         commentService.createComment(clubId, postId, memberEmail, content);
         return ResponseEntity.ok("댓글이 작성되었습니다.");
     }
@@ -38,7 +41,8 @@ public class ClubBoardCommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable Long clubId,
                                               @PathVariable Long postId,
                                               @PathVariable Long commentId,
-                                              @RequestHeader String memberEmail) {
+                                              @AuthenticationPrincipal User user) {
+        String memberEmail = user.getUsername();
         commentService.deleteComment(clubId, postId, commentId, memberEmail);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
