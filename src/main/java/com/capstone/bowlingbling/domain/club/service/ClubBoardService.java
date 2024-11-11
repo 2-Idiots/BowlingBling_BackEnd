@@ -114,6 +114,9 @@ public class ClubBoardService {
 
     @Transactional
     public ClubBoardDetailDto updatePost(Long clubId, Long postId, String memberEmail, ClubBoardCreateDto request, List<Long> keepAttachments, List<MultipartFile> attachments) throws IOException {
+        clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 클럽입니다."));
+
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
 
@@ -138,7 +141,7 @@ public class ClubBoardService {
             // keepAttachments에 포함되지 않은 파일을 삭제
             List<ClubBoardFile> filesToRemove = post.getAttachments().stream()
                     .filter(file -> !keepAttachments.contains(file.getId())) // keepAttachments에 포함되지 않은 파일 삭제
-                    .collect(Collectors.toList());
+                    .toList();
 
             // 기존 첨부파일 삭제
             for (ClubBoardFile fileToRemove : filesToRemove) {
