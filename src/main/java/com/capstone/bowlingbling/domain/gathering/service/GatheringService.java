@@ -50,6 +50,11 @@ public class GatheringService {
                 .images(imageUrls)
                 .build();
 
+        gathering.getMemberGatherings().add(MemberGathering.builder()
+                .gathering(gathering)
+                .member(member)
+                .build());
+
         gatheringRepository.save(gathering);
     }
 
