@@ -59,7 +59,7 @@ public class ClubBoardService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ClubBoardDetailDto getPostDetail(Long clubId, Long postId) {
         ClubBoard post = boardRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
