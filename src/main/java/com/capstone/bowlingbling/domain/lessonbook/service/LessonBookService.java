@@ -54,7 +54,7 @@ public class LessonBookService {
     }
 
     public List<LessonBookDateTimeDto> getLessonDatesAndTimes(Long lessonInfoId) {
-        return lessonBookRepository.findByLessonInfo_Id(lessonInfoId)
+        return lessonBookRepository.findByLessonInfo_IdOrderByCreatedAtDesc(lessonInfoId)
                 .stream()
                 .map(lessonBook -> LessonBookDateTimeDto.builder()
                         .date(lessonBook.getDate())

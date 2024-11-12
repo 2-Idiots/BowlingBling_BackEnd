@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @Repository
 public interface GatheringRepository extends JpaRepository<Gathering, Long> {
-    @Query("SELECT g FROM Gathering g WHERE g.deletedAt IS NULL")
+    @Query("SELECT g FROM Gathering g WHERE g.deletedAt IS NULL ORDER BY g.createdAt DESC")
     Page<Gathering> findAllActive(Pageable pageable);
 
     Optional<Gathering> findById(Long Id);
