@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,7 +95,10 @@ public class ClubJoinListService {
             throw new IllegalStateException("권한이 없습니다. 승인 작업은 해당 클럽의 LEADER 또는 MANAGER만 가능합니다.");
         }
 
-        clubJoinListRepository.updateJoinRequestStatus(requestId, RequestStatus.ACTIVE);
+        String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); // 현재 시간
+
+        // 상태 변경 및 clubJoinedAt 시간 설정
+        clubJoinListRepository.updateJoinRequestStatusWithTime(requestId, RequestStatus.ACTIVE, currentTime);
     }
 
     @Transactional
