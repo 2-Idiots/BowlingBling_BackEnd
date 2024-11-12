@@ -28,6 +28,13 @@ public interface ClubJoinListRepository extends JpaRepository<ClubJoinList, Long
 
     @Modifying
     @Transactional
+    @Query("UPDATE ClubJoinList c SET c.status = :status, c.clubJoinedAt = :clubJoinedAt WHERE c.id = :requestId")
+    void updateJoinRequestStatusWithTime(@Param("requestId") Long requestId,
+                                         @Param("status") RequestStatus status,
+                                         @Param("clubJoinedAt") String clubJoinedAt);
+
+    @Modifying
+    @Transactional
     @Query("UPDATE ClubJoinList c SET c.status = :status WHERE c.id = :requestId")
     void updateJoinRequestStatus(@Param("requestId") Long requestId, @Param("status") RequestStatus status);
 
