@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
 
-    Page<Club> findAllByDeletedAtIsNull(Pageable pageable);
+    Page<Club> findAllByDeletedAtIsNullOrderByCreatedAtDesc(Pageable pageable);
 
     @Modifying
     @Transactional

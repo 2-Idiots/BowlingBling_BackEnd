@@ -134,7 +134,7 @@ public class ClubService {
 
     @Transactional
     public Page<ClubListResponseDto> getClubs(Pageable pageable) {
-        return clubRepository.findAllByDeletedAtIsNull(pageable)
+        return clubRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc(pageable)
                 .map(club -> {
                     int activeMemberCount = clubJoinListRepository.countByClubIdAndStatus(club.getId(), RequestStatus.ACTIVE);
                     return ClubListResponseDto.builder()

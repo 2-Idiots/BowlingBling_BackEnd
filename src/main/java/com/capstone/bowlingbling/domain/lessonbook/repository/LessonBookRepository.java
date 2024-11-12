@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface LessonBookRepository extends JpaRepository<LessonBook, Long> {
 
-    List<LessonBook> findByLessonInfo_Id(Long lessonInfoId);
+    List<LessonBook> findByLessonInfo_IdOrderByCreatedAtDesc(Long lessonInfoId);
 
     @Query("SELECT lr FROM LessonBook lr WHERE lr.date = :date AND lr.time = :time AND lr.teacher.id = :teacherId")
     Optional<LessonBook> findByDayOfWeekAndTimeAndTeacher_Id(@Param("date") String date, @Param("time") String time, @Param("teacherId") Long teacherId);

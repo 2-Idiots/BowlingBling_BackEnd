@@ -58,7 +58,7 @@ public class CenterService {
     }
 
     public Page<CenterListResponseDto> getAllCenters(Pageable pageable) {
-        Page<Center> centerPage = centerRepository.findAll(pageable);
+        Page<Center> centerPage = centerRepository.findAllByOrderByCreatedAtDesc(pageable);
         return centerPage.map(center -> CenterListResponseDto.builder()
                 .id(center.getId())
                 .businessName(center.getBusinessName())
