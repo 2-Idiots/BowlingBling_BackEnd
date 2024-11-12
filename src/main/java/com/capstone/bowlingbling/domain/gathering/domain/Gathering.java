@@ -20,7 +20,7 @@ import java.util.Set;
 @Getter
 public class Gathering extends BaseEntity {
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member leader;
 
     private String title;
