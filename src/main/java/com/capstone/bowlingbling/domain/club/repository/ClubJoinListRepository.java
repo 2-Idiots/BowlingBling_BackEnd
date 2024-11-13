@@ -48,7 +48,7 @@ public interface ClubJoinListRepository extends JpaRepository<ClubJoinList, Long
 
     Optional<ClubJoinList> findByClubIdAndMemberId(Long clubId, Long memberId);
 
-    @Query("SELECT cj FROM ClubJoinList cj WHERE cj.member.email = :email AND cj.status = 'ACCEPTED'")
+    @Query("SELECT cj FROM ClubJoinList cj WHERE cj.member.email = :email AND cj.status = 'ACTIVE'")
     List<ClubJoinList> findClubsByMemberEmail(@Param("email") String email);
 
     // 사용자가 매니징하는 클럽 (LEADER 또는 MANAGER 역할)
